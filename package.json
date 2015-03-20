@@ -15,9 +15,10 @@
     "request": "^2.53.0"
   },
   "devDependencies": {
+    "babelify": "^5.0.4",
     "browserify": "^7.0.0",
     "browserify-shim": "^3.8.1",
-    "gulp": "~3.7.0",
+    "gulp": "~3.8.11",
     "gulp-autoprefixer": "^1.0.0",
     "gulp-browserify": "^0.5.0",
     "gulp-clean": "~0.2.4",
@@ -51,6 +52,18 @@
   },
   "window": {
     "show": false,
-    "show_in_taskbar": false
+    "show_in_taskbar": false,
+    "transparent": true,
+    "resizable": false,
+    "toolbar": false,
+    "frame": false,
+    "always-on-top": true,
+    "visible-on-all-workspaces": true,
+    "width": 460,
+    "height": 360,
+    "min_width": 460,
+    "min_height": 360,
+    "max_width": 460,
+    "max_height": 360
   }
 }

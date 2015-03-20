@@ -11,21 +11,22 @@ var gulp  = require("gulp"),
     autoprefixer = require('gulp-autoprefixer'),
     source = require('vinyl-source-stream'),
     reactify = require("reactify"),
+    babelify = require("babelify")
     browserify = require('browserify');
 
 var paths = {
     src: ['./models/**/*.js', 'package.json'],
-    scripts: ['src/js/**/*.js'],
+    scripts: ['src/js/**/*.js*'],
     css: 'src/scss/**/*css',
     images: 'src/img/**/*'
 };
 
 gulp.task('browserify', function f() {
     return browserify('./src/js/index.js')
+        .transform(babelify)
         .transform(reactify)
         .bundle()
         .pipe(source('bundle.js'))
-//        .pipe(streamify(uglify()))
         .pipe(gulp.dest('./js'));
 });
 

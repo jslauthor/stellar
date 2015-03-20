@@ -1,18 +1,17 @@
 var React = require('react');
-var App = require("./views/App");
+var Main = require("./views/Main.jsx");
 var gui = window.require('nw.gui');
+
 var tray;
 
 var win = gui.Window.get();
 win.on("loaded",
-    function()
-    {
+    () => {
         console.log("**** LOADED");
         // Bootstrap this biatch
-        React.render(<App />, document.getElementById('App'));
+        React.render(<Main style={{width: "100%", height: "100%", position:"relative"}} />, document.getElementById('mainApp'));
     }
 );
-
 
 tray = new gui.Tray({
     title: '',
@@ -22,8 +21,10 @@ tray = new gui.Tray({
 });
 
 tray.on('click', function(evt) {
-    win.moveTo(evt.x - (win.width/2), evt.y);
+    win.moveTo((evt.x - (win.width/2)) + 6, evt.y);
     win.show();
+    win.showDevTools();
+    win.focus();
 });
 
 

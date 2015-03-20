@@ -1,12 +1,11 @@
-/** @jsx React.DOM */
-
 "use strict";
 
 var React = require('react');
 var cheerio = require('cheerio');
 var request = require('browser-request');
+var MainBackground = require('./MainBackground.jsx');
 
-var App = React.createClass({
+var Main = React.createClass({
     getDefaultProps: function() {
         return {
             page: "http://www.amazon.com/Get-Whats-Yours-Secrets-Security-ebook/dp/B00LD1OPP6/ref=zg_bs_tab_pd_bsnr_1"
@@ -40,7 +39,7 @@ var App = React.createClass({
     },
     getNumberOfReviews: function(reviewString) {
         console.log(reviewString);
-        var matches = /(\d).*/gi.exec(reviewString);
+        var matches = /(\d+).*/gi.exec(reviewString);
         return !matches || matches.length < 1 ? 0 : matches[1];
     },
     render: function() {
@@ -53,11 +52,12 @@ var App = React.createClass({
         }
 
         return (
-            <div>
-                <div>{status}</div>
-            </div>
+            <section style={{width: "100%", height: "100%", position:"relative"}}>
+                <MainBackground className="mainBackground" />
+                <div className="mainContent">{status}</div>
+            </section>
         );
     }
 });
 
-module.exports = App;
+module.exports = Main;
