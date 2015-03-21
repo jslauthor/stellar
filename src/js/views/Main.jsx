@@ -4,6 +4,7 @@ var React = require('react');
 var cheerio = require('cheerio');
 var request = require('browser-request');
 var MainBackground = require('./MainBackground.jsx');
+var Controls = require('./Controls.jsx');
 
 var Main = React.createClass({
     getDefaultProps: function() {
@@ -53,8 +54,9 @@ var Main = React.createClass({
 
         return (
             <section style={{width: "100%", height: "100%", position:"relative"}}>
-                <MainBackground className="mainBackground" />
+                <MainBackground />
                 <div className="mainContent">{status}</div>
+                <Controls />
             </section>
         );
     }
