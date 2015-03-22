@@ -7,8 +7,10 @@ var RED = "e62040";
 
 var configStore = alt.createStore(class ConfigStore {
     constructor() {
-
     }
+
+    static getGreen() { return GREEN; }
+    static getRed() { return RED; }
 
     static getRGBForToggle(toggled) {
         if (toggled)

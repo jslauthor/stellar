@@ -40,7 +40,7 @@ var ToggleButton = React.createClass({
     },
     render: function() {
         return (
-            <svg onClick={this.handleClick} viewBox="0 0 56 30" width="56" height="30">
+            <svg className="pointer" onClick={this.handleClick} viewBox="0 0 56 30" width="56" height="30">
                 <rect rx="15" ry="15" fill={this.getToggleFill()} width="100%" height="100%" />
                 <circle cx={this.getTweeningValue('circleX')} cy="15" r="13" fill="white" />
             </svg>

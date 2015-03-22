@@ -49,13 +49,21 @@ body {
     display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
-    -webkit-flex-direction: column;
-    -ms-flex-direction: column;
-    flex-direction: column;
-    -webkit-justify-content: center;
-    -ms-flex-pack: center;
-    justify-content: center;
-    padding-left: 10px; }
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    padding-left: 10px;
+    padding-right: 10px; }
+    #mainApp .mainControls *:not(:first-child) {
+      margin-left: 10px; }
+    #mainApp .mainControls svg {
+      overflow: visible; }
+  #mainApp .pointer {
+    cursor: pointer; }
 
 * {
-  color: white; }
+  color: white;
+  box-sizing: border-box; }

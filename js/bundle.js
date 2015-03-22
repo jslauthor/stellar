@@ -38150,6 +38150,16 @@ var configStore = alt.createStore((function () {
     }
 
     _createClass(ConfigStore, null, {
+        getGreen: {
+            value: function getGreen() {
+                return GREEN;
+            }
+        },
+        getRed: {
+            value: function getRed() {
+                return RED;
+            }
+        },
         getRGBForToggle: {
             value: function getRGBForToggle(toggled) {
                 if (toggled) {
@@ -38171,6 +38181,9 @@ module.exports = configStore;
 
 var React = require("react");
 var ToggleButton = require("./controls/ToggleButton.jsx");
+var RefreshButton = require("./controls/RefreshButton.jsx");
+var AddButton = require("./controls/AddButton.jsx");
+var SettingsButton = require("./controls/SettingsButton.jsx");
 
 var Controls = React.createClass({
     displayName: "Controls",
@@ -38179,7 +38192,10 @@ var Controls = React.createClass({
         return React.createElement(
             "section",
             { className: "mainControls" },
-            React.createElement(ToggleButton, null)
+            React.createElement(ToggleButton, null),
+            React.createElement(RefreshButton, null),
+            React.createElement(AddButton, null),
+            React.createElement(SettingsButton, null)
         );
     }
 
@@ -38187,7 +38203,7 @@ var Controls = React.createClass({
 
 module.exports = Controls;
 
-},{"./controls/ToggleButton.jsx":260,"react":254}],258:[function(require,module,exports){
+},{"./controls/AddButton.jsx":260,"./controls/RefreshButton.jsx":261,"./controls/SettingsButton.jsx":262,"./controls/ToggleButton.jsx":263,"react":254}],258:[function(require,module,exports){
 "use strict";
 
 var React = require("react");
@@ -38323,6 +38339,116 @@ module.exports = MainBackground;
 "use strict";
 
 var React = require("react");
+var ConfigStore = require("../../stores/ConfigStore");
+
+var AddButton = React.createClass({
+    displayName: "AddButton",
+
+    getInitialState: function getInitialState() {
+        return {};
+    },
+    handleClick: function handleClick(event) {},
+    render: function render() {
+        return React.createElement(
+            "svg",
+            { x: "0px", y: "0px", viewBox: "0 0 16 16", onClick: this.handleClick, className: "pointer", width: "22", height: "22" },
+            React.createElement(
+                "g",
+                null,
+                React.createElement(
+                    "g",
+                    null,
+                    React.createElement("polygon", { "fill-rule": "evenodd", "clip-rule": "evenodd", fill: "#" + ConfigStore.getGreen(), points: "16,6.9 9.1,6.9 9.1,0 6.9,0 6.9,6.9 0,6.9 0,9.1 6.9,9.1 6.9,16 9.1,16 9.1,9.1 16,9.1 \t\t" })
+                )
+            )
+        );
+    }
+});
+
+module.exports = AddButton;
+
+},{"../../stores/ConfigStore":256,"react":254}],261:[function(require,module,exports){
+"use strict";
+
+var React = require("react");
+var tweenState = require("react-tween-state");
+var ConfigStore = require("../../stores/ConfigStore");
+
+var RefreshButton = React.createClass({
+    displayName: "RefreshButton",
+
+    mixins: [tweenState.Mixin],
+    getInitialState: function getInitialState() {
+        return {
+            loading: false,
+            rotationTween: 0
+        };
+    },
+    handleClick: function handleClick(event) {
+        this.setState({ loading: !this.state.loading }, function () {
+            if (this.state.loading) this.createTween();else this.tweenState("rotationTween", {
+                easing: tweenState.easingTypes.easeOutQuad,
+                duration: 500,
+                beginValue: Math.round(this.getTweeningValue("rotationTween")),
+                endValue: Math.round(this.getTweeningValue("rotationTween")) + 180,
+                stackBehavior: tweenState.stackBehavior.DESTRUCTIVE
+            });
+        });
+    },
+    createTween: function createTween() {
+        if (!this.state.loading) {
+            return;
+        }this.tweenState("rotationTween", {
+            easing: tweenState.easingTypes.linear,
+            duration: 500,
+            beginValue: Math.round(this.getTweeningValue("rotationTween")),
+            endValue: Math.round(this.getTweeningValue("rotationTween")) + 360,
+            onEnd: this.createTween
+        });
+    },
+    getRotationTween: function getRotationTween() {
+        return "rotate(" + Math.round(this.getTweeningValue("rotationTween")) + " 8 8)";
+    },
+    render: function render() {
+        return React.createElement(
+            "svg",
+            { onClick: this.handleClick, className: "pointer", viewBox: "0 0 17 16", width: "23", height: "22" },
+            React.createElement("path", { fill: "#" + ConfigStore.getGreen(), d: "M17,11.6c-0.1-0.3-0.5-0.5-0.8-0.4l-0.9,0.3c0.5-1.1,0.8-2.3,0.8-3.5c0-4.4-3.6-8-8-8C3.6,0,0,3.6,0,8 s3.6,8,8,8c0.4,0,0.7-0.3,0.7-0.7c0-0.4-0.3-0.7-0.7-0.7c-3.7,0-6.7-3-6.7-6.7s3-6.7,6.7-6.7s6.7,3,6.7,6.7c0,1-0.2,2-0.7,2.9 L13.8,10c-0.1-0.3-0.5-0.5-0.8-0.4c-0.3,0.1-0.5,0.5-0.4,0.8l0.8,2.4c0.1,0.3,0.3,0.5,0.6,0.5c0.1,0,0.1,0,0.2,0l2.4-0.8 C16.9,12.3,17.1,12,17,11.6z",
+                transform: this.getRotationTween() })
+        );
+    }
+});
+
+module.exports = RefreshButton;
+
+},{"../../stores/ConfigStore":256,"react":254,"react-tween-state":107}],262:[function(require,module,exports){
+"use strict";
+
+var React = require("react");
+var ConfigStore = require("../../stores/ConfigStore");
+
+var SettingsButton = React.createClass({
+    displayName: "SettingsButton",
+
+    getInitialState: function getInitialState() {
+        return {};
+    },
+    handleClick: function handleClick(event) {},
+    render: function render() {
+        return React.createElement(
+            "svg",
+            { onClick: this.handleClick, className: "pointer", width: "22", height: "22", viewBox: "0 0 17 17" },
+            React.createElement("path", { fill: "#" + ConfigStore.getGreen(), d: "M17,8.5c0-0.6-0.5-1.3-1-1.5c-0.6-0.2-1.1-0.7-1.3-1.1c-0.2-0.4-0.1-1.1,0.1-1.7c0.3-0.5,0.1-1.3-0.3-1.8 c-0.4-0.4-1.2-0.6-1.8-0.3c-0.5,0.3-1.3,0.3-1.7,0.1C10.7,2.1,10.2,1.6,10,1C9.8,0.5,9.1,0,8.5,0C7.9,0,7.2,0.5,7,1 C6.8,1.6,6.3,2.1,5.9,2.3C5.5,2.4,4.8,2.4,4.3,2.1C3.7,1.9,2.9,2,2.5,2.5C2,2.9,1.9,3.7,2.1,4.3c0.3,0.5,0.3,1.3,0.1,1.7 C2.1,6.3,1.6,6.8,1,7C0.5,7.2,0,7.9,0,8.5S0.5,9.8,1,10c0.6,0.2,1.1,0.7,1.3,1.1c0.2,0.4,0.1,1.1-0.1,1.7c-0.3,0.5-0.1,1.3,0.3,1.8 c0.4,0.4,1.2,0.6,1.8,0.3c0.5-0.3,1.3-0.3,1.7-0.1C6.3,14.9,6.8,15.4,7,16c0.2,0.6,0.9,1,1.5,1c0.6,0,1.3-0.5,1.5-1 c0.2-0.6,0.7-1.1,1.1-1.3c0.4-0.2,1.1-0.1,1.7,0.1c0.5,0.3,1.3,0.1,1.8-0.3c0.4-0.4,0.6-1.2,0.3-1.8c-0.3-0.5-0.3-1.3-0.1-1.7 c0.2-0.4,0.7-0.9,1.3-1.1C16.6,9.8,17,9.1,17,8.5z M8.5,11.6c-1.7,0-3.1-1.4-3.1-3.1c0-1.7,1.4-3.1,3.1-3.1c1.7,0,3.1,1.4,3.1,3.1 C11.6,10.2,10.2,11.6,8.5,11.6z" })
+        );
+    }
+});
+
+module.exports = SettingsButton;
+
+},{"../../stores/ConfigStore":256,"react":254}],263:[function(require,module,exports){
+"use strict";
+
+var React = require("react");
 var tweenState = require("react-tween-state");
 var ConfigStore = require("../../stores/ConfigStore");
 
@@ -38362,7 +38488,7 @@ var ToggleButton = React.createClass({
     render: function render() {
         return React.createElement(
             "svg",
-            { onClick: this.handleClick, viewBox: "0 0 56 30", width: "56", height: "30" },
+            { className: "pointer", onClick: this.handleClick, viewBox: "0 0 56 30", width: "56", height: "30" },
             React.createElement("rect", { rx: "15", ry: "15", fill: this.getToggleFill(), width: "100%", height: "100%" }),
             React.createElement("circle", { cx: this.getTweeningValue("circleX"), cy: "15", r: "13", fill: "white" })
         );
