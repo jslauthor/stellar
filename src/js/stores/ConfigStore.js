@@ -1,12 +1,31 @@
 
 var color = require('hex-rgb-converter');
 var alt = require('../alt');
+var React = require('react')
 
 var GREEN = "1ac57f";
 var RED = "e62040";
 
-var configStore = alt.createStore(class ConfigStore {
+var AMAZON = "amazon";
+var GOODREADS = "goodreads";
+
+class ConfigStore {
     constructor() {
+    }
+
+    static getAmazonType() { return AMAZON; }
+    static getGoodreadsType() { return GOODREADS; }
+
+    static getIconForType(type) {
+        switch (type)
+        {
+            case AMAZON:
+                return <div>A</div>;
+            case GOODREADS:
+                return <div>G</div>;
+            default:
+                return <div></div>;
+        }
     }
 
     static getGreen() { return GREEN; }
@@ -18,6 +37,6 @@ var configStore = alt.createStore(class ConfigStore {
         else
             return color.toRGB(RED);
     }
-});
+}
 
-module.exports = configStore;
+module.exports = alt.createStore(ConfigStore, 'ConfigStore');

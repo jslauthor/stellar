@@ -14,8 +14,15 @@ body {
   -webkit-filter: drop-shadow(0px 5px 8px rgba(0, 0, 0, 0.5));
   filter: drop-shadow(0px 5px 8px rgba(0, 0, 0, 0.5)); }
 
+::-webkit-scrollbar {
+  width: 8px; }
+
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0); }
+
 ::-webkit-scrollbar-thumb {
-  display: none; }
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.5); }
 
 #mainApp {
   width: 425px;
@@ -24,19 +31,76 @@ body {
   margin: 0 auto;
   background: transparent;
   overflow: hidden; }
-  #mainApp .mainContent {
-    position: absolute;
-    top: 15px;
-    right: 3px;
-    bottom: 3px;
-    left: 3px;
-    overflow: auto; }
   #mainApp .mainBackground {
     width: 100%;
     height: 100%;
     top: 0;
     left: 0;
     position: absolute; }
+  #mainApp ::-webkit-scrollbar-track {
+    display: none; }
+  #mainApp .reviewList {
+    position: absolute;
+    top: 15px;
+    right: 3px;
+    bottom: 3px;
+    left: 3px;
+    overflow-x: hidden;
+    overflow-y: auto; }
+    #mainApp .reviewList .reviewItem {
+      width: 100%;
+      margin-bottom: 5px;
+      border-radius: 4px;
+      background-color: #1ac57f;
+      position: relative;
+      padding: 5px; }
+      #mainApp .reviewList .reviewItem .reviewContent {
+        display: -webkit-inline-flex;
+        display: -ms-inline-flexbox;
+        display: inline-flex;
+        -webkit-flex-direction: row;
+        -ms-flex-direction: row;
+        flex-direction: row;
+        -webkit-align-items: center;
+        -ms-flex-align: center;
+        align-items: center;
+        border-radius: 3px;
+        background-color: #eff9e1;
+        position: relative; }
+        #mainApp .reviewList .reviewItem .reviewContent .reviewSource {
+          width: 50px; }
+          #mainApp .reviewList .reviewItem .reviewContent .reviewSource * {
+            color: #808080; }
+        #mainApp .reviewList .reviewItem .reviewContent .reviewTitle {
+          width: 150px; }
+          #mainApp .reviewList .reviewItem .reviewContent .reviewTitle p {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            max-height: 40px; }
+            #mainApp .reviewList .reviewItem .reviewContent .reviewTitle p a {
+              text-overflow: ellipsis;
+              overflow: hidden; }
+          #mainApp .reviewList .reviewItem .reviewContent .reviewTitle * {
+            color: #808080; }
+        #mainApp .reviewList .reviewItem .reviewContent .reviewStatus {
+          width: 75px;
+          background-color: #fafff4; }
+          #mainApp .reviewList .reviewItem .reviewContent .reviewStatus * {
+            color: #e46e4d; }
+          #mainApp .reviewList .reviewItem .reviewContent .reviewStatus h1 {
+            font-size: 46px;
+            text-align: center;
+            width: 100%; }
+          #mainApp .reviewList .reviewItem .reviewContent .reviewStatus h4 {
+            font-size: 9px;
+            text-align: center;
+            width: 100%; }
+          #mainApp .reviewList .reviewItem .reviewContent .reviewStatus span {
+            position: absolute;
+            top: 0px;
+            right: 0px; }
+    #mainApp .reviewList .reviewLoading {
+      background-color: #20bee6; }
   #mainApp .mainControls {
     position: absolute;
     z-index: 2;
@@ -59,6 +123,15 @@ body {
     padding-right: 10px; }
     #mainApp .mainControls *:not(:first-child) {
       margin-left: 10px; }
+    #mainApp .mainControls .sortMenu {
+      -webkit-flex-basis: 100%;
+      -ms-flex-preferred-size: 100%;
+      flex-basis: 100%;
+      text-align: right; }
+      #mainApp .mainControls .sortMenu * {
+        display: inline; }
+      #mainApp .mainControls .sortMenu button {
+        background: transparent; }
     #mainApp .mainControls svg {
       overflow: visible; }
   #mainApp .pointer {

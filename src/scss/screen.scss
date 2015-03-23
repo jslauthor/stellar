@@ -1,3 +1,10 @@
+$borderRadius: 5px;
+$teal: #1ac57f;
+$lightBlue: #20bee6;
+$meringue: #eff9e1;
+$lightMeringue: #fafff4;
+$orange: #e46e4d;
+
 /* Sassy! */
 
 html, body, div, span, p, form, input, textarea, select, h1, h2, h3, table, tbody, tr, td, label, ul, li, button
@@ -18,8 +25,17 @@ body {
   filter: drop-shadow(0px 5px 8px rgba(0,0,0,.5));
 }
 
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0);
+}
+
 ::-webkit-scrollbar-thumb {
-  display: none;
+  border-radius: 10px;
+  background-color: rgba(0,0,0,0.5);
 }
 
 #mainApp {
@@ -30,15 +46,6 @@ body {
   background: transparent;
   overflow: hidden;
 
-  .mainContent {
-    position: absolute;
-    top: 15px;
-    right: 3px;
-    bottom: 3px;
-    left: 3px;
-    overflow: auto;
-  }
-
   .mainBackground {
     width: 100%;
     height: 100%;
@@ -48,17 +55,107 @@ body {
 
   }
 
+  ::-webkit-scrollbar-track {
+    display: none;
+  }
+
+  .reviewList {
+    position: absolute;
+    top: 15px;
+    right: 3px;
+    bottom: 3px;
+    left: 3px;
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    .reviewItem {
+      width: 100%;
+      margin-bottom: 5px;
+      border-radius: $borderRadius - 1;
+      background-color: $teal;
+      position: relative;
+      padding: 5px;
+
+      .reviewContent {
+        display: inline-flex;
+        flex-direction: row;
+        align-items: center;
+        border-radius: $borderRadius - 2;
+        background-color: $meringue;
+        position: relative;
+
+        .reviewSource {
+          width: 50px;
+          * {
+            color: #808080;
+          }
+        }
+
+        .reviewTitle {
+          width: 150px;
+
+          p {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            max-height: 40px;
+
+            a {
+              text-overflow: ellipsis;
+              overflow: hidden;
+            }
+
+          }
+          * {
+            color: #808080;
+          }
+        }
+
+        .reviewStatus {
+          width: 75px;
+          background-color: $lightMeringue;
+
+          * {
+            color: $orange;
+          }
+
+          h1 {
+            font-size: 46px;
+            text-align: center;
+            width: 100%;
+          }
+
+          h4 {
+            font-size: 9px;
+            text-align: center;
+            width: 100%;
+          }
+
+          span {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+          }
+        }
+
+      }
+    }
+
+    .reviewLoading {
+      background-color: $lightBlue;
+    }
+
+  }
+
   .mainControls
   {
     position: absolute;
     z-index: 2;
     width: 100%;
     height: 40px;
-    border-bottom-right-radius: 5px;
-    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: $borderRadius;
+    border-bottom-left-radius: $borderRadius;
     background-color: rgba(52,7,86,.85);
     bottom: 0;
-
 
     display: flex;
     flex-direction: row;
@@ -69,6 +166,19 @@ body {
 
     *:not(:first-child) {
       margin-left: 10px;
+    }
+
+    .sortMenu {
+      flex-basis: 100%;
+      text-align: right;
+
+      * {
+        display: inline;
+      }
+
+      button {
+        background: transparent;
+      }
     }
 
     svg {
