@@ -1,17 +1,12 @@
-$borderRadius: 5px;
-$teal: #1ac57f;
-$lightBlue: #20bee6;
-$meringue: #eff9e1;
-$lightMeringue: #fafff4;
-$orange: #e46e4d;
+@import "settings";
 
 /* Sassy! */
 
 html, body, div, span, p, form, input, textarea, select, h1, h2, h3, table, tbody, tr, td, label, ul, li, button
 {
-  margin  : 0px;
-  padding : 0px;
-  border  : 0px;
+  margin: 0px;
+  padding: 0px;
+  border: 0px;
 }
 
 html, body {
@@ -19,23 +14,11 @@ html, body {
   width: 100%;
   height: 100%;
   position: relative;
+  @include fontNormal;
 }
 
 body {
   filter: drop-shadow(0px 5px 8px rgba(0,0,0,.5));
-}
-
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0);
-}
-
-::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  background-color: rgba(0,0,0,0.5);
 }
 
 #mainApp {
@@ -86,54 +69,107 @@ body {
 
         .reviewSource {
           width: 50px;
+          text-align: center;
+
           * {
             color: #808080;
           }
         }
 
-        .reviewTitle {
+        .reviewInfo {
           width: 150px;
+          padding-top: 10px;
+          padding-bottom: 10px;
 
-          p {
-            text-overflow: ellipsis;
-            overflow: hidden;
-            max-height: 40px;
+          * {
+            color: #4e5449;
+          }
 
-            a {
-              text-overflow: ellipsis;
-              overflow: hidden;
+          .reviewAvg {
+            font-size: 10px;
+            @include fontItalic;
+            position: relative;
+
+            svg {
+              position: relative;
+              display: inline;
+              margin-right: 5px;
+              bottom: -2px;
             }
 
+            .review-avg-text {
+              font-weight: bold;
+            }
           }
-          * {
-            color: #808080;
+
+          .reviewTitle {
+            margin-right: 10px;
+            max-height: 45px;
+            overflow: hidden;
+            line-height: 14px;
+            font-size: 14px;
+            @include fontMdCnO;
+
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+
+            a {
+              text-decoration: none;
+            }
+
+            a:hover {
+              text-decoration: underline;
+            }
           }
         }
 
         .reviewStatus {
-          width: 75px;
+          width: 85px;
+          height: 70px;
           background-color: $lightMeringue;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
 
-          * {
+          h1 {
+            text-align: center;
+            width: 100%;
+            @include fontBlkCn;
             color: $orange;
           }
 
-          h1 {
-            font-size: 46px;
-            text-align: center;
-            width: 100%;
-          }
+          .lg { font-size: 44px; margin-bottom: -12px; }
+          .md { font-size: 24px; margin-bottom: -3px; }
+          .sm { font-size: 10px; }
 
           h4 {
-            font-size: 9px;
+            font-size: 10px;
             text-align: center;
             width: 100%;
+            color: $orange;
+            margin: 0;
+            padding: 0;
+            @include fontItalic;
           }
 
-          span {
+          p {
             position: absolute;
-            top: 0px;
-            right: 0px;
+            background-color: #10a1b2;
+            top: -3px;
+            right: -3px;
+            height: 14px;
+
+            span {
+              position: relative;
+              color: white;
+              margin: 0px 2px;
+              top: -1px;
+              @include fontNormal;
+              font-size: 9px;
+            }
           }
         }
 

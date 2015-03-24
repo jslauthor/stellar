@@ -10,10 +10,10 @@ class ReviewAction {
     addReview(url) {
         var review = {
             id: uuid.v1(),
-            title: "Modern Rituals: The Wayward Three, #1 (A Science Fiction Thriller)",
+            title: "Modern Rituals: The Wayward Three",
             url: url,
             type: ConfigStore.getAmazonType(),
-            stars: 0,
+            stars: 3.6,
             numReviews: 0,
             new: false,
             loading: true,
