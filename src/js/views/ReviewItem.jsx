@@ -5,6 +5,7 @@ var ConfigStore = require('../stores/ConfigStore')
 var classnames = require('classnames')
 var truncate = require('html-truncate')
 var Stars = require('./components/Stars.jsx')
+var pluralize = require('pluralize')
 
 var ReviewItem = React.createClass({
     componentDidMount: function() {
@@ -23,6 +24,10 @@ var ReviewItem = React.createClass({
             lg: num <= 3
         })
 
+        var newComponent;
+        if (this.props.new)
+            newComponent = <p><span>NEW</span></p>
+
         return (
             <section className={classNames}>
                 <div className="reviewContent">
@@ -40,8 +45,8 @@ var ReviewItem = React.createClass({
                     </div>
                     <div className="reviewStatus">
                         <h1 className={numReviewClasses}>{this.props.numReviews}</h1>
-                        <h4>reviews</h4>
-                        <p><span>NEW</span></p>
+                        <h4>{pluralize('review', this.props.numReviews)}</h4>
+                        {newComponent}
                     </div>
                 </div>
                 <div>

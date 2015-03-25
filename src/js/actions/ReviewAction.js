@@ -10,12 +10,14 @@ class ReviewAction {
     addReview(url) {
         var review = {
             id: uuid.v1(),
-            title: "Modern Rituals: The Wayward Three",
+            title: "Retrieving starlet...",
             url: url,
             type: ConfigStore.getAmazonType(),
             stars: 0,
             numReviews: 0,
-            new: false,
+            new: true,
+            lastUpdate: new Date(),
+            lastReview: {},
             loading: true,
             error: false,
             lastFive:[]
@@ -33,19 +35,16 @@ class ReviewAction {
             pleaseWork.each(function (i, el) {
                 if ($(this).text() == "See all reviews") {
                     reviewData = $(this).parents(".crAvgStars").first().text()
-                    console.log($(this).parents(".crAvgStars").first().html())
+                    return false;
                 }
             })
 
+            var title = $("#btAsinTitle").text()
+            title = title == "" ? $("#productTitle").text() : title
 
-            //var items = $('.productImageGrid').next().text()
-            //console.log(items);
-            //var titleData = $('.productImageGrid').next().text()
-            //var reviewData = $('.productImageGrid').next().next().text()
-            //console.log(url);
-            //console.log(reviewData);
             review.numReviews = InterpreterUtil.getNumberOfReviews(reviewData)
             review.stars = InterpreterUtil.getReviewAverage(reviewData)
+            review.title = title != "" ? title : "Title unknown"
             self.actions.reviewComplete(review)
         });
 

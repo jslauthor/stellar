@@ -50,6 +50,7 @@ body {
     left: 3px;
     overflow-x: hidden;
     overflow-y: auto;
+    padding-bottom: 40px; // account for controls and bottom of scroll
 
     .reviewItem {
       width: 100%;
