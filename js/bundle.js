@@ -38679,7 +38679,7 @@ var ReviewAction = (function () {
                     title: "Modern Rituals: The Wayward Three",
                     url: url,
                     type: ConfigStore.getAmazonType(),
-                    stars: 3.6,
+                    stars: 0,
                     numReviews: 0,
                     "new": false,
                     loading: true,
@@ -38693,7 +38693,24 @@ var ReviewAction = (function () {
                 request(review.url, function (er, response, body) {
                     var $ = cheerio.load(body);
                     review.loading = false;
-                    review.numReviews = InterpreterUtil.getNumberOfReviews($(".crAvgStars").first().children("a").text());
+
+                    var reviewData;
+                    var pleaseWork = $("span:contains(\"See all reviews\")");
+                    pleaseWork.each(function (i, el) {
+                        if ($(this).text() == "See all reviews") {
+                            reviewData = $(this).parents(".crAvgStars").first().text();
+                            console.log($(this).parents(".crAvgStars").first().html());
+                        }
+                    });
+
+                    //var items = $('.productImageGrid').next().text()
+                    //console.log(items);
+                    //var titleData = $('.productImageGrid').next().text()
+                    //var reviewData = $('.productImageGrid').next().next().text()
+                    //console.log(url);
+                    //console.log(reviewData);
+                    review.numReviews = InterpreterUtil.getNumberOfReviews(reviewData);
+                    review.stars = InterpreterUtil.getReviewAverage(reviewData);
                     self.actions.reviewComplete(review);
                 });
 
@@ -38891,9 +38908,20 @@ var InterpreterUtil = (function () {
 
     _createClass(InterpreterUtil, {
         getNumberOfReviews: {
-            value: function getNumberOfReviews(page) {
-                console.log(page);
-                var matches = /([,\d]+).*/gi.exec(page);
+            value: function getNumberOfReviews(data) {
+                var matches = /([,\d]+) customer review/gi.exec(data);
+                return !matches || matches.length < 1 ? 0 : matches[1];
+            }
+        },
+        getReviewAverage: {
+            value: function getReviewAverage(data) {
+                var matches = /([.\d]+) out of [.\d]+ stars/gi.exec(data);
+                return !matches || matches.length < 1 ? 0 : matches[1];
+            }
+        },
+        getTitle: {
+            value: function getTitle(data) {
+                var matches = /([.\d]+) out of [.\d]+ stars/gi.exec(data);
                 return !matches || matches.length < 1 ? 0 : matches[1];
             }
         }
@@ -39042,7 +39070,6 @@ var ReviewItem = React.createClass({
         });
 
         var num = this.props.numReviews ? this.props.numReviews.length : 0;
-        console.log(this.props.numReviews + " " + num);
         var numReviewClasses = classnames({
             sm: num > 6,
             md: num <= 6 && num > 3,

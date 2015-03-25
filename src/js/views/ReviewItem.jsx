@@ -17,7 +17,6 @@ var ReviewItem = React.createClass({
         })
 
         var num = this.props.numReviews ? this.props.numReviews.length : 0;
-        console.log(this.props.numReviews + " " + num)
         var numReviewClasses = classnames({
             sm: num > 6,
             md: num <= 6 && num > 3,

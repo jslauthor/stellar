@@ -13,7 +13,7 @@ class ReviewAction {
             title: "Modern Rituals: The Wayward Three",
             url: url,
             type: ConfigStore.getAmazonType(),
-            stars: 3.6,
+            stars: 0,
             numReviews: 0,
             new: false,
             loading: true,
@@ -27,7 +27,25 @@ class ReviewAction {
         request(review.url, function(er, response, body) {
             var $ = cheerio.load(body)
             review.loading = false
-            review.numReviews = InterpreterUtil.getNumberOfReviews($('.crAvgStars').first().children("a").text())
+
+            var reviewData;
+            var pleaseWork = $('span:contains("See all reviews")');
+            pleaseWork.each(function (i, el) {
+                if ($(this).text() == "See all reviews") {
+                    reviewData = $(this).parents(".crAvgStars").first().text()
+                    console.log($(this).parents(".crAvgStars").first().html())
+                }
+            })
+
+
+            //var items = $('.productImageGrid').next().text()
+            //console.log(items);
+            //var titleData = $('.productImageGrid').next().text()
+            //var reviewData = $('.productImageGrid').next().next().text()
+            //console.log(url);
+            //console.log(reviewData);
+            review.numReviews = InterpreterUtil.getNumberOfReviews(reviewData)
+            review.stars = InterpreterUtil.getReviewAverage(reviewData)
             self.actions.reviewComplete(review)
         });
 
