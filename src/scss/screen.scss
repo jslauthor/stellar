@@ -22,7 +22,7 @@ body {
 }
 
 #mainApp {
-  width: 425px;
+  width: 300px;
   height: 325px;
   position: relative;
   margin: 0 auto;
@@ -78,7 +78,8 @@ body {
         }
 
         .reviewInfo {
-          width: 150px;
+          max-width: 150px;
+          min-width: 120px;
           padding-top: 10px;
           padding-bottom: 10px;
 

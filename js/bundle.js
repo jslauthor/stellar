@@ -39380,8 +39380,7 @@ var Controls = React.createClass({
             React.createElement(ToggleButton, null),
             React.createElement(RefreshButton, null),
             React.createElement(AddButton, null),
-            React.createElement(SettingsButton, null),
-            React.createElement(SortMenu, null)
+            React.createElement(SettingsButton, null)
         );
     }
 

@@ -15,7 +15,6 @@ var Controls = React.createClass({
               <RefreshButton />
               <AddButton />
               <SettingsButton />
-              <SortMenu />
           </section>
         );
     }

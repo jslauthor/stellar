@@ -153,7 +153,7 @@ body {
   filter: drop-shadow(0px 5px 8px rgba(0, 0, 0, 0.5)); }
 
 #mainApp {
-  width: 425px;
+  width: 300px;
   height: 325px;
   position: relative;
   margin: 0 auto;
@@ -202,7 +202,8 @@ body {
           #mainApp .reviewList .reviewItem .reviewContent .reviewSource * {
             color: #808080; }
         #mainApp .reviewList .reviewItem .reviewContent .reviewInfo {
-          width: 150px;
+          max-width: 150px;
+          min-width: 120px;
           padding-top: 10px;
           padding-bottom: 10px; }
           #mainApp .reviewList .reviewItem .reviewContent .reviewInfo * {

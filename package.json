@@ -59,11 +59,11 @@
     "frame": false,
     "always-on-top": true,
     "visible-on-all-workspaces": true,
-    "width": 460,
+    "width": 360,
     "height": 360,
-    "min_width": 460,
+    "min_width": 360,
     "min_height": 360,
-    "max_width": 460,
+    "max_width": 360,
     "max_height": 360
   }
 }
