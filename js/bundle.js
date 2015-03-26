@@ -39783,30 +39783,33 @@ var RefreshButton = React.createClass({
         this.listenTo(ReviewStore, this.onChange);
     },
     onChange: function onChange() {
-        this.setState({ loading: ReviewStore.getState().loading }, this.toggleTween());
+        this.setState({ loading: ReviewStore.getState().loading }, this.createTween());
     },
     handleClick: function handleClick(event) {
         reviewAction.updateAll();
     },
-    toggleTween: function toggleTween() {
-        if (this.state.loading) this.createTween();else this.tweenState("rotationTween", {
-            easing: tweenState.easingTypes.easeOutQuad,
-            duration: 500,
-            beginValue: Math.round(this.getTweeningValue("rotationTween")),
-            endValue: Math.round(this.getTweeningValue("rotationTween")) + 180,
-            stackBehavior: tweenState.stackBehavior.DESTRUCTIVE
-        });
-    },
     createTween: function createTween() {
         if (!this.state.loading) {
+            console.log("destroying!");
+            this.tweenState("rotationTween", {
+                easing: tweenState.easingTypes.easeOutQuad,
+                duration: 500,
+                beginValue: Math.round(this.getTweeningValue("rotationTween")),
+                endValue: Math.round(this.getTweeningValue("rotationTween")) + 180,
+                stackBehavior: tweenState.stackBehavior.DESTRUCTIVE
+            });
             return;
-        }this.tweenState("rotationTween", {
-            easing: tweenState.easingTypes.linear,
-            duration: 500,
-            beginValue: Math.round(this.getTweeningValue("rotationTween")),
-            endValue: Math.round(this.getTweeningValue("rotationTween")) + 360,
-            onEnd: this.createTween
-        });
+        } else {
+            console.log("tweening!");
+            this.tweenState("rotationTween", {
+                easing: tweenState.easingTypes.linear,
+                duration: 500,
+                beginValue: Math.round(this.getTweeningValue("rotationTween")),
+                endValue: Math.round(this.getTweeningValue("rotationTween")) + 360,
+                onEnd: this.createTween,
+                stackBehavior: tweenState.stackBehavior.DESTRUCTIVE
+            });
+        }
     },
     getRotationTween: function getRotationTween() {
         return "rotate(" + Math.round(this.getTweeningValue("rotationTween")) + " 8 8)";

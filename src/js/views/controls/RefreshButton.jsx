@@ -19,15 +19,14 @@ var RefreshButton = React.createClass({
         this.listenTo(ReviewStore, this.onChange)
     },
     onChange() {
-        this.setState({loading: ReviewStore.getState().loading}, this.toggleTween())
+        this.setState({loading: ReviewStore.getState().loading}, this.createTween())
     },
     handleClick: function(event) {
         reviewAction.updateAll();
     },
-    toggleTween: function() {
-        if (this.state.loading)
-            this.createTween();
-        else
+    createTween: function() {
+        if (!this.state.loading) {
+            console.log('destroying!')
             this.tweenState("rotationTween", {
                 easing: tweenState.easingTypes.easeOutQuad,
                 duration: 500,
@@ -35,18 +34,19 @@ var RefreshButton = React.createClass({
                 endValue: Math.round(this.getTweeningValue('rotationTween')) + 180,
                 stackBehavior: tweenState.stackBehavior.DESTRUCTIVE
             });
-    },
-    createTween: function() {
-        if (!this.state.loading)
             return;
-
-        this.tweenState("rotationTween", {
-            easing: tweenState.easingTypes.linear,
-            duration: 500,
-            beginValue: Math.round(this.getTweeningValue('rotationTween')),
-            endValue: Math.round(this.getTweeningValue('rotationTween')) + 360,
-            onEnd: this.createTween
-        });
+        }
+        else {
+            console.log('tweening!')
+            this.tweenState("rotationTween", {
+                easing: tweenState.easingTypes.linear,
+                duration: 500,
+                beginValue: Math.round(this.getTweeningValue('rotationTween')),
+                endValue: Math.round(this.getTweeningValue('rotationTween')) + 360,
+                onEnd: this.createTween,
+                stackBehavior: tweenState.stackBehavior.DESTRUCTIVE
+            });
+        }
     },
     getRotationTween: function() {
         return "rotate(" +
