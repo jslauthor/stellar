@@ -2,8 +2,8 @@
 
 var React = require('react');
 var MainBackground = require('./MainBackground.jsx');
-var Controls = require('./Controls.jsx');
 var ReviewList = require('./ReviewList.jsx');
+var Controls = require('./Controls.jsx');
 
 var Main = React.createClass({
     render: function() {

@@ -5,6 +5,19 @@ class ReviewStore {
     constructor() {
         this.bindActions(ReviewAction)
         this.reviews = {}
+        this.loading = false
+    }
+
+    onAllComplete() {
+        this.loading = false
+    }
+
+    onRequestReview(review) {
+        this.loading = true;
+    }
+
+    onDeleteReview(reviews) {
+        this.reviews = reviews
     }
 
     onAddReview(review) {

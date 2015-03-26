@@ -132,7 +132,6 @@ body::-webkit-scrollbar-corner {
   border-width: 3px 0 0 3px;
   box-shadow: inset 1px 1px 0 rgba(220, 172, 0, 0.14); }
 
-/* Sassy! */
 html, body, div, span, p, form, input, textarea, select, h1, h2, h3, table, tbody, tr, td, label, ul, li, button {
   margin: 0px;
   padding: 0px;
@@ -328,7 +327,7 @@ body {
     padding-left: 10px;
     padding-right: 10px; }
     #mainApp .mainControls *:not(:first-child) {
-      margin-left: 10px; }
+      margin-left: 5px; }
     #mainApp .mainControls .sortMenu {
       -webkit-flex-basis: 100%;
       -ms-flex-preferred-size: 100%;

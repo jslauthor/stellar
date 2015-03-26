@@ -1,7 +1,5 @@
 @import "settings";
 
-/* Sassy! */
-
 html, body, div, span, p, form, input, textarea, select, h1, h2, h3, table, tbody, tr, td, label, ul, li, button
 {
   margin: 0px;
@@ -203,7 +201,7 @@ body {
     padding-right: 10px;
 
     *:not(:first-child) {
-      margin-left: 10px;
+      margin-left: 5px;
     }
 
     .sortMenu {

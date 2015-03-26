@@ -13,7 +13,7 @@ var SettingsButton = React.createClass({
     },
     render: function() {
         return (
-            <svg onClick={this.handleClick} className="pointer" width="22" height="22" viewBox="0 0 17 17">
+            <svg onClick={this.handleClick} className="pointer" width="22" height="18" viewBox="0 0 17 17">
                 <path fill={"#"+ConfigStore.getGreen()} d="M17,8.5c0-0.6-0.5-1.3-1-1.5c-0.6-0.2-1.1-0.7-1.3-1.1c-0.2-0.4-0.1-1.1,0.1-1.7c0.3-0.5,0.1-1.3-0.3-1.8
 	c-0.4-0.4-1.2-0.6-1.8-0.3c-0.5,0.3-1.3,0.3-1.7,0.1C10.7,2.1,10.2,1.6,10,1C9.8,0.5,9.1,0,8.5,0C7.9,0,7.2,0.5,7,1
 	C6.8,1.6,6.3,2.1,5.9,2.3C5.5,2.4,4.8,2.4,4.3,2.1C3.7,1.9,2.9,2,2.5,2.5C2,2.9,1.9,3.7,2.1,4.3c0.3,0.5,0.3,1.3,0.1,1.7

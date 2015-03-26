@@ -1,30 +1,40 @@
 "use strict";
 
-var React = require('react');
-var tweenState = require('react-tween-state');
-var ConfigStore = require('../../stores/ConfigStore');
+var React = require('react')
+var tweenState = require('react-tween-state')
+var ConfigStore = require('../../stores/ConfigStore')
+var reviewAction = require('../../actions/ReviewAction')
+var ListenerMixin = require('alt/mixins/ListenerMixin');
+var ReviewStore = require('../../stores/ReviewStore');
 
 var RefreshButton = React.createClass({
-    mixins: [tweenState.Mixin],
+    mixins: [tweenState.Mixin, ListenerMixin],
     getInitialState: function() {
         return {
-            loading: false,
+            loading: ReviewStore.getState().loading,
             rotationTween: 0
         }
     },
+    componentDidMount() {
+        this.listenTo(ReviewStore, this.onChange)
+    },
+    onChange() {
+        this.setState({loading: ReviewStore.getState().loading}, this.toggleTween())
+    },
     handleClick: function(event) {
-        this.setState({loading: !this.state.loading}, function() {
-            if (this.state.loading)
-                this.createTween();
-            else
-                this.tweenState("rotationTween", {
-                    easing: tweenState.easingTypes.easeOutQuad,
-                    duration: 500,
-                    beginValue: Math.round(this.getTweeningValue('rotationTween')),
-                    endValue: Math.round(this.getTweeningValue('rotationTween')) + 180,
-                    stackBehavior: tweenState.stackBehavior.DESTRUCTIVE
-                });
-        });
+        reviewAction.updateAll();
+    },
+    toggleTween: function() {
+        if (this.state.loading)
+            this.createTween();
+        else
+            this.tweenState("rotationTween", {
+                easing: tweenState.easingTypes.easeOutQuad,
+                duration: 500,
+                beginValue: Math.round(this.getTweeningValue('rotationTween')),
+                endValue: Math.round(this.getTweeningValue('rotationTween')) + 180,
+                stackBehavior: tweenState.stackBehavior.DESTRUCTIVE
+            });
     },
     createTween: function() {
         if (!this.state.loading)
@@ -45,7 +55,7 @@ var RefreshButton = React.createClass({
     },
     render: function() {
         return (
-            <svg onClick={this.handleClick} className="pointer" viewBox="0 0 17 16" width="23" height="22">
+            <svg onClick={this.handleClick} className="pointer" viewBox="0 0 17 16" width="23" height="18">
                 <path fill={"#"+ConfigStore.getGreen()} d="M17,11.6c-0.1-0.3-0.5-0.5-0.8-0.4l-0.9,0.3c0.5-1.1,0.8-2.3,0.8-3.5c0-4.4-3.6-8-8-8C3.6,0,0,3.6,0,8
 	s3.6,8,8,8c0.4,0,0.7-0.3,0.7-0.7c0-0.4-0.3-0.7-0.7-0.7c-3.7,0-6.7-3-6.7-6.7s3-6.7,6.7-6.7s6.7,3,6.7,6.7c0,1-0.2,2-0.7,2.9
 	L13.8,10c-0.1-0.3-0.5-0.5-0.8-0.4c-0.3,0.1-0.5,0.5-0.4,0.8l0.8,2.4c0.1,0.3,0.3,0.5,0.6,0.5c0.1,0,0.1,0,0.2,0l2.4-0.8

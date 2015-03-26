@@ -39093,6 +39093,7 @@ var request = require("browser-request");
 var uuid = require("node-uuid");
 var ConfigStore = require("../stores/ConfigStore");
 var InterpreterUtil = require("../utils/InterpreterUtil");
+var _ = require("lodash");
 
 var ReviewAction = (function () {
     function ReviewAction() {
@@ -39113,20 +39114,25 @@ var ReviewAction = (function () {
                     lastUpdate: new Date(),
                     lastReview: {},
                     loading: true,
-                    error: false,
-                    lastFive: []
+                    error: false
                 };
 
                 // Amazon only now
 
+                this.actions.requestReview(review);
+                this.dispatch(review);
+            }
+        },
+        requestReview: {
+            value: function requestReview(review) {
                 var self = this;
                 request(review.url, function (er, response, body) {
                     var $ = cheerio.load(body);
                     review.loading = false;
 
                     var reviewData;
-                    var pleaseWork = $("span:contains(\"See all reviews\")");
-                    pleaseWork.each(function (i, el) {
+                    var rootNode = $("span:contains(\"See all reviews\")");
+                    rootNode.each(function (i, el) {
                         if ($(this).text() == "See all reviews") {
                             reviewData = $(this).parents(".crAvgStars").first().text();
                             return false;
@@ -39141,23 +39147,59 @@ var ReviewAction = (function () {
                     review.title = title != "" ? title : "Title unknown";
                     self.actions.reviewComplete(review);
                 });
-
                 this.dispatch(review);
+            }
+        },
+        allComplete: {
+            value: function allComplete() {
+                this.dispatch();
             }
         },
         reviewComplete: {
             value: function reviewComplete(review) {
                 this.dispatch(review);
+
+                var reviews = this.alt.stores.ReviewStore.getState().reviews;
+                var hasLoading = false;
+                _.each(reviews, function (review) {
+                    if (review.loading) {
+                        hasLoading = true;
+                        return false;
+                    }
+                });
+
+                if (!hasLoading) this.actions.allComplete();
             }
         },
         updateReview: {
-            value: function updateReview(review) {}
+            value: function updateReview(review) {
+                if (!review.loading) {
+                    review.loading = true;
+                    this.actions.requestReview(review);
+                    this.dispatch();
+                }
+            }
         },
         deleteReview: {
-            value: function deleteReview(review) {}
+            value: function deleteReview(id) {
+                var reviews = this.alt.stores.ReviewStore.getState().reviews;
+
+                if (reviews[id]) delete reviews[id];
+
+                this.dispatch(reviews);
+            }
         },
         updateAll: {
-            value: function updateAll() {}
+            value: function updateAll() {
+                var self = this;
+                var reviews = this.alt.stores.ReviewStore.getState().reviews;
+
+                _.each(reviews, function (review) {
+                    self.actions.updateReview(review);
+                });
+
+                this.dispatch();
+            }
         }
     });
 
@@ -39166,7 +39208,7 @@ var ReviewAction = (function () {
 
 module.exports = alt.createActions(ReviewAction);
 
-},{"../alt":263,"../stores/ConfigStore":265,"../utils/InterpreterUtil":267,"browser-request":11,"cheerio":36,"node-uuid":112}],263:[function(require,module,exports){
+},{"../alt":263,"../stores/ConfigStore":265,"../utils/InterpreterUtil":267,"browser-request":11,"cheerio":36,"lodash":111,"node-uuid":112}],263:[function(require,module,exports){
 "use strict";
 
 var Alt = require("alt");
@@ -39302,9 +39344,25 @@ var ReviewStore = (function () {
 
         this.bindActions(ReviewAction);
         this.reviews = {};
+        this.loading = false;
     }
 
     _createClass(ReviewStore, {
+        onAllComplete: {
+            value: function onAllComplete() {
+                this.loading = false;
+            }
+        },
+        onRequestReview: {
+            value: function onRequestReview(review) {
+                this.loading = true;
+            }
+        },
+        onDeleteReview: {
+            value: function onDeleteReview(reviews) {
+                this.reviews = reviews;
+            }
+        },
         onAddReview: {
             value: function onAddReview(review) {
                 this.reviews[review.id] = review;
@@ -39368,7 +39426,7 @@ var ToggleButton = require("./controls/ToggleButton.jsx");
 var RefreshButton = require("./controls/RefreshButton.jsx");
 var AddButton = require("./controls/AddButton.jsx");
 var SettingsButton = require("./controls/SettingsButton.jsx");
-var SortMenu = require("./controls/SortMenu.jsx");
+//var SortMenu = require ('./controls/SortMenu.jsx');
 
 var Controls = React.createClass({
     displayName: "Controls",
@@ -39388,13 +39446,13 @@ var Controls = React.createClass({
 
 module.exports = Controls;
 
-},{"./controls/AddButton.jsx":274,"./controls/RefreshButton.jsx":275,"./controls/SettingsButton.jsx":276,"./controls/SortMenu.jsx":277,"./controls/ToggleButton.jsx":278,"react":261}],269:[function(require,module,exports){
+},{"./controls/AddButton.jsx":274,"./controls/RefreshButton.jsx":275,"./controls/SettingsButton.jsx":276,"./controls/ToggleButton.jsx":277,"react":261}],269:[function(require,module,exports){
 "use strict";
 
 var React = require("react");
 var MainBackground = require("./MainBackground.jsx");
-var Controls = require("./Controls.jsx");
 var ReviewList = require("./ReviewList.jsx");
+var Controls = require("./Controls.jsx");
 
 var Main = React.createClass({
     displayName: "Main",
@@ -39685,7 +39743,7 @@ var AddButton = React.createClass({
     render: function render() {
         return React.createElement(
             "svg",
-            { x: "0px", y: "0px", viewBox: "0 0 16 16", onClick: this.handleClick, className: "pointer", width: "22", height: "22" },
+            { x: "0px", y: "0px", viewBox: "0 0 16 16", onClick: this.handleClick, className: "pointer", width: "22", height: "18" },
             React.createElement(
                 "g",
                 null,
@@ -39707,26 +39765,36 @@ module.exports = AddButton;
 var React = require("react");
 var tweenState = require("react-tween-state");
 var ConfigStore = require("../../stores/ConfigStore");
+var reviewAction = require("../../actions/ReviewAction");
+var ListenerMixin = require("alt/mixins/ListenerMixin");
+var ReviewStore = require("../../stores/ReviewStore");
 
 var RefreshButton = React.createClass({
     displayName: "RefreshButton",
 
-    mixins: [tweenState.Mixin],
+    mixins: [tweenState.Mixin, ListenerMixin],
     getInitialState: function getInitialState() {
         return {
-            loading: false,
+            loading: ReviewStore.getState().loading,
             rotationTween: 0
         };
     },
+    componentDidMount: function componentDidMount() {
+        this.listenTo(ReviewStore, this.onChange);
+    },
+    onChange: function onChange() {
+        this.setState({ loading: ReviewStore.getState().loading }, this.toggleTween());
+    },
     handleClick: function handleClick(event) {
-        this.setState({ loading: !this.state.loading }, function () {
-            if (this.state.loading) this.createTween();else this.tweenState("rotationTween", {
-                easing: tweenState.easingTypes.easeOutQuad,
-                duration: 500,
-                beginValue: Math.round(this.getTweeningValue("rotationTween")),
-                endValue: Math.round(this.getTweeningValue("rotationTween")) + 180,
-                stackBehavior: tweenState.stackBehavior.DESTRUCTIVE
-            });
+        reviewAction.updateAll();
+    },
+    toggleTween: function toggleTween() {
+        if (this.state.loading) this.createTween();else this.tweenState("rotationTween", {
+            easing: tweenState.easingTypes.easeOutQuad,
+            duration: 500,
+            beginValue: Math.round(this.getTweeningValue("rotationTween")),
+            endValue: Math.round(this.getTweeningValue("rotationTween")) + 180,
+            stackBehavior: tweenState.stackBehavior.DESTRUCTIVE
         });
     },
     createTween: function createTween() {
@@ -39746,7 +39814,7 @@ var RefreshButton = React.createClass({
     render: function render() {
         return React.createElement(
             "svg",
-            { onClick: this.handleClick, className: "pointer", viewBox: "0 0 17 16", width: "23", height: "22" },
+            { onClick: this.handleClick, className: "pointer", viewBox: "0 0 17 16", width: "23", height: "18" },
             React.createElement("path", { fill: "#" + ConfigStore.getGreen(), d: "M17,11.6c-0.1-0.3-0.5-0.5-0.8-0.4l-0.9,0.3c0.5-1.1,0.8-2.3,0.8-3.5c0-4.4-3.6-8-8-8C3.6,0,0,3.6,0,8 s3.6,8,8,8c0.4,0,0.7-0.3,0.7-0.7c0-0.4-0.3-0.7-0.7-0.7c-3.7,0-6.7-3-6.7-6.7s3-6.7,6.7-6.7s6.7,3,6.7,6.7c0,1-0.2,2-0.7,2.9 L13.8,10c-0.1-0.3-0.5-0.5-0.8-0.4c-0.3,0.1-0.5,0.5-0.4,0.8l0.8,2.4c0.1,0.3,0.3,0.5,0.6,0.5c0.1,0,0.1,0,0.2,0l2.4-0.8 C16.9,12.3,17.1,12,17,11.6z",
                 transform: this.getRotationTween() })
         );
@@ -39755,7 +39823,7 @@ var RefreshButton = React.createClass({
 
 module.exports = RefreshButton;
 
-},{"../../stores/ConfigStore":265,"react":261,"react-tween-state":114}],276:[function(require,module,exports){
+},{"../../actions/ReviewAction":262,"../../stores/ConfigStore":265,"../../stores/ReviewStore":266,"alt/mixins/ListenerMixin":3,"react":261,"react-tween-state":114}],276:[function(require,module,exports){
 "use strict";
 
 var React = require("react");
@@ -39771,7 +39839,7 @@ var SettingsButton = React.createClass({
     render: function render() {
         return React.createElement(
             "svg",
-            { onClick: this.handleClick, className: "pointer", width: "22", height: "22", viewBox: "0 0 17 17" },
+            { onClick: this.handleClick, className: "pointer", width: "22", height: "18", viewBox: "0 0 17 17" },
             React.createElement("path", { fill: "#" + ConfigStore.getGreen(), d: "M17,8.5c0-0.6-0.5-1.3-1-1.5c-0.6-0.2-1.1-0.7-1.3-1.1c-0.2-0.4-0.1-1.1,0.1-1.7c0.3-0.5,0.1-1.3-0.3-1.8 c-0.4-0.4-1.2-0.6-1.8-0.3c-0.5,0.3-1.3,0.3-1.7,0.1C10.7,2.1,10.2,1.6,10,1C9.8,0.5,9.1,0,8.5,0C7.9,0,7.2,0.5,7,1 C6.8,1.6,6.3,2.1,5.9,2.3C5.5,2.4,4.8,2.4,4.3,2.1C3.7,1.9,2.9,2,2.5,2.5C2,2.9,1.9,3.7,2.1,4.3c0.3,0.5,0.3,1.3,0.1,1.7 C2.1,6.3,1.6,6.8,1,7C0.5,7.2,0,7.9,0,8.5S0.5,9.8,1,10c0.6,0.2,1.1,0.7,1.3,1.1c0.2,0.4,0.1,1.1-0.1,1.7c-0.3,0.5-0.1,1.3,0.3,1.8 c0.4,0.4,1.2,0.6,1.8,0.3c0.5-0.3,1.3-0.3,1.7-0.1C6.3,14.9,6.8,15.4,7,16c0.2,0.6,0.9,1,1.5,1c0.6,0,1.3-0.5,1.5-1 c0.2-0.6,0.7-1.1,1.1-1.3c0.4-0.2,1.1-0.1,1.7,0.1c0.5,0.3,1.3,0.1,1.8-0.3c0.4-0.4,0.6-1.2,0.3-1.8c-0.3-0.5-0.3-1.3-0.1-1.7 c0.2-0.4,0.7-0.9,1.3-1.1C16.6,9.8,17,9.1,17,8.5z M8.5,11.6c-1.7,0-3.1-1.4-3.1-3.1c0-1.7,1.4-3.1,3.1-3.1c1.7,0,3.1,1.4,3.1,3.1 C11.6,10.2,10.2,11.6,8.5,11.6z" })
         );
     }
@@ -39780,49 +39848,6 @@ var SettingsButton = React.createClass({
 module.exports = SettingsButton;
 
 },{"../../stores/ConfigStore":265,"react":261}],277:[function(require,module,exports){
-"use strict";
-
-var React = require("react");
-
-var SortMenu = React.createClass({
-    displayName: "SortMenu",
-
-    render: function render() {
-        return React.createElement(
-            "span",
-            { className: "sortMenu" },
-            React.createElement(
-                "h4",
-                null,
-                "sort:"
-            ),
-            React.createElement(
-                "button",
-                { className: "" },
-                "review"
-            ),
-            React.createElement(
-                "button",
-                { className: "" },
-                "date"
-            ),
-            React.createElement(
-                "button",
-                { className: "" },
-                "average"
-            ),
-            React.createElement(
-                "button",
-                { className: "" },
-                "site"
-            )
-        );
-    }
-});
-
-module.exports = SortMenu;
-
-},{"react":261}],278:[function(require,module,exports){
 "use strict";
 
 var React = require("react");
@@ -39865,7 +39890,7 @@ var ToggleButton = React.createClass({
     render: function render() {
         return React.createElement(
             "svg",
-            { className: "pointer", onClick: this.handleClick, viewBox: "0 0 56 30", width: "56", height: "30" },
+            { className: "pointer", onClick: this.handleClick, viewBox: "0 0 56 30", width: "56", height: "25" },
             React.createElement("rect", { rx: "15", ry: "15", fill: this.getToggleFill(), width: "100%", height: "100%" }),
             React.createElement("circle", { cx: this.getTweeningValue("circleX"), cy: "15", r: "13", fill: "white" })
         );
