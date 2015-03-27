@@ -1,3 +1,5 @@
+$popupIndex: 9999;
+
 $borderRadius: 5px;
 $teal: #1ac57f;
 $lightBlue: #20bee6;
@@ -5,6 +7,9 @@ $meringue: #eff9e1;
 $lightMeringue: #fafff4;
 $orange: #e46e4d;
 $gold: #eaba14;
+$purple: #5e3a6b;
+$lightPurple: #9468a4;
+$darkPurple: #492958;
 
 @font-face {
   font-family: helveticaNeueu;
@@ -38,9 +43,24 @@ $gold: #eaba14;
   font-weight: normal;
 }
 
+@font-face {
+  font-family: helveticaNeueu;
+  src: url('HelveticaNeueLTPro-MdCn.otf');
+  font-style: normal;
+  font-stretch: condensed;
+  font-weight: 500;
+}
+
 @mixin fontMdCnO {
   font-family: helveticaNeueu;
   font-style: italic;
+  font-stretch: condensed;
+  font-weight: 500;
+}
+
+@mixin fontMdCn {
+  font-family: helveticaNeueu;
+  font-style: normal;
   font-stretch: condensed;
   font-weight: 500;
 }

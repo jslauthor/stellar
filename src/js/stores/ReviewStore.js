@@ -6,6 +6,20 @@ class ReviewStore {
         this.bindActions(ReviewAction)
         this.reviews = {}
         this.loading = false
+        this.showReviewPopup = false;
+        this.isEditing = false;
+    }
+
+    onToggleEditing() {
+        this.isEditing = !this.isEditing;
+    }
+
+    onShowAddReviewPopup() {
+        this.showReviewPopup = true;
+    }
+
+    onHideAddReviewPopup() {
+        this.showReviewPopup = false;
     }
 
     onAllComplete() {

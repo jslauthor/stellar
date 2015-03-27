@@ -1,10 +1,11 @@
 "use strict";
 
-var React = require('react');
+var React = require('react')
 var reviewStore = require('../stores/ReviewStore');
-var ListenerMixin = require('alt/mixins/ListenerMixin');
-var _ = require('lodash');
+var ListenerMixin = require('alt/mixins/ListenerMixin')
+var _ = require('lodash')
 var ReviewItem = require('./ReviewItem.jsx')
+var TimeoutTransitionGroup = require('../addons/TimeoutTransitionGroup')
 
 var ReviewList = React.createClass({
     mixins: [ListenerMixin],
@@ -21,10 +22,12 @@ var ReviewList = React.createClass({
     render: function () {
 
         var reviewItems = [];
+        var self = this;
         _.forEach(this.state.reviews, function (item) {
             reviewItems.push(
                 <ReviewItem
                     key={item.id}
+                    reviewID={item.id}
                     title={item.title}
                     url={item.url}
                     stars={item.stars}
@@ -32,12 +35,20 @@ var ReviewList = React.createClass({
                     numReviews={item.numReviews}
                     new={item.new}
                     loading={item.loading}
-                    lastFive={item.lastFive} />
+                    isEditing={self.state.isEditing}
+                />
             )
         })
 
         return (
-            <section className="reviewList">{reviewItems}</section>
+            <section className="reviewList">
+                <TimeoutTransitionGroup
+                    enterTimeout={0}
+                    leaveTimeout={0}
+                    transitionName="list-animation">
+                    {reviewItems}
+                </TimeoutTransitionGroup>
+            </section>
         )
     }
 });

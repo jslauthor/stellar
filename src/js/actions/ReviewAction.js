@@ -9,9 +9,12 @@ var _ = require('lodash')
 class ReviewAction {
 
     constructor() {
+        this.generateActions('showAddReviewPopup', 'hideAddReviewPopup', 'toggleEditing')
     }
 
     addReview(url) {
+        console.log(url);
+
         var review = {
             id: uuid.v1(),
             title: "Retrieving starlet...",
@@ -23,7 +26,8 @@ class ReviewAction {
             lastUpdate: new Date(),
             lastReview: {},
             loading: true,
-            error: false
+            error: false,
+            edit: false
         }
 
         // Amazon only now
@@ -89,12 +93,15 @@ class ReviewAction {
     }
 
     deleteReview(id) {
+        console.log(id)
         let reviews = this.alt.stores.ReviewStore.getState().reviews;
 
         if (reviews[id])
             delete reviews[id]
 
-        this.dispatch(reviews);
+        console.log(reviews[id])
+
+        this.dispatch(reviews)
     }
 
     updateAll() {

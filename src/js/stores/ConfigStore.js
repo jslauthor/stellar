@@ -1,3 +1,4 @@
+"use strict"
 
 var color = require('hex-rgb-converter');
 var alt = require('../alt');

@@ -26,6 +26,13 @@
   font-stretch: normal;
   font-weight: normal; }
 
+@font-face {
+  font-family: helveticaNeueu;
+  src: url('HelveticaNeueLTPro-MdCn.otf');
+  font-style: normal;
+  font-stretch: condensed;
+  font-weight: 500; }
+
 /* Gmail style scrollbar */
 ::-webkit-scrollbar {
   width: 12px; }

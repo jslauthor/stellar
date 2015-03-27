@@ -1,3 +1,5 @@
+"use strict"
+
 class InterpreterUtil {
 
     getNumberOfReviews(data) {

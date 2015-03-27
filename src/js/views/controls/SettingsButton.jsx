@@ -1,15 +1,41 @@
 "use strict";
 
-var React = require('react');
-var ConfigStore = require('../../stores/ConfigStore');
+var React = require('react')
+var ConfigStore = require('../../stores/ConfigStore')
+var gui = window.require('nw.gui')
+var reviewAction = require('../../actions/ReviewAction')
+
+var menu;
 
 var SettingsButton = React.createClass({
     getInitialState: function() {
         return {
         }
     },
+    componentDidMount: function() {
+        menu = new gui.Menu();
+        menu.append(new gui.MenuItem({
+            label: 'Edit starlets',
+            click: function() {
+                reviewAction.toggleEditing()
+            }
+        }));
+        menu.append(new gui.MenuItem({
+            label: 'Open at startup',
+            type: "checkbox",
+            checked: true
+        }));
+        menu.append(new gui.MenuItem({ type: 'separator' }));
+        menu.append(new gui.MenuItem({
+            label: 'Join J.S.L. Newsletter',
+            click: function() {
+                gui.Shell.openExternal('http://www.jslauthor.com/sign-up');
+            }
+        }));
+    },
     handleClick: function(event) {
-
+        console.log(event)
+        menu.popup(event.clientX+5, event.clientY+5)
     },
     render: function() {
         return (

@@ -1,7 +1,8 @@
 "use strict";
 
-var React = require('react');
-var ConfigStore = require('../../stores/ConfigStore');
+var React = require('react')
+var ConfigStore = require('../../stores/ConfigStore')
+var reviewAction = require('../../actions/ReviewAction')
 
 var AddButton = React.createClass({
     getInitialState: function() {
@@ -9,7 +10,7 @@ var AddButton = React.createClass({
         }
     },
     handleClick: function(event) {
-
+        reviewAction.showAddReviewPopup();
     },
     render: function() {
         return (

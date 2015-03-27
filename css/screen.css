@@ -26,6 +26,13 @@
   font-stretch: normal;
   font-weight: normal; }
 
+@font-face {
+  font-family: helveticaNeueu;
+  src: url('HelveticaNeueLTPro-MdCn.otf');
+  font-style: normal;
+  font-stretch: condensed;
+  font-weight: 500; }
+
 /* Gmail style scrollbar */
 ::-webkit-scrollbar {
   width: 12px; }
@@ -152,12 +159,20 @@ body {
   filter: drop-shadow(0px 5px 8px rgba(0, 0, 0, 0.5)); }
 
 #mainApp {
-  width: 300px;
-  height: 325px;
+  width: 100%;
+  height: 100%;
   position: relative;
   margin: 0 auto;
-  background: transparent;
-  overflow: hidden; }
+  background: transparent; }
+  #mainApp .main-section {
+    width: 300px;
+    height: 325px;
+    position: relative;
+    margin: 0 auto;
+    transition: 2s -webkit-filter linear, 2s filter linear;
+    transition: 2s filter linear;
+    -webkit-filter: blur(0px);
+    filter: blur(0px); }
   #mainApp .mainBackground {
     width: 100%;
     height: 100%;
@@ -328,6 +343,10 @@ body {
     padding-right: 10px; }
     #mainApp .mainControls *:not(:first-child) {
       margin-left: 5px; }
+    #mainApp .mainControls *:nth-child(3) {
+      -webkit-flex-grow: 2;
+      -ms-flex-positive: 2;
+      flex-grow: 2; }
     #mainApp .mainControls .sortMenu {
       -webkit-flex-basis: 100%;
       -ms-flex-preferred-size: 100%;
@@ -341,7 +360,226 @@ body {
       overflow: visible; }
   #mainApp .pointer {
     cursor: pointer; }
+  #mainApp .blur {
+    -webkit-filter: blur(3px);
+    filter: blur(3px);
+    pointer-events: none; }
+  #mainApp .add-item-container {
+    z-index: 9999;
+    overflow: hidden;
+    margin: auto;
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    width: 350px;
+    height: 250px;
+    background-color: #5e3a6b;
+    -webkit-filter: drop-shadow(0px 5px 8px rgba(0, 0, 0, 0.75));
+    filter: drop-shadow(0px 5px 8px rgba(0, 0, 0, 0.75));
+    border-radius: 5px; }
+    #mainApp .add-item-container main {
+      padding: 10px 10px 0 10px; }
+      #mainApp .add-item-container main h1 {
+        font-family: helveticaNeueu;
+        font-style: normal;
+        font-stretch: condensed;
+        font-weight: 800;
+        color: #9468a4;
+        font-size: 42px;
+        margin-bottom: 10px; }
+      #mainApp .add-item-container main div {
+        font-family: helveticaNeueu;
+        font-style: italic;
+        font-stretch: condensed;
+        font-weight: 500;
+        font-size: 14px;
+        color: white;
+        margin-bottom: 5px; }
+      #mainApp .add-item-container main div.help-text {
+        font-family: helveticaNeueu;
+        font-style: normal;
+        font-stretch: normal;
+        font-weight: normal;
+        font-size: 11px;
+        opacity: 0.5;
+        margin-top: 15px;
+        text-align: center; }
+      #mainApp .add-item-container main input {
+        width: 100%;
+        height: 55px;
+        color: white;
+        padding: 0px 10px;
+        font-size: 25px;
+        font-family: helveticaNeueu;
+        font-style: normal;
+        font-stretch: normal;
+        font-weight: normal;
+        background-color: #41284a;
+        border-radius: 5px; }
+      #mainApp .add-item-container main input:focus {
+        box-shadow: 0 0 5px #c2a4cd;
+        border: 1px solid #c2a4cd; }
+      #mainApp .add-item-container main input.error, #mainApp .add-item-container main input:focus .error {
+        box-shadow: 0 0 5px #e70e65;
+        border: 1px solid #e70e65; }
+    #mainApp .add-item-container button.add-btn {
+      width: 100%;
+      height: 60px;
+      position: absolute;
+      bottom: 0;
+      font-family: helveticaNeueu;
+      font-style: normal;
+      font-stretch: condensed;
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 23px;
+      background-color: #492958;
+      border-bottom-right-radius: 5px;
+      border-bottom-left-radius: 5px; }
+    #mainApp .add-item-container button.close-btn {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      background-color: #492958;
+      width: 60px;
+      height: 60px;
+      -webkit-transform: translateY(-30px) translateX(30px) rotate(45deg);
+      -ms-transform: translateY(-30px) translateX(30px) rotate(45deg);
+      transform: translateY(-30px) translateX(30px) rotate(45deg); }
+      #mainApp .add-item-container button.close-btn svg {
+        position: absolute;
+        bottom: 6px;
+        right: 20px;
+        opacity: 0.8;
+        -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        transform: rotate(45deg); }
+
+:focus {
+  outline: none; }
 
 * {
   color: white;
   box-sizing: border-box; }
+
+/* Animations */
+@-webkit-keyframes shake {
+  0% {
+    -webkit-transform: translateX(0);
+    transform: translateX(0); }
+
+  12.5% {
+    -webkit-transform: translateX(-6px) rotateY(-5deg);
+    transform: translateX(-6px) rotateY(-5deg); }
+
+  37.5% {
+    -webkit-transform: translateX(5px) rotateY(4deg);
+    transform: translateX(5px) rotateY(4deg); }
+
+  62.5% {
+    -webkit-transform: translateX(-3px) rotateY(-2deg);
+    transform: translateX(-3px) rotateY(-2deg); }
+
+  87.5% {
+    -webkit-transform: translateX(2px) rotateY(1deg);
+    transform: translateX(2px) rotateY(1deg); }
+
+  100% {
+    -webkit-transform: translateX(0);
+    transform: translateX(0); } }
+@keyframes shake {
+  0% {
+    -webkit-transform: translateX(0);
+    transform: translateX(0); }
+
+  12.5% {
+    -webkit-transform: translateX(-6px) rotateY(-5deg);
+    transform: translateX(-6px) rotateY(-5deg); }
+
+  37.5% {
+    -webkit-transform: translateX(5px) rotateY(4deg);
+    transform: translateX(5px) rotateY(4deg); }
+
+  62.5% {
+    -webkit-transform: translateX(-3px) rotateY(-2deg);
+    transform: translateX(-3px) rotateY(-2deg); }
+
+  87.5% {
+    -webkit-transform: translateX(2px) rotateY(1deg);
+    transform: translateX(2px) rotateY(1deg); }
+
+  100% {
+    -webkit-transform: translateX(0);
+    transform: translateX(0); } }
+
+.shake {
+  -webkit-animation: shake 400ms ease-in-out;
+  animation: shake 400ms ease-in-out; }
+
+.spin {
+  -webkit-animation-name: fullRotate;
+  animation-name: fullRotate;
+  -webkit-animation-duration: 0.5s;
+  animation-duration: 0.5s;
+  -webkit-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+  -webkit-transform-origin: 48% 50%;
+  -ms-transform-origin: 48% 50%;
+  transform-origin: 48% 50%;
+  -webkit-animation-timing-function: linear;
+  animation-timing-function: linear;
+  display: inline-block; }
+
+@-webkit-keyframes fullRotate {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg); }
+
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg); } }
+
+@keyframes fullRotate {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg); }
+
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg); } }
+
+.stopSpin {
+  -webkit-animation-name: stopRotate;
+  animation-name: stopRotate;
+  -webkit-animation-duration: 2s;
+  animation-duration: 2s;
+  -webkit-transform-origin: 48% 50%;
+  -ms-transform-origin: 48% 50%;
+  transform-origin: 48% 50%;
+  -webkit-transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: inline-block; }
+
+@-webkit-keyframes stopRotate {
+  to {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg); } }
+
+@keyframes stopRotate {
+  to {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg); } }
+
+.list-animation--enter {
+  opacity: 0.01;
+  transition: opacity 0.5s ease-in; }
+
+.list-animation--enter.list-animation--enter-active {
+  opacity: 1; }
+
+.list-animation--leave {
+  opacity: 1;
+  transition: opacity 0.5s ease-in; }
+
+.list-animation--leave.list-animation--leave-active {
+  opacity: 0.01; }

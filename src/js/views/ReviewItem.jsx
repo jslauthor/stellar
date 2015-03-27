@@ -6,10 +6,9 @@ var classnames = require('classnames')
 var truncate = require('html-truncate')
 var Stars = require('./components/Stars.jsx')
 var pluralize = require('pluralize')
+var DeleteButton = require('./controls/DeleteButton.jsx')
 
 var ReviewItem = React.createClass({
-    componentDidMount: function() {
-    },
     render: function() {
 
         var classNames = classnames({
@@ -24,15 +23,21 @@ var ReviewItem = React.createClass({
             lg: num <= 3
         })
 
-        var newComponent;
+        var newComponent
         if (this.props.new)
             newComponent = <p><span>NEW</span></p>
+
+        var reviewSource
+        if (!this.props.isEditing)
+            reviewSource = ConfigStore.getIconForType(this.props.type)
+        else
+            reviewSource = <DeleteButton reviewID={this.props.reviewID} />
 
         return (
             <section className={classNames}>
                 <div className="reviewContent">
                     <div className="reviewSource">
-                        {ConfigStore.getIconForType(this.props.type)}
+                        {reviewSource}
                     </div>
                     <div className="reviewInfo">
                         <div ref="reviewTitle" className="reviewTitle">

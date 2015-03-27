@@ -15,6 +15,15 @@ win.on("loaded",
     }
 );
 
+// Fix for copy/paste on mac
+var nativeMenuBar = new gui.Menu({ type: "menubar" });
+try {
+    nativeMenuBar.createMacBuiltin("Stellar");
+    win.menu = nativeMenuBar;
+} catch (ex) {
+    console.log(ex.message);
+}
+
 tray = new gui.Tray({
     title: '',
     tooltip: 'stellar',
@@ -28,6 +37,3 @@ tray.on('click', function(evt) {
     win.showDevTools();
     win.focus();
 });
-
-
-

@@ -20,12 +20,20 @@ body {
 }
 
 #mainApp {
-  width: 300px;
-  height: 325px;
+  width: 100%;
+  height: 100%;
   position: relative;
   margin: 0 auto;
   background: transparent;
-  overflow: hidden;
+
+  .main-section {
+    width: 300px;
+    height: 325px;
+    position: relative;
+    margin: 0 auto;
+    transition: 2s filter linear;
+    filter: blur(0px);
+  }
 
   .mainBackground {
     width: 100%;
@@ -204,6 +212,10 @@ body {
       margin-left: 5px;
     }
 
+    *:nth-child(3) {
+      flex-grow: 2;
+    }
+
     .sortMenu {
       flex-basis: 100%;
       text-align: right;
@@ -224,10 +236,185 @@ body {
 
   .pointer { cursor: pointer }
 
+  .blur {
+    filter: blur(3px);
+    pointer-events: none;
+  }
+
+  .add-item-container {
+
+    z-index: $popupIndex;
+    overflow: hidden;
+
+    margin: auto;
+    position: absolute;
+    top: 20px; left: 0;  right: 0;
+
+    width: 350px;
+    height: 250px;
+    background-color: $purple;
+    filter: drop-shadow(0px 5px 8px rgba(0,0,0,.75));
+    border-radius: $borderRadius;
+
+    main {
+
+      padding: 10px 10px 0 10px;
+
+      h1 {
+        @include fontBlkCn;
+        color: $lightPurple;
+        font-size: 42px;
+        margin-bottom: 10px;
+      }
+
+      div {
+        @include fontMdCnO;
+        font-size: 14px;
+        color: white;
+        margin-bottom: 5px;
+      }
+
+      div.help-text {
+        @include fontNormal;
+        font-size: 11px;
+        opacity: .5;
+        margin-top: 15px;
+        text-align: center;
+      }
+
+      input {
+        width: 100%;
+        height: 55px;
+        color: white;
+        padding: 0px 10px;
+        font-size: 25px;
+        @include fontNormal;
+        background-color: darken($purple, 10);
+        border-radius: $borderRadius;
+      }
+
+      input:focus {
+        box-shadow: 0 0 5px lighten($purple, 40);
+        border: 1px solid lighten($purple, 40);
+      }
+
+      input.error, input:focus  .error {
+        box-shadow: 0 0 5px #e70e65;
+        border: 1px solid #e70e65;
+      }
+
+    }
+
+    button.add-btn {
+      width: 100%;
+      height: 60px;
+      position: absolute;
+      bottom: 0;
+      @include fontMdCn;
+      cursor: pointer;
+      font-size: 23px;
+      background-color: $darkPurple;
+      border-bottom-right-radius: $borderRadius;
+      border-bottom-left-radius: $borderRadius;
+    }
+
+    button.close-btn {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      background-color: $darkPurple;
+      width: 60px;
+      height: 60px;
+
+      transform:
+        translateY(-30px)
+        translateX(30px)
+        rotate(45deg);
+
+      svg {
+        position: absolute;
+        bottom: 6px;
+        right: 20px;
+        opacity: .8;
+        transform: rotate(45deg);
+      }
+    }
+
+  }
+  
 }
+
+:focus { outline: none; }
 
 *
 {
   color: white;
   box-sizing: border-box;
 }
+
+/* Animations */
+
+@keyframes shake {
+  0% {transform: translateX(0);}
+  12.5% {transform: translateX(-6px) rotateY(-5deg)}
+  37.5% {transform: translateX(5px) rotateY(4deg)}
+  62.5% {transform: translateX(-3px) rotateY(-2deg)}
+  87.5% {transform: translateX(2px) rotateY(1deg)}
+  100% {transform: translateX(0)}
+}
+
+.shake {
+  animation: shake 400ms ease-in-out;
+}
+
+.spin {
+  animation-name: fullRotate;
+  animation-duration: .5s;
+  animation-iteration-count: infinite;
+  transform-origin: 48% 50%;
+  animation-timing-function: linear;
+  display: inline-block;
+}
+
+@keyframes fullRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.stopSpin {
+  animation-name: stopRotate;
+  animation-duration: 2s;
+  transform-origin: 48% 50%;
+  -webkit-transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: inline-block;
+}
+
+@keyframes stopRotate {
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.list-animation--enter {
+  opacity: 0.01;
+  transition: opacity .5s ease-in;
+}
+
+.list-animation--enter.list-animation--enter-active {
+  opacity: 1;
+}
+
+.list-animation--leave {
+  opacity: 1;
+  transition: opacity .5s ease-in;
+}
+
+.list-animation--leave.list-animation--leave-active {
+  opacity: 0.01;
+}
+
+

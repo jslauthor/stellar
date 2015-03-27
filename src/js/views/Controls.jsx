@@ -13,6 +13,7 @@ var Controls = React.createClass({
           <section className="mainControls">
               <ToggleButton />
               <RefreshButton />
+              <div className="spacer" />
               <AddButton />
               <SettingsButton />
           </section>
