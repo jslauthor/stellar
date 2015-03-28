@@ -30,7 +30,7 @@ win.on("blur", function () {
 });
 
 win.on("close", function () {
-    this.hide(); // Pretend to be closed already
+    this.hide();
     // potentially save again and wait for it to finish
     this.close(true);
 });
@@ -41582,7 +41582,7 @@ var ReviewAction = (function () {
     function ReviewAction() {
         _classCallCheck(this, ReviewAction);
 
-        this.generateActions("showAddReviewPopup", "hideAddReviewPopup", "toggleEditing");
+        this.generateActions("showAddReviewPopup", "hideAddReviewPopup", "toggleEditing", "hasNewReview");
     }
 
     _createClass(ReviewAction, {
@@ -41660,12 +41660,16 @@ var ReviewAction = (function () {
 
                 var reviews = this.alt.stores.ReviewStore.getState().reviews;
                 var hasLoading = false;
+                var hasNew = false;
                 _.each(reviews, function (review) {
-                    if (review.loading) {
-                        hasLoading = true;
-                        return false;
-                    }
+                    if (review.loading) hasLoading = true;
+
+                    if (review.hasNew) hasNew = true;
+
+                    if (hasNew && hasLoading) return false;
                 });
+
+                if (hasNew) this.actions.hasNewReview();
 
                 if (!hasLoading) this.actions.allComplete();
             }

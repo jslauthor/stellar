@@ -31,7 +31,7 @@ win.on("blur", function() {
 })
 
 win.on("close", function() {
-    this.hide(); // Pretend to be closed already
+    this.hide();
     // potentially save again and wait for it to finish
     this.close(true);
 })

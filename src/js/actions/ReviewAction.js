@@ -9,7 +9,7 @@ var _ = require('lodash')
 class ReviewAction {
 
     constructor() {
-        this.generateActions('showAddReviewPopup', 'hideAddReviewPopup', 'toggleEditing')
+        this.generateActions('showAddReviewPopup', 'hideAddReviewPopup', 'toggleEditing', 'hasNewReview')
     }
 
     toggleMonitoring() {
@@ -83,13 +83,20 @@ class ReviewAction {
 
         let reviews = this.alt.stores.ReviewStore.getState().reviews;
         let hasLoading = false;
+        let hasNew = false;
         _.each(reviews, function(review) {
             if (review.loading)
-            {
                 hasLoading = true
+
+            if (review.hasNew)
+                hasNew = true
+
+            if (hasNew && hasLoading)
                 return false
-            }
         })
+
+        if (hasNew)
+            this.actions.hasNewReview();
 
         if (!hasLoading)
             this.actions.allComplete()
