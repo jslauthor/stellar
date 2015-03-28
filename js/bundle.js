@@ -41577,7 +41577,7 @@ var ReviewAction = (function () {
     function ReviewAction() {
         _classCallCheck(this, ReviewAction);
 
-        this.generateActions("showAddReviewPopup", "hideAddReviewPopup", "toggleEditing");
+        this.generateActions("showAddReviewPopup", "hideAddReviewPopup", "toggleEditing", "toggleMonitoring");
     }
 
     _createClass(ReviewAction, {
@@ -42062,6 +42062,7 @@ var ReviewStore = (function () {
         this.loading = false;
         this.showReviewPopup = false;
         this.isEditing = false;
+        this.isMonitoring = true;
 
         this.on("serialize", function () {
             var state = _this.alt.stores.ReviewStore.getState();
@@ -42073,6 +42074,12 @@ var ReviewStore = (function () {
     }
 
     _createClass(ReviewStore, {
+        onToggleMonitoring: {
+            value: function onToggleMonitoring() {
+                this.isMonitoring = !this.isMonitoring;
+                LocalStorageUtil.saveAll();
+            }
+        },
         onToggleEditing: {
             value: function onToggleEditing() {
                 this.isEditing = !this.isEditing;
@@ -42843,29 +42850,40 @@ module.exports = SettingsButton;
 var React = require("react");
 var tweenState = require("react-tween-state");
 var ConfigStore = require("../../stores/ConfigStore");
+var reviewAction = require("../../actions/ReviewAction");
+var reviewStore = require("../../stores/ReviewStore");
+var ListenerMixin = require("alt/mixins/ListenerMixin");
 
 var ToggleButton = React.createClass({
     displayName: "ToggleButton",
 
-    mixins: [tweenState.Mixin],
+    mixins: [ListenerMixin, tweenState.Mixin],
     getInitialState: function getInitialState() {
         var bg = ConfigStore.getRGBForToggle(true);
         return {
-            toggled: true,
+            toggled: reviewStore.getState().isMonitoring,
             circleX: 41,
             redBG: bg[0],
             greenBG: bg[1],
             blueBG: bg[2]
         };
     },
+    onChange: function onChange() {
+        this.setState({ toggled: reviewStore.getState().isMonitoring }, this.initiateTween);
+    },
+    initiateTween: function initiateTween() {
+        var bg = ConfigStore.getRGBForToggle(this.state.toggled);
+        this.createTween("redBG", bg[0]);
+        this.createTween("greenBG", bg[1]);
+        this.createTween("blueBG", bg[2]);
+        this.createTween("circleX", !this.state.toggled ? 15 : 41);
+    },
+    componentDidMount: function componentDidMount() {
+        this.listenTo(reviewStore, this.onChange);
+        this.initiateTween();
+    },
     handleClick: function handleClick(event) {
-        this.setState({ toggled: !this.state.toggled }, function () {
-            var bg = ConfigStore.getRGBForToggle(this.state.toggled);
-            this.createTween("redBG", bg[0]);
-            this.createTween("greenBG", bg[1]);
-            this.createTween("blueBG", bg[2]);
-            this.createTween("circleX", !this.state.toggled ? 15 : 41);
-        });
+        reviewAction.toggleMonitoring();
     },
     createTween: function createTween(name, value) {
         this.tweenState(name, {
@@ -42889,4 +42907,4 @@ var ToggleButton = React.createClass({
 
 module.exports = ToggleButton;
 
-},{"../../stores/ConfigStore":282,"react":277,"react-tween-state":114}]},{},[1]);
+},{"../../actions/ReviewAction":279,"../../stores/ConfigStore":282,"../../stores/ReviewStore":283,"alt/mixins/ListenerMixin":3,"react":277,"react-tween-state":114}]},{},[1]);

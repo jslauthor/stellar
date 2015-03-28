@@ -9,6 +9,7 @@ class ReviewStore {
         this.loading = false
         this.showReviewPopup = false
         this.isEditing = false
+        this.isMonitoring = true
 
         this.on('serialize', () => {
             var state = this.alt.stores.ReviewStore.getState();
@@ -17,7 +18,11 @@ class ReviewStore {
             state.showReviewPopup = false;
             return state;
         });
+    }
 
+    onToggleMonitoring() {
+        this.isMonitoring = !this.isMonitoring
+        LocalStorageUtil.saveAll()
     }
 
     onToggleEditing() {

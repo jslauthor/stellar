@@ -9,7 +9,7 @@ var _ = require('lodash')
 class ReviewAction {
 
     constructor() {
-        this.generateActions('showAddReviewPopup', 'hideAddReviewPopup', 'toggleEditing')
+        this.generateActions('showAddReviewPopup', 'hideAddReviewPopup', 'toggleEditing', 'toggleMonitoring')
     }
 
     addReview(url) {
