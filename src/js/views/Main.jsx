@@ -14,11 +14,11 @@ var Main = React.createClass({
     getInitialState: function() {
         return reviewStore.getState()
     },
-    componentDidMount() {
+    componentDidMount: function() {
         this.listenTo(reviewStore, this.onChange)
     },
 
-    onChange() {
+    onChange: function() {
         this.setState(this.getInitialState())
     },
     render: function() {

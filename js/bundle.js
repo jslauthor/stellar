@@ -4,16 +4,30 @@
 var React = require("react");
 var Main = require("./views/Main.jsx");
 var gui = window.require("nw.gui");
-var mockService = require("./services/MockService");
+var alt = require("./alt");
+var LocalStorageUtil = require("./utils/LocalStorageUtil");
 
 var tray;
 
 var win = gui.Window.get();
 win.on("loaded", function () {
     console.log("**** LOADED");
-    mockService.init(); // load some fake data
+
+    var altStore = LocalStorageUtil.restore();
+    if (altStore != "") alt.bootstrap(altStore);
+
     // Bootstrap this biatch
     React.render(React.createElement(Main, { style: { width: "100%", height: "100%", position: "relative" } }), document.getElementById("mainApp"));
+});
+
+win.on("blur", function () {
+    win.hide();
+});
+
+win.on("close", function () {
+    this.hide(); // Pretend to be closed already
+    //save
+    this.close(true);
 });
 
 // Fix for copy/paste on mac
@@ -32,6 +46,8 @@ tray = new gui.Tray({
     iconsAreTemplates: false
 });
 
+function resetWindowPosition(x, y) {}
+
 tray.on("click", function (evt) {
     win.moveTo(evt.x - win.width / 2 + 6, evt.y);
     win.show();
@@ -39,7 +55,12 @@ tray.on("click", function (evt) {
     win.focus();
 });
 
-},{"./services/MockService":282,"./views/Main.jsx":288,"react":277}],2:[function(require,module,exports){
+gui.Screen.Init();
+gui.Screen.on("displayBoundsChanged", function (screen) {
+    console.log("screen changed");
+});
+
+},{"./alt":281,"./utils/LocalStorageUtil":285,"./views/Main.jsx":288,"react":277}],2:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -41673,7 +41694,7 @@ var ReviewAction = (function () {
 
 module.exports = alt.createActions(ReviewAction);
 
-},{"../alt":281,"../stores/ConfigStore":283,"../utils/InterpreterUtil":285,"browser-request":11,"cheerio":36,"lodash":111,"node-uuid":112}],280:[function(require,module,exports){
+},{"../alt":281,"../stores/ConfigStore":282,"../utils/InterpreterUtil":284,"browser-request":11,"cheerio":36,"lodash":111,"node-uuid":112}],280:[function(require,module,exports){
 "use strict";
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -41927,23 +41948,6 @@ module.exports = alt;
 },{"alt":2}],282:[function(require,module,exports){
 "use strict";
 
-var reviewAction = require("../actions/ReviewAction");
-
-module.exports = {
-    init: function init() {}
-};
-
-//reviewAction.addReview("http://www.amazon.com/Modern-Rituals-Wayward-Supernatural-Thriller-ebook/dp/B00ROPEBKE/ref=cm_cr_pr_product_top?ie=UTF8");
-//reviewAction.addReview("http://www.amazon.com/The-Hunger-Games/dp/B001H97LLY/ref=tmm_aud_swatch_0?_encoding=UTF8&sr=8-1&qid=1427292167");
-//reviewAction.addReview("http://www.amazon.com/The-Giver-Quartet-Lois-Lowry/dp/0544336267/ref=pd_sim_b_4?ie=UTF8&refRID=1342KTHH1J92SNZSS14P");
-//reviewAction.addReview("http://www.amazon.com/Master-Magician-Paper-Book-ebook/dp/B00P1NO3G8/ref=sr_1_3?s=digital-text&ie=UTF8&qid=1427200609&sr=1-3");
-//reviewAction.addReview("http://www.amazon.com/The-User-Experience-Team-One/dp/1933820187/ref=pd_rhf_ee_s_cp_15_MH68?ie=UTF8&refRID=1BNBHPJ3G9ERXT26TSFZ");
-//reviewAction.addReview("http://www.amazon.com/Carlotas-Legacy-Jewel-Trilogy-Book-ebook/dp/B0029ZARU2/ref=sr_1_50?s=digital-text&ie=UTF8&qid=1427200339&sr=1-50");
-//reviewAction.addReview("http://www.amazon.com/gp/product/B00IS619X0/ref=s9_ps_bw_d19_g351_i5?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=merchandised-search-4&pf_rd_r=0YMNWP6SVAKP6ZJ4EGK6&pf_rd_t=101&pf_rd_p=1721688422&pf_rd_i=154606011");
-
-},{"../actions/ReviewAction":279}],283:[function(require,module,exports){
-"use strict";
-
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
@@ -42036,7 +42040,7 @@ var ConfigStore = (function () {
 
 module.exports = alt.createStore(ConfigStore, "ConfigStore");
 
-},{"../alt":281,"hex-rgb-converter":109,"react":277}],284:[function(require,module,exports){
+},{"../alt":281,"hex-rgb-converter":109,"react":277}],283:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -42045,9 +42049,12 @@ var _classCallCheck = function (instance, Constructor) { if (!(instance instance
 
 var alt = require("../alt");
 var ReviewAction = require("../actions/ReviewAction");
+var LocalStorageUtil = require("../utils/LocalStorageUtil");
 
 var ReviewStore = (function () {
     function ReviewStore() {
+        var _this = this;
+
         _classCallCheck(this, ReviewStore);
 
         this.bindActions(ReviewAction);
@@ -42055,6 +42062,14 @@ var ReviewStore = (function () {
         this.loading = false;
         this.showReviewPopup = false;
         this.isEditing = false;
+
+        this.on("serialize", function () {
+            var state = _this.alt.stores.ReviewStore.getState();
+            state.isEditing = false;
+            state.loading = false;
+            state.showReviewPopup = false;
+            return state;
+        });
     }
 
     _createClass(ReviewStore, {
@@ -42086,16 +42101,20 @@ var ReviewStore = (function () {
         onDeleteReview: {
             value: function onDeleteReview(reviews) {
                 this.reviews = reviews;
+                LocalStorageUtil.saveAll();
             }
         },
         onAddReview: {
             value: function onAddReview(review) {
+                this.isEditing = false;
                 this.reviews[review.id] = review;
+                LocalStorageUtil.saveAll();
             }
         },
         onReviewComplete: {
             value: function onReviewComplete(review) {
                 this.reviews[review.id] = review;
+                LocalStorageUtil.saveAll();
             }
         }
     });
@@ -42105,7 +42124,7 @@ var ReviewStore = (function () {
 
 module.exports = alt.createStore(ReviewStore, "ReviewStore");
 
-},{"../actions/ReviewAction":279,"../alt":281}],285:[function(require,module,exports){
+},{"../actions/ReviewAction":279,"../alt":281,"../utils/LocalStorageUtil":285}],284:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -42143,7 +42162,25 @@ var InterpreterUtil = (function () {
 
 module.exports = new InterpreterUtil();
 
-},{}],286:[function(require,module,exports){
+},{}],285:[function(require,module,exports){
+"use strict";
+
+var alt = require("../alt");
+
+var ALT_KEY = "ALT_STORAGE_KEY";
+
+module.exports = {
+    saveAll: function saveAll() {
+        localStorage.setItem(ALT_KEY, alt.takeSnapshot());
+    },
+
+    restore: function restore() {
+        var altStore = localStorage.getItem(ALT_KEY);
+        return altStore && altStore || "";
+    }
+};
+
+},{"../alt":281}],286:[function(require,module,exports){
 "use strict";
 
 var React = require("react");
@@ -42174,7 +42211,9 @@ var AddItem = React.createClass({
         });
     },
     handleKeyUp: function handleKeyUp(event) {
-        if (event.keyCode == 13) this.handleClick();
+        if (event.keyCode == 13) // enter
+            this.handleClick();else if (event.keyCode == 27) // escape
+            this.handleClose();
     },
     handleClose: function handleClose(event) {
         reviewAction.hideAddReviewPopup();
@@ -42314,7 +42353,7 @@ var Main = React.createClass({
 
 module.exports = Main;
 
-},{"../stores/ReviewStore":284,"./AddItem.jsx":286,"./Controls.jsx":287,"./MainBackground.jsx":289,"./ReviewList.jsx":291,"alt/mixins/ListenerMixin":3,"classnames":108,"react":277}],289:[function(require,module,exports){
+},{"../stores/ReviewStore":283,"./AddItem.jsx":286,"./Controls.jsx":287,"./MainBackground.jsx":289,"./ReviewList.jsx":291,"alt/mixins/ListenerMixin":3,"classnames":108,"react":277}],289:[function(require,module,exports){
 "use strict";
 
 var React = require("react");
@@ -42486,7 +42525,7 @@ var ReviewItem = React.createClass({
 
 module.exports = ReviewItem;
 
-},{"../stores/ConfigStore":283,"./components/Stars.jsx":292,"./controls/DeleteButton.jsx":295,"classnames":108,"html-truncate":110,"pluralize":113,"react":277}],291:[function(require,module,exports){
+},{"../stores/ConfigStore":282,"./components/Stars.jsx":292,"./controls/DeleteButton.jsx":295,"classnames":108,"html-truncate":110,"pluralize":113,"react":277}],291:[function(require,module,exports){
 "use strict";
 
 var React = require("react");
@@ -42546,7 +42585,7 @@ var ReviewList = React.createClass({
 
 module.exports = ReviewList;
 
-},{"../addons/TimeoutTransitionGroup":280,"../stores/ReviewStore":284,"./ReviewItem.jsx":290,"alt/mixins/ListenerMixin":3,"lodash":111,"react":277}],292:[function(require,module,exports){
+},{"../addons/TimeoutTransitionGroup":280,"../stores/ReviewStore":283,"./ReviewItem.jsx":290,"alt/mixins/ListenerMixin":3,"lodash":111,"react":277}],292:[function(require,module,exports){
 "use strict";
 
 var React = require("react");
@@ -42585,7 +42624,7 @@ var Stars = React.createClass({
 
 module.exports = Stars;
 
-},{"../../stores/ConfigStore":283,"react":277}],293:[function(require,module,exports){
+},{"../../stores/ConfigStore":282,"react":277}],293:[function(require,module,exports){
 "use strict";
 
 var React = require("react");
@@ -42620,7 +42659,7 @@ var AddButton = React.createClass({
 
 module.exports = AddButton;
 
-},{"../../actions/ReviewAction":279,"../../stores/ConfigStore":283,"react":277}],294:[function(require,module,exports){
+},{"../../actions/ReviewAction":279,"../../stores/ConfigStore":282,"react":277}],294:[function(require,module,exports){
 "use strict";
 
 var React = require("react");
@@ -42714,45 +42753,77 @@ var RefreshButton = React.createClass({
 
 module.exports = RefreshButton;
 
-},{"../../actions/ReviewAction":279,"../../stores/ConfigStore":283,"../../stores/ReviewStore":284,"alt/mixins/ListenerMixin":3,"classnames":108,"react":277}],297:[function(require,module,exports){
+},{"../../actions/ReviewAction":279,"../../stores/ConfigStore":282,"../../stores/ReviewStore":283,"alt/mixins/ListenerMixin":3,"classnames":108,"react":277}],297:[function(require,module,exports){
 "use strict";
 
 var React = require("react");
 var ConfigStore = require("../../stores/ConfigStore");
 var gui = window.require("nw.gui");
 var reviewAction = require("../../actions/ReviewAction");
+var reviewStore = require("../../stores/ReviewStore");
+var ListenerMixin = require("alt/mixins/ListenerMixin");
 
 var menu;
+var editMenu;
+var startUpMenu;
 
 var SettingsButton = React.createClass({
     displayName: "SettingsButton",
 
+    mixins: [ListenerMixin],
     getInitialState: function getInitialState() {
-        return {};
+        return reviewStore.getState();
+    },
+    onChange: function onChange() {
+        this.setState(this.getInitialState());
     },
     componentDidMount: function componentDidMount() {
+        this.listenTo(reviewStore, this.onChange);
+
         menu = new gui.Menu();
-        menu.append(new gui.MenuItem({
+        editMenu = new gui.MenuItem({
             label: "Edit starlets",
+            type: "checkbox",
+            checked: this.state.isEditing,
             click: function click() {
                 reviewAction.toggleEditing();
             }
-        }));
-        menu.append(new gui.MenuItem({
+        });
+        menu.append(editMenu);
+
+        startUpMenu = new gui.MenuItem({
             label: "Open at startup",
             type: "checkbox",
             checked: true
-        }));
-        menu.append(new gui.MenuItem({ type: "separator" }));
+        });
+        menu.append(startUpMenu);
+
         menu.append(new gui.MenuItem({
             label: "Join J.S.L. Newsletter",
             click: function click() {
                 gui.Shell.openExternal("http://www.jslauthor.com/sign-up");
             }
         }));
+
+        menu.append(new gui.MenuItem({
+            label: "Help",
+            click: function click() {
+                gui.Shell.openExternal("http://www.jslauthor.com/stellar");
+            }
+        }));
+
+        menu.append(new gui.MenuItem({ type: "separator" }));
+        menu.append(new gui.MenuItem({
+            label: "Exit",
+            click: function click() {
+                gui.Window.get().close();
+            }
+        }));
+    },
+    componentDidUpdate: function componentDidUpdate() {
+        if (editMenu) editMenu.checked = this.state.isEditing;
     },
     handleClick: function handleClick(event) {
-        console.log(event);
         menu.popup(event.clientX + 5, event.clientY + 5);
     },
     render: function render() {
@@ -42766,7 +42837,7 @@ var SettingsButton = React.createClass({
 
 module.exports = SettingsButton;
 
-},{"../../actions/ReviewAction":279,"../../stores/ConfigStore":283,"react":277}],298:[function(require,module,exports){
+},{"../../actions/ReviewAction":279,"../../stores/ConfigStore":282,"../../stores/ReviewStore":283,"alt/mixins/ListenerMixin":3,"react":277}],298:[function(require,module,exports){
 "use strict";
 
 var React = require("react");
@@ -42818,4 +42889,4 @@ var ToggleButton = React.createClass({
 
 module.exports = ToggleButton;
 
-},{"../../stores/ConfigStore":283,"react":277,"react-tween-state":114}]},{},[1]);
+},{"../../stores/ConfigStore":282,"react":277,"react-tween-state":114}]},{},[1]);

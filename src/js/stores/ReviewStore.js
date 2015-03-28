@@ -1,25 +1,35 @@
 var alt = require('../alt')
 var ReviewAction = require('../actions/ReviewAction')
+var LocalStorageUtil = require('../utils/LocalStorageUtil')
 
 class ReviewStore {
     constructor() {
         this.bindActions(ReviewAction)
         this.reviews = {}
         this.loading = false
-        this.showReviewPopup = false;
-        this.isEditing = false;
+        this.showReviewPopup = false
+        this.isEditing = false
+
+        this.on('serialize', () => {
+            var state = this.alt.stores.ReviewStore.getState();
+            state.isEditing = false;
+            state.loading = false;
+            state.showReviewPopup = false;
+            return state;
+        });
+
     }
 
     onToggleEditing() {
-        this.isEditing = !this.isEditing;
+        this.isEditing = !this.isEditing
     }
 
     onShowAddReviewPopup() {
-        this.showReviewPopup = true;
+        this.showReviewPopup = true
     }
 
     onHideAddReviewPopup() {
-        this.showReviewPopup = false;
+        this.showReviewPopup = false
     }
 
     onAllComplete() {
@@ -27,19 +37,23 @@ class ReviewStore {
     }
 
     onRequestReview(review) {
-        this.loading = true;
+        this.loading = true
     }
 
     onDeleteReview(reviews) {
         this.reviews = reviews
+        LocalStorageUtil.saveAll()
     }
 
     onAddReview(review) {
+        this.isEditing = false;
         this.reviews[review.id] = review;
+        LocalStorageUtil.saveAll()
     }
 
     onReviewComplete(review) {
         this.reviews[review.id] = review;
+        LocalStorageUtil.saveAll()
     }
 
 }

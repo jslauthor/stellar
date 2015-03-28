@@ -4,37 +4,69 @@ var React = require('react')
 var ConfigStore = require('../../stores/ConfigStore')
 var gui = window.require('nw.gui')
 var reviewAction = require('../../actions/ReviewAction')
+var reviewStore = require('../../stores/ReviewStore')
+var ListenerMixin = require('alt/mixins/ListenerMixin')
 
 var menu;
+var editMenu;
+var startUpMenu;
 
 var SettingsButton = React.createClass({
+    mixins: [ListenerMixin],
     getInitialState: function() {
-        return {
-        }
+        return reviewStore.getState()
+    },
+    onChange: function() {
+        this.setState(this.getInitialState())
     },
     componentDidMount: function() {
+        this.listenTo(reviewStore, this.onChange)
+
         menu = new gui.Menu();
-        menu.append(new gui.MenuItem({
+        editMenu = new gui.MenuItem({
             label: 'Edit starlets',
+            type: "checkbox",
+            checked: this.state.isEditing,
             click: function() {
                 reviewAction.toggleEditing()
             }
-        }));
-        menu.append(new gui.MenuItem({
+        })
+        menu.append(editMenu);
+
+        startUpMenu = new gui.MenuItem({
             label: 'Open at startup',
             type: "checkbox",
             checked: true
-        }));
-        menu.append(new gui.MenuItem({ type: 'separator' }));
+        });
+        menu.append(startUpMenu)
+
         menu.append(new gui.MenuItem({
             label: 'Join J.S.L. Newsletter',
             click: function() {
                 gui.Shell.openExternal('http://www.jslauthor.com/sign-up');
             }
         }));
+
+        menu.append(new gui.MenuItem({
+            label: 'Help',
+            click: function() {
+                gui.Shell.openExternal('http://www.jslauthor.com/stellar');
+            }
+        }));
+
+        menu.append(new gui.MenuItem({ type: 'separator' }));
+        menu.append(new gui.MenuItem({
+            label: 'Exit',
+            click: function() {
+                gui.Window.get().close()
+            }
+        }));
+    },
+    componentDidUpdate: function() {
+        if (editMenu)
+            editMenu.checked = this.state.isEditing
     },
     handleClick: function(event) {
-        console.log(event)
         menu.popup(event.clientX+5, event.clientY+5)
     },
     render: function() {

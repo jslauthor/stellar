@@ -29,8 +29,10 @@ var AddItem = React.createClass({
         })
     },
     handleKeyUp: function(event) {
-        if (event.keyCode == 13)
+        if (event.keyCode == 13) // enter
             this.handleClick()
+        else if (event.keyCode ==27) // escape
+            this.handleClose()
     },
     handleClose: function(event) {
         reviewAction.hideAddReviewPopup()
