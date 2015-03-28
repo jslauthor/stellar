@@ -3,17 +3,23 @@ var Main = require("./views/Main.jsx");
 var gui = window.require('nw.gui');
 var alt = require('./alt')
 var LocalStorageUtil = require('./utils/LocalStorageUtil')
+var reviewAction = require('./actions/ReviewAction')
+var _ = require('lodash')
 
 var tray;
-
 var win = gui.Window.get();
+
 win.on("loaded",
     () => {
-        console.log("**** LOADED");
 
         var altStore = LocalStorageUtil.restore()
         if (altStore != "")
             alt.bootstrap(altStore)
+
+        setInterval(function() {
+            if (alt.stores.ReviewStore.getState().isMonitoring)
+                reviewAction.updateAll();
+        }, 60000)
 
         // Bootstrap this biatch
         React.render(<Main style={{width: "100%", height: "100%", position:"relative"}} />, document.getElementById('mainApp'));
@@ -26,7 +32,7 @@ win.on("blur", function() {
 
 win.on("close", function() {
     this.hide(); // Pretend to be closed already
-    //save
+    // potentially save again and wait for it to finish
     this.close(true);
 })
 

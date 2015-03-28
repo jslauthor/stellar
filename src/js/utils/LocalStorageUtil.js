@@ -3,6 +3,10 @@ var alt = require('../alt')
 var ALT_KEY = "ALT_STORAGE_KEY"
 
 module.exports = {
+    deleteAll: function() {
+        localStorage.setItem(ALT_KEY, "")
+    },
+
     saveAll: function() {
         localStorage.setItem(ALT_KEY, alt.takeSnapshot())
     },

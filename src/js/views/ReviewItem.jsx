@@ -24,7 +24,7 @@ var ReviewItem = React.createClass({
         })
 
         var newComponent
-        if (this.props.new)
+        if (this.props.hasNew)
             newComponent = <p><span>NEW</span></p>
 
         var reviewSource
@@ -53,9 +53,6 @@ var ReviewItem = React.createClass({
                         <h4>{pluralize('review', this.props.numReviews)}</h4>
                         {newComponent}
                     </div>
-                </div>
-                <div>
-                    {this.props.lastFive}
                 </div>
             </section>
         )

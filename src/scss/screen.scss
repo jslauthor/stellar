@@ -73,9 +73,10 @@ body {
         border-radius: $borderRadius - 2;
         background-color: $meringue;
         position: relative;
+        width: 100%;
 
         .reviewSource {
-          width: 50px;
+          min-width: 50px;
           text-align: center;
 
           * {
@@ -84,10 +85,9 @@ body {
         }
 
         .reviewInfo {
-          max-width: 150px;
-          min-width: 120px;
           padding-top: 10px;
           padding-bottom: 10px;
+          flex-grow: 2;
 
           * {
             color: #4e5449;
@@ -133,7 +133,7 @@ body {
         }
 
         .reviewStatus {
-          width: 85px;
+          min-width: 85px;
           height: 70px;
           background-color: $lightMeringue;
           display: flex;

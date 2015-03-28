@@ -209,17 +209,19 @@ body {
         align-items: center;
         border-radius: 3px;
         background-color: #eff9e1;
-        position: relative; }
+        position: relative;
+        width: 100%; }
         #mainApp .reviewList .reviewItem .reviewContent .reviewSource {
-          width: 50px;
+          min-width: 50px;
           text-align: center; }
           #mainApp .reviewList .reviewItem .reviewContent .reviewSource * {
             color: #808080; }
         #mainApp .reviewList .reviewItem .reviewContent .reviewInfo {
-          max-width: 150px;
-          min-width: 120px;
           padding-top: 10px;
-          padding-bottom: 10px; }
+          padding-bottom: 10px;
+          -webkit-flex-grow: 2;
+          -ms-flex-positive: 2;
+          flex-grow: 2; }
           #mainApp .reviewList .reviewItem .reviewContent .reviewInfo * {
             color: #4e5449; }
           #mainApp .reviewList .reviewItem .reviewContent .reviewInfo .reviewAvg {
@@ -260,7 +262,7 @@ body {
             #mainApp .reviewList .reviewItem .reviewContent .reviewInfo .reviewTitle a:hover {
               text-decoration: underline; }
         #mainApp .reviewList .reviewItem .reviewContent .reviewStatus {
-          width: 85px;
+          min-width: 85px;
           height: 70px;
           background-color: #fafff4;
           display: -webkit-flex;

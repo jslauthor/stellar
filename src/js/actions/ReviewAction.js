@@ -9,7 +9,14 @@ var _ = require('lodash')
 class ReviewAction {
 
     constructor() {
-        this.generateActions('showAddReviewPopup', 'hideAddReviewPopup', 'toggleEditing', 'toggleMonitoring')
+        this.generateActions('showAddReviewPopup', 'hideAddReviewPopup', 'toggleEditing')
+    }
+
+    toggleMonitoring() {
+        if (!this.alt.stores.ReviewStore.getState().isMonitoring)
+            this.actions.updateAll()
+
+        this.dispatch();
     }
 
     addReview(url) {
@@ -22,9 +29,9 @@ class ReviewAction {
             type: ConfigStore.getAmazonType(),
             stars: 0,
             numReviews: 0,
-            new: true,
+            hasNew: false,
             lastUpdate: new Date(),
-            lastReview: {},
+            lastStatus: {stars: 0, numReviews: 0},
             loading: true,
             error: false,
             edit: false
@@ -40,6 +47,7 @@ class ReviewAction {
         var self = this;
         request(review.url, function(er, response, body) {
             var $ = cheerio.load(body)
+            review.lastStatus = {stars: review.stars, numReviews: review.numReviews}
             review.loading = false
 
             var reviewData;
@@ -57,6 +65,10 @@ class ReviewAction {
             review.numReviews = InterpreterUtil.getNumberOfReviews(reviewData)
             review.stars = InterpreterUtil.getReviewAverage(reviewData)
             review.title = title != "" ? title : "Title unknown"
+
+            if (!review.hasNew)
+                review.hasNew = (review.lastStatus.numStars != review.numStars) || (review.lastStatus.stars != review.stars)
+
             self.actions.reviewComplete(review)
         });
         this.dispatch(review)
@@ -93,7 +105,6 @@ class ReviewAction {
     }
 
     deleteReview(id) {
-        console.log(id)
         let reviews = this.alt.stores.ReviewStore.getState().reviews;
 
         if (reviews[id])

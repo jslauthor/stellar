@@ -6,15 +6,20 @@ var Main = require("./views/Main.jsx");
 var gui = window.require("nw.gui");
 var alt = require("./alt");
 var LocalStorageUtil = require("./utils/LocalStorageUtil");
+var reviewAction = require("./actions/ReviewAction");
+var _ = require("lodash");
 
 var tray;
-
 var win = gui.Window.get();
+
 win.on("loaded", function () {
-    console.log("**** LOADED");
 
     var altStore = LocalStorageUtil.restore();
     if (altStore != "") alt.bootstrap(altStore);
+
+    setInterval(function () {
+        if (alt.stores.ReviewStore.getState().isMonitoring) reviewAction.updateAll();
+    }, 60000);
 
     // Bootstrap this biatch
     React.render(React.createElement(Main, { style: { width: "100%", height: "100%", position: "relative" } }), document.getElementById("mainApp"));
@@ -26,7 +31,7 @@ win.on("blur", function () {
 
 win.on("close", function () {
     this.hide(); // Pretend to be closed already
-    //save
+    // potentially save again and wait for it to finish
     this.close(true);
 });
 
@@ -60,7 +65,7 @@ gui.Screen.on("displayBoundsChanged", function (screen) {
     console.log("screen changed");
 });
 
-},{"./alt":281,"./utils/LocalStorageUtil":285,"./views/Main.jsx":288,"react":277}],2:[function(require,module,exports){
+},{"./actions/ReviewAction":279,"./alt":281,"./utils/LocalStorageUtil":285,"./views/Main.jsx":288,"lodash":111,"react":277}],2:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -41577,10 +41582,17 @@ var ReviewAction = (function () {
     function ReviewAction() {
         _classCallCheck(this, ReviewAction);
 
-        this.generateActions("showAddReviewPopup", "hideAddReviewPopup", "toggleEditing", "toggleMonitoring");
+        this.generateActions("showAddReviewPopup", "hideAddReviewPopup", "toggleEditing");
     }
 
     _createClass(ReviewAction, {
+        toggleMonitoring: {
+            value: function toggleMonitoring() {
+                if (!this.alt.stores.ReviewStore.getState().isMonitoring) this.actions.updateAll();
+
+                this.dispatch();
+            }
+        },
         addReview: {
             value: function addReview(url) {
                 console.log(url);
@@ -41592,9 +41604,9 @@ var ReviewAction = (function () {
                     type: ConfigStore.getAmazonType(),
                     stars: 0,
                     numReviews: 0,
-                    "new": true,
+                    hasNew: false,
                     lastUpdate: new Date(),
-                    lastReview: {},
+                    lastStatus: { stars: 0, numReviews: 0 },
                     loading: true,
                     error: false,
                     edit: false
@@ -41611,6 +41623,7 @@ var ReviewAction = (function () {
                 var self = this;
                 request(review.url, function (er, response, body) {
                     var $ = cheerio.load(body);
+                    review.lastStatus = { stars: review.stars, numReviews: review.numReviews };
                     review.loading = false;
 
                     var reviewData;
@@ -41628,6 +41641,9 @@ var ReviewAction = (function () {
                     review.numReviews = InterpreterUtil.getNumberOfReviews(reviewData);
                     review.stars = InterpreterUtil.getReviewAverage(reviewData);
                     review.title = title != "" ? title : "Title unknown";
+
+                    if (!review.hasNew) review.hasNew = review.lastStatus.numStars != review.numStars || review.lastStatus.stars != review.stars;
+
                     self.actions.reviewComplete(review);
                 });
                 this.dispatch(review);
@@ -41665,7 +41681,6 @@ var ReviewAction = (function () {
         },
         deleteReview: {
             value: function deleteReview(id) {
-                console.log(id);
                 var reviews = this.alt.stores.ReviewStore.getState().reviews;
 
                 if (reviews[id]) delete reviews[id];
@@ -42177,6 +42192,10 @@ var alt = require("../alt");
 var ALT_KEY = "ALT_STORAGE_KEY";
 
 module.exports = {
+    deleteAll: function deleteAll() {
+        localStorage.setItem(ALT_KEY, "");
+    },
+
     saveAll: function saveAll() {
         localStorage.setItem(ALT_KEY, alt.takeSnapshot());
     },
@@ -42453,7 +42472,7 @@ var ReviewItem = React.createClass({
         });
 
         var newComponent;
-        if (this.props["new"]) newComponent = React.createElement(
+        if (this.props.hasNew) newComponent = React.createElement(
             "p",
             null,
             React.createElement(
@@ -42520,11 +42539,6 @@ var ReviewItem = React.createClass({
                     ),
                     newComponent
                 )
-            ),
-            React.createElement(
-                "div",
-                null,
-                this.props.lastFive
             )
         );
     }
