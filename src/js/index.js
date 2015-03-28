@@ -32,7 +32,7 @@ win.on("blur", function() {
 
 win.on("close", function() {
     this.hide();
-    // potentially save again and wait for it to finish
+    LocalStorageUtil.saveAll();
     this.close(true);
 })
 

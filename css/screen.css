@@ -322,7 +322,13 @@ body {
               font-weight: normal;
               font-size: 9px; }
     #mainApp .reviewList .reviewLoading {
-      background-color: #20bee6; }
+      -webkit-animation: moveBG 1s linear 0s infinite;
+      animation: moveBG 1s linear 0s infinite;
+      background-color: #20bee6;
+      background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc1MCcgaGVpZ2h0PScxMDAnIHZpZXdCb3g9JzAgMCA1IDEwJz4NCgk8bGluZSB4MT0nLTInIHkxPScxJyB4Mj0nNycgeTI9JzEwJyBzdHJva2U9JyMxZGE2Y2MnIHN0cm9rZS13aWR0aD0nMi4wOScvPg0KCTxsaW5lIHgxPSctMicgeTE9JzYnIHgyPSc3JyB5Mj0nMTUnIHN0cm9rZT0nIzFkYTZjYycgc3Ryb2tlLXdpZHRoPScyLjA5Jy8+DQoJPGxpbmUgeDE9Jy0yJyB5MT0nLTQnIHgyPSc3JyB5Mj0nNScgc3Ryb2tlPScjMWRhNmNjJyBzdHJva2Utd2lkdGg9JzIuMDknLz4NCjwvc3ZnPg==');
+      background-position: 0 0; }
+    #mainApp .reviewList .reviewError {
+      background-color: #e62040; }
   #mainApp .mainControls {
     position: absolute;
     z-index: 2;
@@ -571,6 +577,14 @@ body {
   to {
     -webkit-transform: rotate(0deg);
     transform: rotate(0deg); } }
+
+@-webkit-keyframes moveBG {
+  100% {
+    background-position: -100px 0; } }
+
+@keyframes moveBG {
+  100% {
+    background-position: -100px 0; } }
 
 .list-animation--enter {
   opacity: 0.01;

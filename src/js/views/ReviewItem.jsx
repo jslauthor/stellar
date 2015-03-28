@@ -7,13 +7,18 @@ var truncate = require('html-truncate')
 var Stars = require('./components/Stars.jsx')
 var pluralize = require('pluralize')
 var DeleteButton = require('./controls/DeleteButton.jsx')
+var reviewAction = require('../actions/ReviewAction')
 
 var ReviewItem = React.createClass({
+    handleMouseOver: function() {
+        reviewAction.markAsSeen(this.props.reviewID)
+    },
     render: function() {
 
         var classNames = classnames({
             reviewItem: true,
-            reviewLoading: this.props.loading
+            reviewLoading: this.props.loading,
+            reviewError: this.props.error && !this.props.loading
         })
 
         var num = this.props.numReviews ? this.props.numReviews.length : 0;
@@ -34,7 +39,7 @@ var ReviewItem = React.createClass({
             reviewSource = <DeleteButton reviewID={this.props.reviewID} />
 
         return (
-            <section className={classNames}>
+            <section className={classNames} onMouseOver={this.handleMouseOver}>
                 <div className="reviewContent">
                     <div className="reviewSource">
                         {reviewSource}

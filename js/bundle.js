@@ -31,7 +31,7 @@ win.on("blur", function () {
 
 win.on("close", function () {
     this.hide();
-    // potentially save again and wait for it to finish
+    LocalStorageUtil.saveAll();
     this.close(true);
 });
 
@@ -41574,7 +41574,6 @@ var alt = require("../alt");
 var cheerio = require("cheerio");
 var request = require("browser-request");
 var uuid = require("node-uuid");
-var ConfigStore = require("../stores/ConfigStore");
 var InterpreterUtil = require("../utils/InterpreterUtil");
 var _ = require("lodash");
 
@@ -41595,13 +41594,11 @@ var ReviewAction = (function () {
         },
         addReview: {
             value: function addReview(url) {
-                console.log(url);
-
                 var review = {
                     id: uuid.v1(),
                     title: "Retrieving starlet...",
                     url: url,
-                    type: ConfigStore.getAmazonType(),
+                    type: this.alt.stores.ConfigStore.getAmazonType(),
                     stars: 0,
                     numReviews: 0,
                     hasNew: false,
@@ -41623,17 +41620,21 @@ var ReviewAction = (function () {
                 var self = this;
                 request(review.url, function (er, response, body) {
                     var $ = cheerio.load(body);
+
+                    review.lastUpdate = new Date();
                     review.lastStatus = { stars: review.stars, numReviews: review.numReviews };
                     review.loading = false;
 
                     var reviewData;
                     var rootNode = $("span:contains(\"See all reviews\")");
-                    rootNode.each(function (i, el) {
-                        if ($(this).text() == "See all reviews") {
-                            reviewData = $(this).parents(".crAvgStars").first().text();
-                            return false;
-                        }
-                    });
+                    try {
+                        rootNode.each(function (i, el) {
+                            if ($(this).text() == "See all reviews") {
+                                reviewData = $(this).parents(".crAvgStars").first().text();
+                                return false;
+                            }
+                        });
+                    } catch (error) {}
 
                     var title = $("#btAsinTitle").text();
                     title = title == "" ? $("#productTitle").text() : title;
@@ -41641,6 +41642,8 @@ var ReviewAction = (function () {
                     review.numReviews = InterpreterUtil.getNumberOfReviews(reviewData);
                     review.stars = InterpreterUtil.getReviewAverage(reviewData);
                     review.title = title != "" ? title : "Title unknown";
+
+                    review.error = title == "" || er != null;
 
                     if (!review.hasNew) review.hasNew = review.lastStatus.numStars != review.numStars || review.lastStatus.stars != review.stars;
 
@@ -41676,8 +41679,10 @@ var ReviewAction = (function () {
         },
         updateReview: {
             value: function updateReview(review) {
-                if (!review.loading) {
+                var elapsedTime = new Date().getTime() - (review.lastUpdate && Date.parse(review.lastUpdate) || 0);
+                if (!review.loading || elapsedTime >= 60000) {
                     review.loading = true;
+                    review.error = false;
                     this.actions.requestReview(review);
                     this.dispatch();
                 }
@@ -41688,8 +41693,6 @@ var ReviewAction = (function () {
                 var reviews = this.alt.stores.ReviewStore.getState().reviews;
 
                 if (reviews[id]) delete reviews[id];
-
-                console.log(reviews[id]);
 
                 this.dispatch(reviews);
             }
@@ -41705,6 +41708,11 @@ var ReviewAction = (function () {
 
                 this.dispatch();
             }
+        },
+        markAsSeen: {
+            value: function markAsSeen(reviewID) {
+                this.dispatch(reviewID);
+            }
         }
     });
 
@@ -41713,7 +41721,7 @@ var ReviewAction = (function () {
 
 module.exports = alt.createActions(ReviewAction);
 
-},{"../alt":281,"../stores/ConfigStore":282,"../utils/InterpreterUtil":284,"browser-request":11,"cheerio":36,"lodash":111,"node-uuid":112}],280:[function(require,module,exports){
+},{"../alt":281,"../utils/InterpreterUtil":284,"browser-request":11,"cheerio":36,"lodash":111,"node-uuid":112}],280:[function(require,module,exports){
 "use strict";
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -41974,6 +41982,7 @@ var _classCallCheck = function (instance, Constructor) { if (!(instance instance
 var color = require("hex-rgb-converter");
 var alt = require("../alt");
 var React = require("react");
+var reviewAction = require("../actions/ReviewAction");
 
 var DARK_GREEN = "d2dbc6";
 var GREEN = "1ac57f";
@@ -41985,9 +41994,15 @@ var GOODREADS = "goodreads";
 var ConfigStore = (function () {
     function ConfigStore() {
         _classCallCheck(this, ConfigStore);
+
+        this.bindAction(reviewAction.hasNewReview, this.onNewReview);
     }
 
-    _createClass(ConfigStore, null, {
+    _createClass(ConfigStore, {
+        onNewReview: {
+            value: function onNewReview() {}
+        }
+    }, {
         getAmazonType: {
             value: function getAmazonType() {
                 return AMAZON;
@@ -42059,7 +42074,9 @@ var ConfigStore = (function () {
 
 module.exports = alt.createStore(ConfigStore, "ConfigStore");
 
-},{"../alt":281,"hex-rgb-converter":109,"react":277}],283:[function(require,module,exports){
+// need reference to tray, create tray icons for new and regular
+
+},{"../actions/ReviewAction":279,"../alt":281,"hex-rgb-converter":109,"react":277}],283:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -42069,6 +42086,7 @@ var _classCallCheck = function (instance, Constructor) { if (!(instance instance
 var alt = require("../alt");
 var ReviewAction = require("../actions/ReviewAction");
 var LocalStorageUtil = require("../utils/LocalStorageUtil");
+var _ = require("lodash");
 
 var ReviewStore = (function () {
     function ReviewStore() {
@@ -42142,6 +42160,12 @@ var ReviewStore = (function () {
                 this.reviews[review.id] = review;
                 LocalStorageUtil.saveAll();
             }
+        },
+        onMarkAsSeen: {
+            value: function onMarkAsSeen(reviewID) {
+                var review = this.reviews[reviewID];
+                if (!_.isUndefined(review)) review.hasNew = false;
+            }
         }
     });
 
@@ -42150,7 +42174,7 @@ var ReviewStore = (function () {
 
 module.exports = alt.createStore(ReviewStore, "ReviewStore");
 
-},{"../actions/ReviewAction":279,"../alt":281,"../utils/LocalStorageUtil":285}],284:[function(require,module,exports){
+},{"../actions/ReviewAction":279,"../alt":281,"../utils/LocalStorageUtil":285,"lodash":111}],284:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -42214,7 +42238,6 @@ module.exports = {
 "use strict";
 
 var React = require("react");
-var reviewAction = require("../actions/ReviewAction");
 var validator = require("validator");
 var classnames = require("classnames");
 var reviewAction = require("../actions/ReviewAction");
@@ -42457,15 +42480,20 @@ var truncate = require("html-truncate");
 var Stars = require("./components/Stars.jsx");
 var pluralize = require("pluralize");
 var DeleteButton = require("./controls/DeleteButton.jsx");
+var reviewAction = require("../actions/ReviewAction");
 
 var ReviewItem = React.createClass({
     displayName: "ReviewItem",
 
+    handleMouseOver: function handleMouseOver() {
+        reviewAction.markAsSeen(this.props.reviewID);
+    },
     render: function render() {
 
         var classNames = classnames({
             reviewItem: true,
-            reviewLoading: this.props.loading
+            reviewLoading: this.props.loading,
+            reviewError: this.props.error && !this.props.loading
         });
 
         var num = this.props.numReviews ? this.props.numReviews.length : 0;
@@ -42491,7 +42519,7 @@ var ReviewItem = React.createClass({
 
         return React.createElement(
             "section",
-            { className: classNames },
+            { className: classNames, onMouseOver: this.handleMouseOver },
             React.createElement(
                 "div",
                 { className: "reviewContent" },
@@ -42550,7 +42578,7 @@ var ReviewItem = React.createClass({
 
 module.exports = ReviewItem;
 
-},{"../stores/ConfigStore":282,"./components/Stars.jsx":292,"./controls/DeleteButton.jsx":295,"classnames":108,"html-truncate":110,"pluralize":113,"react":277}],291:[function(require,module,exports){
+},{"../actions/ReviewAction":279,"../stores/ConfigStore":282,"./components/Stars.jsx":292,"./controls/DeleteButton.jsx":295,"classnames":108,"html-truncate":110,"pluralize":113,"react":277}],291:[function(require,module,exports){
 "use strict";
 
 var React = require("react");
@@ -42587,8 +42615,9 @@ var ReviewList = React.createClass({
                 stars: item.stars,
                 type: item.type,
                 numReviews: item.numReviews,
-                "new": item["new"],
+                hasNew: item.hasNew,
                 loading: item.loading,
+                error: item.error,
                 isEditing: self.state.isEditing
             }));
         });
@@ -42627,7 +42656,7 @@ var Stars = React.createClass({
     render: function render() {
 
         var percent = (this.props.stars > 0 ? Math.min(this.props.stars, 5) / 5 : 0) * 100 + "%";
-        var backgroundStyle = { mask: "url(#starMask)" };
+        var backgroundStyle = { clipPath: "url(#starMask)" };
 
         return React.createElement(
             "svg",
@@ -42636,7 +42665,7 @@ var Stars = React.createClass({
                 "defs",
                 null,
                 React.createElement(
-                    "mask",
+                    "clipPath",
                     { id: "starMask" },
                     React.createElement("path", { "fill-rule": "evenodd", "clip-rule": "evenodd", fill: "#FFFFFF", d: "M8.6,3.8L6.5,0L4.4,3.8L0,4.6l3,3.1L2.5,12l4-1.8l4,1.8L10,7.7 l3-3.1L8.6,3.8z M23.6,3.8L21.5,0l-2.1,3.8L15,4.6l3,3.1L17.5,12l4-1.8l4,1.8L25,7.7l3-3.1L23.6,3.8z M38.6,3.8L36.5,0l-2.1,3.8 L30,4.6l3,3.1L32.5,12l4-1.8l4,1.8L40,7.7l3-3.1L38.6,3.8z M53.6,3.8L51.5,0l-2.1,3.8L45,4.6l3,3.1L47.5,12l4-1.8l4,1.8L55,7.7 l3-3.1L53.6,3.8z M73,4.6l-4.4-0.8L66.5,0l-2.1,3.8L60,4.6l3,3.1L62.5,12l4-1.8l4,1.8L70,7.7L73,4.6z" })
                 )

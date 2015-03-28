@@ -33,8 +33,9 @@ var ReviewList = React.createClass({
                     stars={item.stars}
                     type={item.type}
                     numReviews={item.numReviews}
-                    new={item.new}
+                    hasNew={item.hasNew}
                     loading={item.loading}
+                    error={item.error}
                     isEditing={self.state.isEditing}
                 />
             )

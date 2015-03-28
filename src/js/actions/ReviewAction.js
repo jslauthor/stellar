@@ -2,7 +2,6 @@ var alt = require("../alt")
 var cheerio = require('cheerio')
 var request = require('browser-request')
 var uuid = require('node-uuid')
-var ConfigStore = require('../stores/ConfigStore')
 var InterpreterUtil = require('../utils/InterpreterUtil')
 var _ = require('lodash')
 
@@ -20,13 +19,11 @@ class ReviewAction {
     }
 
     addReview(url) {
-        console.log(url);
-
         var review = {
             id: uuid.v1(),
             title: "Retrieving starlet...",
             url: url,
-            type: ConfigStore.getAmazonType(),
+            type: this.alt.stores.ConfigStore.getAmazonType(),
             stars: 0,
             numReviews: 0,
             hasNew: false,
@@ -47,17 +44,21 @@ class ReviewAction {
         var self = this;
         request(review.url, function(er, response, body) {
             var $ = cheerio.load(body)
+
+            review.lastUpdate = new Date()
             review.lastStatus = {stars: review.stars, numReviews: review.numReviews}
             review.loading = false
 
-            var reviewData;
+            var reviewData
             var rootNode = $('span:contains("See all reviews")');
-            rootNode.each(function (i, el) {
-                if ($(this).text() == "See all reviews") {
-                    reviewData = $(this).parents(".crAvgStars").first().text()
-                    return false;
-                }
-            })
+            try {
+                rootNode.each(function (i, el) {
+                    if ($(this).text() == "See all reviews") {
+                        reviewData = $(this).parents(".crAvgStars").first().text()
+                        return false;
+                    }
+                })
+            } catch(error) {}
 
             var title = $("#btAsinTitle").text()
             title = title == "" ? $("#productTitle").text() : title
@@ -65,6 +66,8 @@ class ReviewAction {
             review.numReviews = InterpreterUtil.getNumberOfReviews(reviewData)
             review.stars = InterpreterUtil.getReviewAverage(reviewData)
             review.title = title != "" ? title : "Title unknown"
+
+            review.error = title == "" || er != null
 
             if (!review.hasNew)
                 review.hasNew = (review.lastStatus.numStars != review.numStars) || (review.lastStatus.stars != review.stars)
@@ -103,9 +106,11 @@ class ReviewAction {
     }
 
     updateReview(review) {
-        if (!review.loading)
+        var elapsedTime = new Date().getTime() - ((review.lastUpdate && Date.parse(review.lastUpdate)) || 0)
+        if (!review.loading || elapsedTime >= 60000)
         {
             review.loading = true
+            review.error = false
             this.actions.requestReview(review)
             this.dispatch()
         }
@@ -116,8 +121,6 @@ class ReviewAction {
 
         if (reviews[id])
             delete reviews[id]
-
-        console.log(reviews[id])
 
         this.dispatch(reviews)
     }
@@ -131,6 +134,10 @@ class ReviewAction {
         })
 
         this.dispatch()
+    }
+
+    markAsSeen(reviewID) {
+        this.dispatch(reviewID)
     }
 
 }

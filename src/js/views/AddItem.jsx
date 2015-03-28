@@ -1,7 +1,6 @@
 "use strict"
 
 var React = require('react')
-var reviewAction = require('../actions/ReviewAction')
 var validator = require('validator')
 var classnames = require('classnames')
 var reviewAction = require('../actions/ReviewAction')

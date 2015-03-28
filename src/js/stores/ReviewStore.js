@@ -1,6 +1,7 @@
 var alt = require('../alt')
 var ReviewAction = require('../actions/ReviewAction')
 var LocalStorageUtil = require('../utils/LocalStorageUtil')
+var _ = require('lodash')
 
 class ReviewStore {
     constructor() {
@@ -59,6 +60,12 @@ class ReviewStore {
     onReviewComplete(review) {
         this.reviews[review.id] = review;
         LocalStorageUtil.saveAll()
+    }
+
+    onMarkAsSeen(reviewID) {
+        var review = this.reviews[reviewID]
+        if (!_.isUndefined(review))
+            review.hasNew = false;
     }
 
 }
