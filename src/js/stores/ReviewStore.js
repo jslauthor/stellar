@@ -16,15 +16,12 @@ class ReviewStore {
         this.lastUpdate = ""
         this.shouldScrollToBottom = true;
         this.hasNewReviews = false
-        this.tray = null
 
         this.on('serialize', () => {
             var state = _.cloneDeep(this.alt.stores.ReviewStore.getState());
             state.isEditing = false;
             state.loading = false;
             state.showReviewPopup = false;
-
-            delete state.tray // do not save tray
 
             _.each(state.reviews, function(review){
                 review.loading = false;
