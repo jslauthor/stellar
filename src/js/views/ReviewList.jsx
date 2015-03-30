@@ -5,6 +5,7 @@ var reviewStore = require('../stores/ReviewStore');
 var ListenerMixin = require('alt/mixins/ListenerMixin')
 var _ = require('lodash')
 var ReviewItem = require('./ReviewItem.jsx')
+var reviewAction = require('../actions/ReviewAction')
 var TimeoutTransitionGroup = require('../addons/TimeoutTransitionGroup')
 
 var ReviewList = React.createClass({
@@ -18,6 +19,14 @@ var ReviewList = React.createClass({
 
     onChange() {
         this.setState(this.getInitialState())
+    },
+    componentDidUpdate: function() {
+        if (this.state.shouldScrollToBottom)
+        {
+            var list = this.refs.listRef.getDOMNode();
+            list.scrollTop = list.scrollHeight;
+            reviewAction.resetScrollToBottom();
+        }
     },
     render: function () {
 
@@ -36,13 +45,12 @@ var ReviewList = React.createClass({
                     hasNew={item.hasNew}
                     loading={item.loading}
                     error={item.error}
-                    isEditing={self.state.isEditing}
-                />
+                    isEditing={self.state.isEditing} />
             )
         })
 
         return (
-            <section className="reviewList">
+            <section ref="listRef" className="reviewList">
                 <TimeoutTransitionGroup
                     enterTimeout={0}
                     leaveTimeout={0}

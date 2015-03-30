@@ -8,9 +8,14 @@ var Stars = require('./components/Stars.jsx')
 var pluralize = require('pluralize')
 var DeleteButton = require('./controls/DeleteButton.jsx')
 var reviewAction = require('../actions/ReviewAction')
+var gui = window.require('nw.gui');
 
 var ReviewItem = React.createClass({
-    handleMouseOver: function() {
+    handleClick: function() {
+        reviewAction.markAsSeen(this.props.reviewID)
+    },
+    handleLink: function() {
+        gui.Shell.openExternal(this.props.url)
         reviewAction.markAsSeen(this.props.reviewID)
     },
     render: function() {
@@ -30,7 +35,7 @@ var ReviewItem = React.createClass({
 
         var newComponent
         if (this.props.hasNew)
-            newComponent = <p><span>NEW</span></p>
+            newComponent = <p className="pointer" onClick={this.handleClick}><span>NEW</span></p>
 
         var reviewSource
         if (!this.props.isEditing)
@@ -39,14 +44,14 @@ var ReviewItem = React.createClass({
             reviewSource = <DeleteButton reviewID={this.props.reviewID} />
 
         return (
-            <section className={classNames} onMouseOver={this.handleMouseOver}>
+            <section className={classNames}>
                 <div className="reviewContent">
                     <div className="reviewSource">
                         {reviewSource}
                     </div>
                     <div className="reviewInfo">
                         <div ref="reviewTitle" className="reviewTitle">
-                            <p><a href={this.props.url} target="_blank">{truncate(this.props.title, 55)}</a></p>
+                            <p><a className="pointer" onClick={this.handleLink}>{truncate(this.props.title, 55)}</a></p>
                         </div>
                         <div className="reviewAvg">
                             <Stars stars={this.props.stars} />
@@ -54,7 +59,7 @@ var ReviewItem = React.createClass({
                         </div>
                     </div>
                     <div className="reviewStatus">
-                        <h1 className={numReviewClasses}>{this.props.numReviews}</h1>
+                        <h1 className={numReviewClasses}><a className="pointer" onClick={this.handleLink}>{this.props.numReviews}</a></h1>
                         <h4>{pluralize('review', this.props.numReviews)}</h4>
                         {newComponent}
                     </div>

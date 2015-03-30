@@ -22,7 +22,7 @@ win.on("loaded",
         }, 60000)
 
         // Bootstrap this biatch
-        React.render(<Main style={{width: "100%", height: "100%", position:"relative"}} />, document.getElementById('mainApp'));
+        React.render(<Main tray={tray} style={{width: "100%", height: "100%", position:"relative"}} />, document.getElementById('mainApp'));
     }
 );
 
@@ -48,22 +48,13 @@ try {
 tray = new gui.Tray({
     title: '',
     tooltip: 'stellar',
-    icon: 'img/tray_icon.png',
+    icon: 'img/tray_icon@2x.png',
     iconsAreTemplates: false
 });
 
-function resetWindowPosition(x, y) {
-
-}
-
 tray.on('click', function(evt) {
-    win.moveTo((evt.x - (win.width/2)) + 6, evt.y);
+    win.moveTo((evt.x - (win.width/2)) + 8, evt.y);
     win.show();
     win.showDevTools();
     win.focus();
 });
-
-gui.Screen.Init();
-gui.Screen.on('displayBoundsChanged', function(screen) {
-    console.log('screen changed');
-})

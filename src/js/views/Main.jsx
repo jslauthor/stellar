@@ -11,15 +11,26 @@ var ListenerMixin = require('alt/mixins/ListenerMixin')
 
 var Main = React.createClass({
     mixins: [ListenerMixin],
+    getDefaultProps: function() {
+        return { tray: null }
+    },
     getInitialState: function() {
         return reviewStore.getState()
     },
     componentDidMount: function() {
         this.listenTo(reviewStore, this.onChange)
     },
-
     onChange: function() {
         this.setState(this.getInitialState())
+    },
+    componentDidUpdate() {
+        if (this.props.tray == null)
+            return
+
+        if (this.state.hasNewReviews)
+            this.props.tray.icon = 'img/tray_icon_alert@2x.png'
+        else
+            this.props.tray.icon = 'img/tray_icon@2x.png'
     },
     render: function() {
 

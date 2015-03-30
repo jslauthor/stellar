@@ -286,6 +286,13 @@ body {
             font-stretch: condensed;
             font-weight: 800;
             color: #e46e4d; }
+            #mainApp .reviewList .reviewItem .reviewContent .reviewStatus h1 a {
+              font-family: helveticaNeueu;
+              font-style: normal;
+              font-stretch: condensed;
+              font-weight: 800;
+              color: #e46e4d;
+              text-decoration: none; }
           #mainApp .reviewList .reviewItem .reviewContent .reviewStatus .lg {
             font-size: 44px;
             margin-bottom: -12px; }
@@ -355,6 +362,15 @@ body {
       -webkit-flex-grow: 2;
       -ms-flex-positive: 2;
       flex-grow: 2; }
+    #mainApp .mainControls .last-update {
+      font-size: 10px;
+      font-family: helveticaNeueu;
+      font-style: italic;
+      font-stretch: condensed;
+      font-weight: 500;
+      opacity: 0.8;
+      color: #1ac57f;
+      padding-left: 5px; }
     #mainApp .mainControls .sortMenu {
       -webkit-flex-basis: 100%;
       -ms-flex-preferred-size: 100%;
@@ -424,7 +440,17 @@ body {
         font-stretch: normal;
         font-weight: normal;
         background-color: #41284a;
-        border-radius: 5px; }
+        border-radius: 5px;
+        font-family: helveticaNeueu;
+        font-style: italic;
+        font-stretch: condensed;
+        font-weight: 500; }
+      #mainApp .add-item-container main input::-webkit-input-placeholder {
+        color: #5e3a6b;
+        font-family: helveticaNeueu;
+        font-style: italic;
+        font-stretch: condensed;
+        font-weight: 500; }
       #mainApp .add-item-container main input:focus {
         box-shadow: 0 0 5px #c2a4cd;
         border: 1px solid #c2a4cd; }

@@ -48,8 +48,8 @@ var AddItem = React.createClass({
             <section className={containerClasses}>
                 <main>
                     <h1>CREATE STARLET</h1>
-                    <div>Amazon or Goodreads product URL (with http://)</div>
-                    <input ref="urlInput" defaultValue="Enter URL" type="url"
+                    <div>Amazon or Goodreads product URL</div>
+                    <input ref="urlInput" placeholder="Enter URL (with http://)" type="url"
                         className={inputClasses} onKeyUp={this.handleKeyUp} />
                     <div className="help-text">Need help? <a href="">Head here</a></div>
                 </main>

@@ -8,7 +8,16 @@ var _ = require('lodash')
 class ReviewAction {
 
     constructor() {
-        this.generateActions('showAddReviewPopup', 'hideAddReviewPopup', 'toggleEditing', 'hasNewReview')
+        this.generateActions(
+            'showAddReviewPopup',
+            'hideAddReviewPopup',
+            'toggleEditing',
+            'resetScrollToBottom'
+        )
+    }
+
+    setTray(tray) {
+        this.dispatch(tray)
     }
 
     toggleMonitoring() {
@@ -31,7 +40,8 @@ class ReviewAction {
             lastStatus: {stars: 0, numReviews: 0},
             loading: true,
             error: false,
-            edit: false
+            edit: false,
+            isDeleted: false
         }
 
         // Amazon only now
@@ -41,8 +51,16 @@ class ReviewAction {
     }
 
     requestReview(review) {
-        var self = this;
+
+        if (review.isDeleted)
+            return false;
+
+        var self = this
         request(review.url, function(er, response, body) {
+
+            if (review.isDeleted)
+                return false;
+
             var $ = cheerio.load(body)
 
             review.lastUpdate = new Date()
@@ -70,10 +88,11 @@ class ReviewAction {
             review.error = title == "" || er != null
 
             if (!review.hasNew)
-                review.hasNew = (review.lastStatus.numStars != review.numStars) || (review.lastStatus.stars != review.stars)
+                review.hasNew = !review.error && (review.lastStatus.numReviews != review.numReviews) || (review.lastStatus.stars != review.stars)
 
             self.actions.reviewComplete(review)
         });
+
         this.dispatch(review)
     }
 
@@ -86,20 +105,14 @@ class ReviewAction {
 
         let reviews = this.alt.stores.ReviewStore.getState().reviews;
         let hasLoading = false;
-        let hasNew = false;
+
         _.each(reviews, function(review) {
             if (review.loading)
                 hasLoading = true
 
-            if (review.hasNew)
-                hasNew = true
-
-            if (hasNew && hasLoading)
+            if (hasLoading)
                 return false
         })
-
-        if (hasNew)
-            this.actions.hasNewReview();
 
         if (!hasLoading)
             this.actions.allComplete()
@@ -119,8 +132,10 @@ class ReviewAction {
     deleteReview(id) {
         let reviews = this.alt.stores.ReviewStore.getState().reviews;
 
-        if (reviews[id])
+        if (reviews[id]) {
+            reviews[id].isDeleted = true
             delete reviews[id]
+        }
 
         this.dispatch(reviews)
     }

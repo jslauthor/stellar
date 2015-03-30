@@ -147,6 +147,12 @@ body {
             width: 100%;
             @include fontBlkCn;
             color: $orange;
+
+            a {
+              @include fontBlkCn;
+              color: $orange;
+              text-decoration: none;
+            }
           }
 
           .lg { font-size: 44px; margin-bottom: -12px; }
@@ -221,6 +227,14 @@ body {
 
     *:nth-child(3) {
       flex-grow: 2;
+    }
+
+    .last-update {
+      font-size: 10px;
+      @include fontMdCnO;
+      opacity: .8;
+      color: $teal;
+      padding-left: 5px;
     }
 
     .sortMenu {
@@ -298,6 +312,12 @@ body {
         @include fontNormal;
         background-color: darken($purple, 10);
         border-radius: $borderRadius;
+        @include fontMdCnO;
+      }
+
+      input::-webkit-input-placeholder {
+        color: $purple;
+        @include fontMdCnO;
       }
 
       input:focus {

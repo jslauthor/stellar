@@ -3,7 +3,6 @@
 var color = require('hex-rgb-converter');
 var alt = require('../alt');
 var React = require('react')
-var reviewAction = require('../actions/ReviewAction')
 
 var DARK_GREEN = "d2dbc6";
 var GREEN = "1ac57f";
@@ -14,11 +13,6 @@ var GOODREADS = "goodreads";
 
 class ConfigStore {
     constructor() {
-        this.bindAction(reviewAction.hasNewReview, this.onNewReview)
-    }
-
-    onNewReview() {
-        // need reference to tray, create tray icons for new and regular
     }
 
     static getAmazonType() { return AMAZON; }
