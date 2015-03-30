@@ -80,6 +80,7 @@ class ReviewStore {
             review.hasNew = false;
 
         this._updateHasNew();
+        LocalStorageUtil.saveAll()
     }
 
     onResetScrollToBottom() {

@@ -4,12 +4,31 @@ var cheerio = require('cheerio')
 
 class InterpreterUtil {
 
-    interpretGoodreads(review) {
+    interpretGoodreads(body, er, review) {
+        var $ = cheerio.load(body)
 
+        var reviewData = $('#bookMeta').text()
+        var title = $('#bookMeta').find(".fn").first().text()
+
+        review.numReviews = this._getNumberOfGoodreadsReviews($('#bookMeta').find('.value-title').first().text())
+        review.stars = this._getGoodreadsReviewAverage(reviewData)
+        review.error = title == "" || er != null
+        review.title = title != "" ? title : "Title unknown"
+
+        return review
     }
 
+    _getNumberOfGoodreadsReviews(data) {
+        var matches = /([,\d]+) ratings/gi.exec(data)
+        return !matches || matches.length < 1 ? 0 : matches[1]
+    }
 
-    interpretAmazon(body, review) {
+    _getGoodreadsReviewAverage(data) {
+        var matches = /([.\d]+) of [.\d]+ stars/gi.exec(data)
+        return !matches || matches.length < 1 ? 0 : matches[1]
+    }
+
+    interpretAmazon(body, er, review) {
         var $ = cheerio.load(body)
         var reviewData
 
@@ -24,29 +43,21 @@ class InterpreterUtil {
         var title = $("#btAsinTitle").text()
         title = title == "" ? $("#productTitle").text() : title
 
-        review.numReviews = this.getNumberOfReviews(reviewData)
-        review.stars = this.getReviewAverage(reviewData)
+        review.numReviews = this._getNumberOfAmazonReviews(reviewData)
+        review.stars = this._getAmazonReviewAverage(reviewData)
         review.title = title != "" ? title : "Title unknown"
 
         review.error = title == "" || er != null
 
-        if (!review.hasNew)
-            review.hasNew = !review.error && (review.lastStatus.numReviews != review.numReviews) || (review.lastStatus.stars != review.stars)
-
         return review
     }
 
-    getNumberOfReviews(data) {
+    _getNumberOfAmazonReviews(data) {
         var matches = /([,\d]+) customer review/gi.exec(data);
         return !matches || matches.length < 1 ? 0 : matches[1];
     }
 
-    getReviewAverage(data) {
-        var matches = /([.\d]+) out of [.\d]+ stars/gi.exec(data);
-        return !matches || matches.length < 1 ? 0 : matches[1];
-    }
-
-    getTitle(data) {
+    _getAmazonReviewAverage(data) {
         var matches = /([.\d]+) out of [.\d]+ stars/gi.exec(data);
         return !matches || matches.length < 1 ? 0 : matches[1];
     }

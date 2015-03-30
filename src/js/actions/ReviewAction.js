@@ -1,9 +1,9 @@
 var alt = require("../alt")
-var cheerio = require('cheerio')
 var request = require('browser-request')
 var uuid = require('node-uuid')
 var InterpreterUtil = require('../utils/InterpreterUtil')
 var _ = require('lodash')
+var Review = require('../vo/Review')
 
 class ReviewAction {
 
@@ -30,26 +30,12 @@ class ReviewAction {
     addReview(url) {
 
         var type
-        if (url.indexOf('amazon.com') != 1)
+        if (url.indexOf('amazon.com') != -1)
             type = this.alt.stores.ConfigStore.getAmazonType()
-        else if (url.indexOf('goodreads.com') != 1)
+        else if (url.indexOf('goodreads.com') != -1)
             type = this.alt.stores.ConfigStore.getGoodreadsType()
 
-        var review = {
-            id: uuid.v1(),
-            title: "Retrieving starlet...",
-            url: url,
-            type: type,
-            stars: 0,
-            numReviews: 0,
-            hasNew: false,
-            lastUpdate: new Date(),
-            lastStatus: {stars: 0, numReviews: 0},
-            loading: true,
-            error: false,
-            edit: false,
-            isDeleted: false
-        }
+        var review = new Review(url, type);
 
         this.actions.requestReview(review)
         this.dispatch(review)
@@ -65,31 +51,20 @@ class ReviewAction {
 
             review.loading = false
 
-            if (review.isDeleted || _.isUndefined((body)))
+            if (review.isDeleted || _.isUndefined(body))
                 return false;
-
-            var $ = cheerio.load(body)
 
             review.lastUpdate = new Date()
             review.lastStatus = {stars: review.stars, numReviews: review.numReviews}
 
-            var reviewData
-            var rootNode = $('span:contains("See all reviews")');
-            rootNode.each(function (i, el) {
-                if ($(this).text() == "See all reviews") {
-                    reviewData = $(this).parents(".crAvgStars").first().text()
-                    return false;
-                }
-            })
-
-            var title = $("#btAsinTitle").text()
-            title = title == "" ? $("#productTitle").text() : title
-
-            review.numReviews = InterpreterUtil.getNumberOfReviews(reviewData)
-            review.stars = InterpreterUtil.getReviewAverage(reviewData)
-            review.title = title != "" ? title : "Title unknown"
-
-            review.error = title == "" || er != null
+            switch (review.type) {
+                case self.alt.stores.ConfigStore.getGoodreadsType():
+                    review = InterpreterUtil.interpretGoodreads(body, er, review)
+                    break;
+                case self.alt.stores.ConfigStore.getAmazonType():
+                default:
+                    review = InterpreterUtil.interpretAmazon(body, er, review)
+            }
 
             if (!review.hasNew)
                 review.hasNew = !review.error && (review.lastStatus.numReviews != review.numReviews) || (review.lastStatus.stars != review.stars)

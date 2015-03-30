@@ -44504,11 +44504,11 @@ var _createClass = (function () { function defineProperties(target, props) { for
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
 var alt = require("../alt");
-var cheerio = require("cheerio");
 var request = require("browser-request");
 var uuid = require("node-uuid");
 var InterpreterUtil = require("../utils/InterpreterUtil");
 var _ = require("lodash");
+var Review = require("../vo/Review");
 
 var ReviewAction = (function () {
     function ReviewAction() {
@@ -44534,23 +44534,9 @@ var ReviewAction = (function () {
             value: function addReview(url) {
 
                 var type;
-                if (url.indexOf("amazon.com") != 1) type = this.alt.stores.ConfigStore.getAmazonType();else if (url.indexOf("goodreads.com") != 1) type = this.alt.stores.ConfigStore.getGoodreadsType();
+                if (url.indexOf("amazon.com") != -1) type = this.alt.stores.ConfigStore.getAmazonType();else if (url.indexOf("goodreads.com") != -1) type = this.alt.stores.ConfigStore.getGoodreadsType();
 
-                var review = {
-                    id: uuid.v1(),
-                    title: "Retrieving starlet...",
-                    url: url,
-                    type: type,
-                    stars: 0,
-                    numReviews: 0,
-                    hasNew: false,
-                    lastUpdate: new Date(),
-                    lastStatus: { stars: 0, numReviews: 0 },
-                    loading: true,
-                    error: false,
-                    edit: false,
-                    isDeleted: false
-                };
+                var review = new Review(url, type);
 
                 this.actions.requestReview(review);
                 this.dispatch(review);
@@ -44568,28 +44554,19 @@ var ReviewAction = (function () {
 
                     if (review.isDeleted || _.isUndefined(body)) return false;
 
-                    var $ = cheerio.load(body);
-
                     review.lastUpdate = new Date();
                     review.lastStatus = { stars: review.stars, numReviews: review.numReviews };
 
-                    var reviewData;
-                    var rootNode = $("span:contains(\"See all reviews\")");
-                    rootNode.each(function (i, el) {
-                        if ($(this).text() == "See all reviews") {
-                            reviewData = $(this).parents(".crAvgStars").first().text();
-                            return false;
-                        }
-                    });
-
-                    var title = $("#btAsinTitle").text();
-                    title = title == "" ? $("#productTitle").text() : title;
-
-                    review.numReviews = InterpreterUtil.getNumberOfReviews(reviewData);
-                    review.stars = InterpreterUtil.getReviewAverage(reviewData);
-                    review.title = title != "" ? title : "Title unknown";
-
-                    review.error = title == "" || er != null;
+                    switch (review.type) {
+                        case self.alt.stores.ConfigStore.getGoodreadsType():
+                            review = InterpreterUtil.interpretGoodreads(body, er, review);
+                            console.log(review === InterpreterUtil.interpretGoodreads(body, er, review));
+                            break;
+                        case self.alt.stores.ConfigStore.getAmazonType():
+                        default:
+                            review = InterpreterUtil.interpretAmazon(body, er, review);
+                            console.log(review === InterpreterUtil.interpretAmazon(body, er, review));
+                    }
 
                     if (!review.hasNew) review.hasNew = !review.error && review.lastStatus.numReviews != review.numReviews || review.lastStatus.stars != review.stars;
 
@@ -44667,7 +44644,7 @@ var ReviewAction = (function () {
 
 module.exports = alt.createActions(ReviewAction);
 
-},{"../alt":282,"../utils/InterpreterUtil":285,"browser-request":11,"cheerio":36,"lodash":111,"node-uuid":113}],281:[function(require,module,exports){
+},{"../alt":282,"../utils/InterpreterUtil":285,"../vo/Review":300,"browser-request":11,"lodash":111,"node-uuid":113}],281:[function(require,module,exports){
 "use strict";
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -45115,6 +45092,7 @@ var ReviewStore = (function () {
                 if (!_.isUndefined(review)) review.hasNew = false;
 
                 this._updateHasNew();
+                LocalStorageUtil.saveAll();
             }
         },
         onResetScrollToBottom: {
@@ -45157,10 +45135,34 @@ var InterpreterUtil = (function () {
 
     _createClass(InterpreterUtil, {
         interpretGoodreads: {
-            value: function interpretGoodreads(review) {}
+            value: function interpretGoodreads(body, er, review) {
+                var $ = cheerio.load(body);
+
+                var reviewData = $("#bookMeta").text();
+                var title = $("#bookMeta").find(".fn").first().text();
+
+                review.numReviews = this._getNumberOfGoodreadsReviews($("#bookMeta").find(".value-title").first().text());
+                review.stars = this._getGoodreadsReviewAverage(reviewData);
+                review.error = title == "" || er != null;
+                review.title = title != "" ? title : "Title unknown";
+
+                return review;
+            }
+        },
+        _getNumberOfGoodreadsReviews: {
+            value: function _getNumberOfGoodreadsReviews(data) {
+                var matches = /([,\d]+) ratings/gi.exec(data);
+                return !matches || matches.length < 1 ? 0 : matches[1];
+            }
+        },
+        _getGoodreadsReviewAverage: {
+            value: function _getGoodreadsReviewAverage(data) {
+                var matches = /([.\d]+) of [.\d]+ stars/gi.exec(data);
+                return !matches || matches.length < 1 ? 0 : matches[1];
+            }
         },
         interpretAmazon: {
-            value: function interpretAmazon(body, review) {
+            value: function interpretAmazon(body, er, review) {
                 var $ = cheerio.load(body);
                 var reviewData;
 
@@ -45175,31 +45177,23 @@ var InterpreterUtil = (function () {
                 var title = $("#btAsinTitle").text();
                 title = title == "" ? $("#productTitle").text() : title;
 
-                review.numReviews = this.getNumberOfReviews(reviewData);
-                review.stars = this.getReviewAverage(reviewData);
+                review.numReviews = this._getNumberOfAmazonReviews(reviewData);
+                review.stars = this._getAmazonReviewAverage(reviewData);
                 review.title = title != "" ? title : "Title unknown";
 
                 review.error = title == "" || er != null;
 
-                if (!review.hasNew) review.hasNew = !review.error && review.lastStatus.numReviews != review.numReviews || review.lastStatus.stars != review.stars;
-
                 return review;
             }
         },
-        getNumberOfReviews: {
-            value: function getNumberOfReviews(data) {
+        _getNumberOfAmazonReviews: {
+            value: function _getNumberOfAmazonReviews(data) {
                 var matches = /([,\d]+) customer review/gi.exec(data);
                 return !matches || matches.length < 1 ? 0 : matches[1];
             }
         },
-        getReviewAverage: {
-            value: function getReviewAverage(data) {
-                var matches = /([.\d]+) out of [.\d]+ stars/gi.exec(data);
-                return !matches || matches.length < 1 ? 0 : matches[1];
-            }
-        },
-        getTitle: {
-            value: function getTitle(data) {
+        _getAmazonReviewAverage: {
+            value: function _getAmazonReviewAverage(data) {
                 var matches = /([.\d]+) out of [.\d]+ stars/gi.exec(data);
                 return !matches || matches.length < 1 ? 0 : matches[1];
             }
@@ -46001,4 +45995,31 @@ var ToggleButton = React.createClass({
 
 module.exports = ToggleButton;
 
-},{"../../actions/ReviewAction":280,"../../stores/ConfigStore":283,"../../stores/ReviewStore":284,"alt/mixins/ListenerMixin":3,"react":278,"react-tween-state":115}]},{},[1]);
+},{"../../actions/ReviewAction":280,"../../stores/ConfigStore":283,"../../stores/ReviewStore":284,"alt/mixins/ListenerMixin":3,"react":278,"react-tween-state":115}],300:[function(require,module,exports){
+"use strict";
+
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
+var uuid = require("node-uuid");
+
+var Review = function Review(url, type) {
+    _classCallCheck(this, Review);
+
+    this.id = uuid.v1();
+    this.title = "Retrieving starlet...";
+    this.url = url;
+    this.type = type;
+    this.stars = 0;
+    this.numReviews = 0;
+    this.hasNew = false;
+    this.lastUpdate = new Date();
+    this.lastStatus = { stars: 0, numReviews: 0 };
+    this.loading = true;
+    this.error = false;
+    this.edit = false;
+    this.isDeleted = false;
+};
+
+module.exports = Review;
+
+},{"node-uuid":113}]},{},[1]);
