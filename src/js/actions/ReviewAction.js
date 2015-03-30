@@ -28,11 +28,18 @@ class ReviewAction {
     }
 
     addReview(url) {
+
+        var type
+        if (url.indexOf('amazon.com') != 1)
+            type = this.alt.stores.ConfigStore.getAmazonType()
+        else if (url.indexOf('goodreads.com') != 1)
+            type = this.alt.stores.ConfigStore.getGoodreadsType()
+
         var review = {
             id: uuid.v1(),
             title: "Retrieving starlet...",
             url: url,
-            type: this.alt.stores.ConfigStore.getAmazonType(),
+            type: type,
             stars: 0,
             numReviews: 0,
             hasNew: false,
@@ -43,8 +50,6 @@ class ReviewAction {
             edit: false,
             isDeleted: false
         }
-
-        // Amazon only now
 
         this.actions.requestReview(review)
         this.dispatch(review)
@@ -58,25 +63,24 @@ class ReviewAction {
         var self = this
         request(review.url, function(er, response, body) {
 
-            if (review.isDeleted)
+            review.loading = false
+
+            if (review.isDeleted || _.isUndefined((body)))
                 return false;
 
             var $ = cheerio.load(body)
 
             review.lastUpdate = new Date()
             review.lastStatus = {stars: review.stars, numReviews: review.numReviews}
-            review.loading = false
 
             var reviewData
             var rootNode = $('span:contains("See all reviews")');
-            try {
-                rootNode.each(function (i, el) {
-                    if ($(this).text() == "See all reviews") {
-                        reviewData = $(this).parents(".crAvgStars").first().text()
-                        return false;
-                    }
-                })
-            } catch(error) {}
+            rootNode.each(function (i, el) {
+                if ($(this).text() == "See all reviews") {
+                    reviewData = $(this).parents(".crAvgStars").first().text()
+                    return false;
+                }
+            })
 
             var title = $("#btAsinTitle").text()
             title = title == "" ? $("#productTitle").text() : title

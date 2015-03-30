@@ -44532,11 +44532,15 @@ var ReviewAction = (function () {
         },
         addReview: {
             value: function addReview(url) {
+
+                var type;
+                if (url.indexOf("amazon.com") != 1) type = this.alt.stores.ConfigStore.getAmazonType();else if (url.indexOf("goodreads.com") != 1) type = this.alt.stores.ConfigStore.getGoodreadsType();
+
                 var review = {
                     id: uuid.v1(),
                     title: "Retrieving starlet...",
                     url: url,
-                    type: this.alt.stores.ConfigStore.getAmazonType(),
+                    type: type,
                     stars: 0,
                     numReviews: 0,
                     hasNew: false,
@@ -44547,8 +44551,6 @@ var ReviewAction = (function () {
                     edit: false,
                     isDeleted: false
                 };
-
-                // Amazon only now
 
                 this.actions.requestReview(review);
                 this.dispatch(review);
@@ -44562,24 +44564,23 @@ var ReviewAction = (function () {
                 }var self = this;
                 request(review.url, function (er, response, body) {
 
-                    if (review.isDeleted) return false;
+                    review.loading = false;
+
+                    if (review.isDeleted || _.isUndefined(body)) return false;
 
                     var $ = cheerio.load(body);
 
                     review.lastUpdate = new Date();
                     review.lastStatus = { stars: review.stars, numReviews: review.numReviews };
-                    review.loading = false;
 
                     var reviewData;
                     var rootNode = $("span:contains(\"See all reviews\")");
-                    try {
-                        rootNode.each(function (i, el) {
-                            if ($(this).text() == "See all reviews") {
-                                reviewData = $(this).parents(".crAvgStars").first().text();
-                                return false;
-                            }
-                        });
-                    } catch (error) {}
+                    rootNode.each(function (i, el) {
+                        if ($(this).text() == "See all reviews") {
+                            reviewData = $(this).parents(".crAvgStars").first().text();
+                            return false;
+                        }
+                    });
 
                     var title = $("#btAsinTitle").text();
                     title = title == "" ? $("#productTitle").text() : title;
@@ -45147,12 +45148,44 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
+var cheerio = require("cheerio");
+
 var InterpreterUtil = (function () {
     function InterpreterUtil() {
         _classCallCheck(this, InterpreterUtil);
     }
 
     _createClass(InterpreterUtil, {
+        interpretGoodreads: {
+            value: function interpretGoodreads(review) {}
+        },
+        interpretAmazon: {
+            value: function interpretAmazon(body, review) {
+                var $ = cheerio.load(body);
+                var reviewData;
+
+                var rootNode = $("span:contains(\"See all reviews\")");
+                rootNode.each(function (i, el) {
+                    if ($(this).text() == "See all reviews") {
+                        reviewData = $(this).parents(".crAvgStars").first().text();
+                        return false;
+                    }
+                });
+
+                var title = $("#btAsinTitle").text();
+                title = title == "" ? $("#productTitle").text() : title;
+
+                review.numReviews = this.getNumberOfReviews(reviewData);
+                review.stars = this.getReviewAverage(reviewData);
+                review.title = title != "" ? title : "Title unknown";
+
+                review.error = title == "" || er != null;
+
+                if (!review.hasNew) review.hasNew = !review.error && review.lastStatus.numReviews != review.numReviews || review.lastStatus.stars != review.stars;
+
+                return review;
+            }
+        },
         getNumberOfReviews: {
             value: function getNumberOfReviews(data) {
                 var matches = /([,\d]+) customer review/gi.exec(data);
@@ -45178,7 +45211,7 @@ var InterpreterUtil = (function () {
 
 module.exports = new InterpreterUtil();
 
-},{}],286:[function(require,module,exports){
+},{"cheerio":36}],286:[function(require,module,exports){
 "use strict";
 
 var alt = require("../alt");
