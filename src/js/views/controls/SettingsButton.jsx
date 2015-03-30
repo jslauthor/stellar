@@ -40,6 +40,15 @@ var SettingsButton = React.createClass({
         });
         menu.append(startUpMenu)
 
+        startUpMenu = new gui.MenuItem({
+            label: 'Show notifications',
+            type: "checkbox",
+            checked: true
+        });
+        menu.append(startUpMenu)
+
+        menu.append(new gui.MenuItem({ type: 'separator' }));
+
         menu.append(new gui.MenuItem({
             label: 'Join J.S.L. Newsletter',
             click: function() {

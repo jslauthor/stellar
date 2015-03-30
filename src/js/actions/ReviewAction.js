@@ -4,6 +4,7 @@ var uuid = require('node-uuid')
 var InterpreterUtil = require('../utils/InterpreterUtil')
 var _ = require('lodash')
 var Review = require('../vo/Review')
+var NotificationUtil = require('../utils/NotificationUtil')
 
 class ReviewAction {
 
@@ -57,17 +58,26 @@ class ReviewAction {
             review.lastUpdate = new Date()
             review.lastStatus = {stars: review.stars, numReviews: review.numReviews}
 
-            switch (review.type) {
-                case self.alt.stores.ConfigStore.getGoodreadsType():
-                    review = InterpreterUtil.interpretGoodreads(body, er, review)
-                    break;
-                case self.alt.stores.ConfigStore.getAmazonType():
-                default:
-                    review = InterpreterUtil.interpretAmazon(body, er, review)
+            if (er == null) {
+                switch (review.type) {
+                    case self.alt.stores.ConfigStore.getGoodreadsType():
+                        review = InterpreterUtil.interpretGoodreads(body, review)
+                        break;
+                    case self.alt.stores.ConfigStore.getAmazonType():
+                    default:
+                        review = InterpreterUtil.interpretAmazon(body, review)
+                }
+
+                if (!review.hasNew) {
+                    review.hasNew = !review.error && (review.lastStatus.numReviews != review.numReviews) || (review.lastStatus.stars != review.stars)
+
+                    // create notification
+                    if (review.hasNew)
+                        NotificationUtil.createNotification(review.title + " now has " + review.numReviews + " reviews!")
+                }
             }
 
-            if (!review.hasNew)
-                review.hasNew = !review.error && (review.lastStatus.numReviews != review.numReviews) || (review.lastStatus.stars != review.stars)
+            review.error = er != null;
 
             self.actions.reviewComplete(review)
         });

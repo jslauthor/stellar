@@ -4,7 +4,7 @@ var cheerio = require('cheerio')
 
 class InterpreterUtil {
 
-    interpretGoodreads(body, er, review) {
+    interpretGoodreads(body, review) {
         var $ = cheerio.load(body)
 
         var reviewData = $('#bookMeta').text()
@@ -12,7 +12,6 @@ class InterpreterUtil {
 
         review.numReviews = this._getNumberOfGoodreadsReviews($('#bookMeta').find('.value-title').first().text())
         review.stars = this._getGoodreadsReviewAverage(reviewData)
-        review.error = title == "" || er != null
         review.title = title != "" ? title : "Title unknown"
 
         return review
@@ -28,7 +27,7 @@ class InterpreterUtil {
         return !matches || matches.length < 1 ? 0 : matches[1]
     }
 
-    interpretAmazon(body, er, review) {
+    interpretAmazon(body, review) {
         var $ = cheerio.load(body)
         var reviewData
 
@@ -46,8 +45,6 @@ class InterpreterUtil {
         review.numReviews = this._getNumberOfAmazonReviews(reviewData)
         review.stars = this._getAmazonReviewAverage(reviewData)
         review.title = title != "" ? title : "Title unknown"
-
-        review.error = title == "" || er != null
 
         return review
     }
