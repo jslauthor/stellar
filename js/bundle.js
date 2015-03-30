@@ -45361,11 +45361,15 @@ var Main = React.createClass({
     },
     componentDidMount: function componentDidMount() {
         this.listenTo(reviewStore, this.onChange);
+        this.checkForNew();
     },
     onChange: function onChange() {
         this.setState(this.getInitialState());
     },
     componentDidUpdate: function componentDidUpdate() {
+        this.checkForNew();
+    },
+    checkForNew: function checkForNew() {
         if (this.props.tray == null) {
             return;
         }if (this.state.hasNewReviews) this.props.tray.icon = "img/tray_icon_alert@2x.png";else this.props.tray.icon = "img/tray_icon@2x.png";

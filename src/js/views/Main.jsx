@@ -19,11 +19,15 @@ var Main = React.createClass({
     },
     componentDidMount: function() {
         this.listenTo(reviewStore, this.onChange)
+        this.checkForNew()
     },
     onChange: function() {
         this.setState(this.getInitialState())
     },
     componentDidUpdate() {
+        this.checkForNew()
+    },
+    checkForNew: function() {
         if (this.props.tray == null)
             return
 
