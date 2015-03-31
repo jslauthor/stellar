@@ -1,6 +1,7 @@
 var alt = require('../alt')
 var ReviewAction = require('../actions/ReviewAction')
 var LocalStorageUtil = require('../utils/LocalStorageUtil')
+var OSXUtil = require('../utils/OSXUtil')
 var _ = require('lodash')
 var moment = require('moment')
 
@@ -14,14 +15,16 @@ class ReviewStore {
         this.isEditing = false
         this.isMonitoring = true
         this.lastUpdate = ""
-        this.shouldScrollToBottom = true;
+        this.shouldScrollToBottom = true
         this.hasNewReviews = false
+        this.notificationsEnabled = true
+        this.runOnLogin = true
 
         this.on('serialize', () => {
             var state = _.cloneDeep(this.alt.stores.ReviewStore.getState());
-            state.isEditing = false;
-            state.loading = false;
-            state.showReviewPopup = false;
+            state.isEditing = false
+            state.loading = false
+            state.showReviewPopup = false
 
             _.each(state.reviews, function(review){
                 review.loading = false;
@@ -37,6 +40,22 @@ class ReviewStore {
 
     onToggleEditing() {
         this.isEditing = !this.isEditing
+    }
+
+    onToggleNotifications() {
+        this.notificationsEnabled = !this.notificationsEnabled
+        LocalStorageUtil.saveAll()
+    }
+
+    onToggleRunOnLogin() {
+        this.runOnLogin = !this.runOnLogin
+
+        if (this.runOnLogin)
+            OSXUtil.enableRunOnLogin()
+        else
+            OSXUtil.disableRunOnLogin()
+
+        LocalStorageUtil.saveAll()
     }
 
     onShowAddReviewPopup() {

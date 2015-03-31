@@ -10,6 +10,7 @@ var ListenerMixin = require('alt/mixins/ListenerMixin')
 var menu;
 var editMenu;
 var startUpMenu;
+var notificationMenu
 
 var SettingsButton = React.createClass({
     mixins: [ListenerMixin],
@@ -36,16 +37,22 @@ var SettingsButton = React.createClass({
         startUpMenu = new gui.MenuItem({
             label: 'Open at startup',
             type: "checkbox",
-            checked: true
+            checked: true,
+            click: function() {
+                reviewAction.toggleRunOnLogin()
+            }
         });
         menu.append(startUpMenu)
 
-        startUpMenu = new gui.MenuItem({
+        notificationMenu = new gui.MenuItem({
             label: 'Show notifications',
             type: "checkbox",
-            checked: true
+            checked: true,
+            click: function() {
+                reviewAction.toggleNotifications()
+            }
         });
-        menu.append(startUpMenu)
+        menu.append(notificationMenu)
 
         menu.append(new gui.MenuItem({ type: 'separator' }));
 
@@ -70,10 +77,21 @@ var SettingsButton = React.createClass({
                 gui.Window.get().close()
             }
         }));
+
+        this.updateMenuItems()
     },
     componentDidUpdate: function() {
+        this.updateMenuItems()
+    },
+    updateMenuItems: function() {
         if (editMenu)
             editMenu.checked = this.state.isEditing
+
+        if (notificationMenu)
+            notificationMenu.checked = this.state.notificationsEnabled
+
+        if (startUpMenu)
+            startUpMenu.checked = this.state.runOnLogin
     },
     handleClick: function(event) {
         menu.popup(event.clientX+5, event.clientY+5)

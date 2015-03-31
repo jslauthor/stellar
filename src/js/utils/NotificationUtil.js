@@ -1,11 +1,16 @@
 "use strict"
 
-var path = require('path')
-var gui = window.require('nw.gui');
-
 class NotificationUtil {
 
     static createNotification(message) {
+
+        var path = require('path')
+        var gui = window.require('nw.gui');
+        var alt = require("../alt")
+
+        if (!alt.stores.ReviewStore.getState().notificationsEnabled)
+            return
+
         var options = {
             //icon: path.join(path.dirname(process.execPath), '/img/tray_icon_alert@2x.png'),
             body: message
@@ -19,7 +24,7 @@ class NotificationUtil {
         }
 
         notification.onshow = function () {
-            setTimeout(function() {notification.close();}, 10000);
+            setTimeout(function() {notification.close();}, 20000);
         }
     }
 

@@ -13,6 +13,8 @@ class ReviewAction {
             'showAddReviewPopup',
             'hideAddReviewPopup',
             'toggleEditing',
+            'toggleNotifications',
+            'toggleRunOnLogin',
             'resetScrollToBottom'
         )
     }
