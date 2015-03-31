@@ -1,8 +1,7 @@
 "use strict"
 
 var async = require('async')
-var exec = require('child_process').exec
-var path = require('path')
+var exec = window.require('child_process').exec;
 
 var plistName = 'com.jslauthor.stellarApp.plist'
 
@@ -10,7 +9,7 @@ module.exports = {
     enableRunOnLogin: function(callback) {
         async.waterfall([
             function(callback) {
-                var plistPath = path.join(path.dirname(process.execPath), '/' + plistName)
+                var plistPath = '../' + plistName
                 exec('cp ' + plistPath + ' ~/Library/LaunchAgents/',
                     function(error, stdout, stderr) {
                         if (stderr) { return callback(stderr); }

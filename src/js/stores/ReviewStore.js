@@ -4,6 +4,7 @@ var LocalStorageUtil = require('../utils/LocalStorageUtil')
 var OSXUtil = require('../utils/OSXUtil')
 var _ = require('lodash')
 var moment = require('moment')
+var AutoLaunch = require('auto-launch')
 
 class ReviewStore {
 
@@ -48,14 +49,18 @@ class ReviewStore {
     }
 
     onToggleRunOnLogin() {
-        this.runOnLogin = !this.runOnLogin
+        console.log(window.process.execPath)
+        //this.runOnLogin = !this.runOnLogin
+
+        var onRunChange = (result) => {
+            this.runOnLogin = result == null;
+            LocalStorageUtil.saveAll()
+        }
 
         if (this.runOnLogin)
-            OSXUtil.enableRunOnLogin()
+            OSXUtil.enableRunOnLogin(onRunChange.bind(this))
         else
-            OSXUtil.disableRunOnLogin()
-
-        LocalStorageUtil.saveAll()
+            OSXUtil.disableRunOnLogin(onRunChange.bind(this))
     }
 
     onShowAddReviewPopup() {
