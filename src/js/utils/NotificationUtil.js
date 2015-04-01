@@ -5,7 +5,7 @@ class NotificationUtil {
     static createNotification(message) {
 
         var path = require('path')
-        var gui = window.require('nw.gui');
+        var gui = require('nw.gui');
         var alt = require("../alt")
 
         if (!alt.stores.ReviewStore.getState().notificationsEnabled)

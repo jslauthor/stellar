@@ -8,7 +8,7 @@ var Stars = require('./components/Stars.jsx')
 var pluralize = require('pluralize')
 var DeleteButton = require('./controls/DeleteButton.jsx')
 var reviewAction = require('../actions/ReviewAction')
-var gui = window.require('nw.gui');
+var gui = require('nw.gui');
 
 var ReviewItem = React.createClass({
     handleClick: function() {

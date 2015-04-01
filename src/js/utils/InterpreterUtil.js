@@ -12,6 +12,7 @@ class InterpreterUtil {
 
         review.numReviews = this._getNumberOfGoodreadsReviews($('#bookMeta').find('.value-title').first().text())
         review.stars = this._getGoodreadsReviewAverage(reviewData)
+        review.hasTitle = title != ""
         review.title = title != "" ? title : "Title unknown"
 
         return review
@@ -44,6 +45,7 @@ class InterpreterUtil {
 
         review.numReviews = this._getNumberOfAmazonReviews(reviewData)
         review.stars = this._getAmazonReviewAverage(reviewData)
+        review.hasTitle = title != ""
         review.title = title != "" ? title : "Title unknown"
 
         return review

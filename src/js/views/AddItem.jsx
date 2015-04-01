@@ -36,6 +36,9 @@ var AddItem = React.createClass({
     handleClose: function(event) {
         reviewAction.hideAddReviewPopup()
     },
+    componentDidMount: function() {
+        this.refs.urlInput.getDOMNode().focus()
+    },
     render: function() {
 
         var inputClasses = classnames({error: this.state.formError})

@@ -6,6 +6,7 @@ class Review {
     constructor(url, type) {
         this.id = uuid.v1()
         this.title = "Retrieving starlet..."
+        this.hasTitle
         this.url = url
         this.type = type
         this.stars = 0

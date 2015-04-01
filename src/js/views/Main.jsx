@@ -24,7 +24,7 @@ var Main = React.createClass({
     onChange: function() {
         this.setState(this.getInitialState())
     },
-    componentDidUpdate() {
+    componentDidUpdate: function() {
         this.checkForNew()
     },
     checkForNew: function() {

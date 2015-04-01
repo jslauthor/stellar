@@ -1,7 +1,7 @@
 "use strict";
 
 var React = require('react');
-var gui = window.require('nw.gui');
+var gui = require('nw.gui');
 
 var MainBackground = React.createClass({
     getInitialState: function() {

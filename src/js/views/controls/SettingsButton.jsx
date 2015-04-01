@@ -2,15 +2,12 @@
 
 var React = require('react')
 var ConfigStore = require('../../stores/ConfigStore')
-var gui = window.require('nw.gui')
+var gui = require('nw.gui')
 var reviewAction = require('../../actions/ReviewAction')
 var reviewStore = require('../../stores/ReviewStore')
 var ListenerMixin = require('alt/mixins/ListenerMixin')
 
-var menu;
-var editMenu;
-var startUpMenu;
-var notificationMenu
+var menu, editMenu, startUpMenu, notificationMenu, markSeenMenu
 
 var SettingsButton = React.createClass({
     mixins: [ListenerMixin],
@@ -33,6 +30,16 @@ var SettingsButton = React.createClass({
             }
         })
         menu.append(editMenu);
+
+        markSeenMenu = new gui.MenuItem({
+            label: 'Mark all as seen',
+            click: function() {
+                reviewAction.markAllAsSeen()
+            }
+        })
+        menu.append(markSeenMenu);
+
+        menu.append(new gui.MenuItem({ type: 'separator' }));
 
         startUpMenu = new gui.MenuItem({
             label: 'Open at startup',

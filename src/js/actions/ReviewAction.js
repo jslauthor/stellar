@@ -15,6 +15,7 @@ class ReviewAction {
             'toggleEditing',
             'toggleNotifications',
             'toggleRunOnLogin',
+            'checkRunOnLogin',
             'resetScrollToBottom'
         )
     }
@@ -71,7 +72,7 @@ class ReviewAction {
                 }
 
                 if (!review.hasNew) {
-                    review.hasNew = !review.error && (review.lastStatus.numReviews != review.numReviews) || (review.lastStatus.stars != review.stars)
+                    review.hasNew = review.hasTitle && !review.error && (review.lastStatus.numReviews != review.numReviews) || (review.lastStatus.stars != review.stars)
 
                     // create notification
                     if (review.hasNew)
@@ -79,7 +80,7 @@ class ReviewAction {
                 }
             }
 
-            review.error = er != null;
+            review.error = er != null || !review.hasTitle;
 
             self.actions.reviewComplete(review)
         });
@@ -144,6 +145,17 @@ class ReviewAction {
 
     markAsSeen(reviewID) {
         this.dispatch(reviewID)
+    }
+
+    markAllAsSeen() {
+        let self = this
+        let reviews = this.alt.stores.ReviewStore.getState().reviews;
+
+        _.each(reviews, function(review) {
+            self.actions.markAsSeen(review.id)
+        })
+
+        this.dispatch()
     }
 
 }

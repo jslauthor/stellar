@@ -1,7 +1,6 @@
 var alt = require('../alt')
 var ReviewAction = require('../actions/ReviewAction')
 var LocalStorageUtil = require('../utils/LocalStorageUtil')
-var OSXUtil = require('../utils/OSXUtil')
 var _ = require('lodash')
 var moment = require('moment')
 var AutoLaunch = require('auto-launch')
@@ -19,13 +18,19 @@ class ReviewStore {
         this.shouldScrollToBottom = true
         this.hasNewReviews = false
         this.notificationsEnabled = true
-        this.runOnLogin = true
+        this.runOnLogin = false
+
+        this.nwAppLauncher = new AutoLaunch({
+            name: 'stellarApp',
+            isHidden: false
+        });
 
         this.on('serialize', () => {
             var state = _.cloneDeep(this.alt.stores.ReviewStore.getState());
             state.isEditing = false
             state.loading = false
             state.showReviewPopup = false
+            delete state.nwAppLauncher
 
             _.each(state.reviews, function(review){
                 review.loading = false;
@@ -48,19 +53,20 @@ class ReviewStore {
         LocalStorageUtil.saveAll()
     }
 
+    onCheckRunOnLogin(error) {
+        console.log(error)
+        this.nwAppLauncher.isEnabled(function(enabled) {
+            this.runOnLogin = enabled
+        }.bind(this))
+    }
+
     onToggleRunOnLogin() {
-        console.log(window.process.execPath)
-        //this.runOnLogin = !this.runOnLogin
-
-        var onRunChange = (result) => {
-            this.runOnLogin = result == null;
-            LocalStorageUtil.saveAll()
-        }
-
+        console.log(this.runOnLogin)
+        this.runOnLogin = !this.runOnLogin
         if (this.runOnLogin)
-            OSXUtil.enableRunOnLogin(onRunChange.bind(this))
+            this.nwAppLauncher.enable(this.onCheckRunOnLogin.bind(this))
         else
-            OSXUtil.disableRunOnLogin(onRunChange.bind(this))
+            this.nwAppLauncher.disable(this.onCheckRunOnLogin.bind(this))
     }
 
     onShowAddReviewPopup() {

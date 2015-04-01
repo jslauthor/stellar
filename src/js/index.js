@@ -1,6 +1,8 @@
+require("../../css/screen.css")
+
 var React = require('react');
 var Main = require("./views/Main.jsx");
-var gui = window.require('nw.gui');
+var gui = require('nw.gui');
 var alt = require('./alt')
 var LocalStorageUtil = require('./utils/LocalStorageUtil')
 var reviewAction = require('./actions/ReviewAction')
@@ -20,6 +22,8 @@ win.on("loaded",
             if (alt.stores.ReviewStore.getState().isMonitoring)
                 reviewAction.updateAll();
         }, 60000)
+
+        reviewAction.checkRunOnLogin();
 
         // Bootstrap this biatch
         React.render(<Main tray={tray} style={{width: "100%", height: "100%", position:"relative"}} />, document.getElementById('mainApp'));
