@@ -24,6 +24,15 @@ win.on("loaded",
         else
             iconPath = 'img/tray_icon@2x.png'
 
+        // Fix for copy/paste on mac
+        var nativeMenuBar = new gui.Menu({ type: "menubar" });
+        try {
+            nativeMenuBar.createMacBuiltin("Stellar");
+            win.menu = nativeMenuBar;
+        } catch (ex) {
+            console.log(ex.message);
+        }
+
         var tray = new gui.Tray({
             title: '',
             tooltip: 'stellar',
@@ -63,12 +72,4 @@ win.on("close", function() {
     this.close(true);
 })
 
-// Fix for copy/paste on mac
-var nativeMenuBar = new gui.Menu({ type: "menubar" });
-try {
-    nativeMenuBar.createMacBuiltin("Stellar");
-    win.menu = nativeMenuBar;
-} catch (ex) {
-    console.log(ex.message);
-}
 

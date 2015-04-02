@@ -55,7 +55,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "6fe059ab5ea4efea18d1";
+/******/ 	var hotCurrentHash = "21baa8c7f7f8e46f1d85";
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = [];
 /******/ 	
@@ -555,6 +555,15 @@
 	    var iconPath;
 	    if (alt.stores.ReviewStore.getState().hasNewReviews) iconPath = "img/tray_icon_alert@2x.png";else iconPath = "img/tray_icon@2x.png";
 	
+	    // Fix for copy/paste on mac
+	    var nativeMenuBar = new gui.Menu({ type: "menubar" });
+	    try {
+	        nativeMenuBar.createMacBuiltin("Stellar");
+	        win.menu = nativeMenuBar;
+	    } catch (ex) {
+	        console.log(ex.message);
+	    }
+	
 	    var tray = new gui.Tray({
 	        title: "",
 	        tooltip: "stellar",
@@ -591,15 +600,6 @@
 	    LocalStorageUtil.saveAll();
 	    this.close(true);
 	});
-	
-	// Fix for copy/paste on mac
-	var nativeMenuBar = new gui.Menu({ type: "menubar" });
-	try {
-	    nativeMenuBar.createMacBuiltin("Stellar");
-	    win.menu = nativeMenuBar;
-	} catch (ex) {
-	    console.log(ex.message);
-	}
 
 /***/ },
 /* 1 */
@@ -18045,7 +18045,7 @@
 /* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = "\"use strict\";\n\nrequire(\"../../scss/screen.scss\");\n\nvar React = require(\"react\");\nvar Main = require(\"./views/Main.jsx\");\nvar gui = require(\"nw.gui\");\nvar alt = require(\"./alt\");\nvar LocalStorageUtil = require(\"./utils/LocalStorageUtil\");\nvar reviewAction = require(\"./actions/ReviewAction\");\nvar _ = require(\"lodash\");\nvar OSXUtil = require(\"./utils/OSXUtil\");\n\nvar win = gui.Window.get();\n\nwin.on(\"loaded\", function () {\n\n    var altStore = LocalStorageUtil.restore();\n    if (altStore != \"\") alt.bootstrap(altStore);\n\n    var iconPath;\n    if (alt.stores.ReviewStore.getState().hasNewReviews) iconPath = \"img/tray_icon_alert@2x.png\";else iconPath = \"img/tray_icon@2x.png\";\n\n    var tray = new gui.Tray({\n        title: \"\",\n        tooltip: \"stellar\",\n        icon: iconPath,\n        iconsAreTemplates: false\n    });\n\n    tray.on(\"click\", function (evt) {\n        win.moveTo(evt.x - win.width / 2 + 8, evt.y);\n        win.show();\n        win.showDevTools();\n        win.focus();\n    });\n\n    function update() {\n        if (alt.stores.ReviewStore.getState().isMonitoring) reviewAction.updateAll();\n    }\n\n    setInterval(update, 60000);\n    update();\n\n    reviewAction.checkRunOnLogin();\n\n    // Bootstrap this biatch\n    React.render(React.createElement(Main, { tray: tray, style: { width: \"100%\", height: \"100%\", position: \"relative\" } }), document.getElementById(\"mainApp\"));\n});\n\nwin.on(\"blur\", function () {\n    win.hide();\n});\n\nwin.on(\"close\", function () {\n    this.hide();\n    LocalStorageUtil.saveAll();\n    this.close(true);\n});\n\n// Fix for copy/paste on mac\nvar nativeMenuBar = new gui.Menu({ type: \"menubar\" });\ntry {\n    nativeMenuBar.createMacBuiltin(\"Stellar\");\n    win.menu = nativeMenuBar;\n} catch (ex) {\n    console.log(ex.message);\n}"
+	module.exports = "\"use strict\";\n\nrequire(\"../../scss/screen.scss\");\n\nvar React = require(\"react\");\nvar Main = require(\"./views/Main.jsx\");\nvar gui = require(\"nw.gui\");\nvar alt = require(\"./alt\");\nvar LocalStorageUtil = require(\"./utils/LocalStorageUtil\");\nvar reviewAction = require(\"./actions/ReviewAction\");\nvar _ = require(\"lodash\");\nvar OSXUtil = require(\"./utils/OSXUtil\");\n\nvar win = gui.Window.get();\n\nwin.on(\"loaded\", function () {\n\n    var altStore = LocalStorageUtil.restore();\n    if (altStore != \"\") alt.bootstrap(altStore);\n\n    var iconPath;\n    if (alt.stores.ReviewStore.getState().hasNewReviews) iconPath = \"img/tray_icon_alert@2x.png\";else iconPath = \"img/tray_icon@2x.png\";\n\n    // Fix for copy/paste on mac\n    var nativeMenuBar = new gui.Menu({ type: \"menubar\" });\n    try {\n        nativeMenuBar.createMacBuiltin(\"Stellar\");\n        win.menu = nativeMenuBar;\n    } catch (ex) {\n        console.log(ex.message);\n    }\n\n    var tray = new gui.Tray({\n        title: \"\",\n        tooltip: \"stellar\",\n        icon: iconPath,\n        iconsAreTemplates: false\n    });\n\n    tray.on(\"click\", function (evt) {\n        win.moveTo(evt.x - win.width / 2 + 8, evt.y);\n        win.show();\n        win.showDevTools();\n        win.focus();\n    });\n\n    function update() {\n        if (alt.stores.ReviewStore.getState().isMonitoring) reviewAction.updateAll();\n    }\n\n    setInterval(update, 60000);\n    update();\n\n    reviewAction.checkRunOnLogin();\n\n    // Bootstrap this biatch\n    React.render(React.createElement(Main, { tray: tray, style: { width: \"100%\", height: \"100%\", position: \"relative\" } }), document.getElementById(\"mainApp\"));\n});\n\nwin.on(\"blur\", function () {\n    win.hide();\n});\n\nwin.on(\"close\", function () {\n    this.hide();\n    LocalStorageUtil.saveAll();\n    this.close(true);\n});"
 
 /***/ },
 /* 62 */
