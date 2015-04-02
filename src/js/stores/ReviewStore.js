@@ -3,7 +3,7 @@ var ReviewAction = require('../actions/ReviewAction')
 var LocalStorageUtil = require('../utils/LocalStorageUtil')
 var _ = require('lodash')
 var moment = require('moment')
-var AutoLaunch = require('auto-launch')
+var OSXUtil = require('../utils/OSXUtil')
 
 class ReviewStore {
 
@@ -20,17 +20,13 @@ class ReviewStore {
         this.notificationsEnabled = true
         this.runOnLogin = false
 
-        this.nwAppLauncher = new AutoLaunch({
-            name: 'stellarApp',
-            isHidden: false
-        });
-
         this.on('serialize', () => {
             var state = _.cloneDeep(this.alt.stores.ReviewStore.getState());
             state.isEditing = false
             state.loading = false
             state.showReviewPopup = false
             delete state.nwAppLauncher
+            delete state.runOnLogin
 
             _.each(state.reviews, function(review){
                 review.loading = false;
@@ -53,20 +49,8 @@ class ReviewStore {
         LocalStorageUtil.saveAll()
     }
 
-    onCheckRunOnLogin(error) {
-        console.log(error)
-        this.nwAppLauncher.isEnabled(function(enabled) {
-            this.runOnLogin = enabled
-        }.bind(this))
-    }
-
-    onToggleRunOnLogin() {
-        console.log(this.runOnLogin)
-        this.runOnLogin = !this.runOnLogin
-        if (this.runOnLogin)
-            this.nwAppLauncher.enable(this.onCheckRunOnLogin.bind(this))
-        else
-            this.nwAppLauncher.disable(this.onCheckRunOnLogin.bind(this))
+    onUpdateRunOnLogin(enabled) {
+        this.runOnLogin = enabled
     }
 
     onShowAddReviewPopup() {

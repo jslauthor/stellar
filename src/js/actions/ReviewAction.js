@@ -5,6 +5,7 @@ var InterpreterUtil = require('../utils/InterpreterUtil')
 var _ = require('lodash')
 var Review = require('../vo/Review')
 var NotificationUtil = require('../utils/NotificationUtil')
+var OSXUtil = require('../utils/OSXUtil')
 
 class ReviewAction {
 
@@ -14,14 +15,43 @@ class ReviewAction {
             'hideAddReviewPopup',
             'toggleEditing',
             'toggleNotifications',
-            'toggleRunOnLogin',
-            'checkRunOnLogin',
             'resetScrollToBottom'
         )
     }
 
-    setTray(tray) {
-        this.dispatch(tray)
+    toggleRunOnLogin() {
+
+        OSXUtil.checkIfRunOnLoginEnabled(function(arg, enabled) {
+
+            function enableResult(enabled) {
+                this.actions.updateRunOnLogin(enabled == null)
+            }
+
+            function disableResult(enabled) {
+                this.actions.updateRunOnLogin(!(enabled == null))
+            }
+
+            if (!enabled)
+                OSXUtil.enableRunOnLogin(enableResult.bind(this))
+            else
+                OSXUtil.disableRunOnLogin(disableResult.bind(this))
+
+        }.bind(this))
+
+        this.dispatch()
+    }
+
+    checkRunOnLogin() {
+
+        OSXUtil.checkIfRunOnLoginEnabled(function(arg, enabled) {
+            this.actions.updateRunOnLogin(enabled)
+        }.bind(this))
+
+        this.dispatch()
+    }
+
+    updateRunOnLogin(enabled) {
+        this.dispatch(enabled)
     }
 
     toggleMonitoring() {

@@ -7,6 +7,7 @@ var alt = require('./alt')
 var LocalStorageUtil = require('./utils/LocalStorageUtil')
 var reviewAction = require('./actions/ReviewAction')
 var _ = require('lodash')
+var OSXUtil = require('./utils/OSXUtil')
 
 var win = gui.Window.get();
 
