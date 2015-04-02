@@ -1,4 +1,4 @@
-require("../../css/screen.css")
+require("../../scss/screen.scss")
 
 var React = require('react');
 var Main = require("./views/Main.jsx");
@@ -8,7 +8,6 @@ var LocalStorageUtil = require('./utils/LocalStorageUtil')
 var reviewAction = require('./actions/ReviewAction')
 var _ = require('lodash')
 
-var tray;
 var win = gui.Window.get();
 
 win.on("loaded",
@@ -18,10 +17,33 @@ win.on("loaded",
         if (altStore != "")
             alt.bootstrap(altStore)
 
-        setInterval(function() {
+        var iconPath;
+        if (alt.stores.ReviewStore.getState().hasNewReviews)
+            iconPath = 'img/tray_icon_alert@2x.png'
+        else
+            iconPath = 'img/tray_icon@2x.png'
+
+        var tray = new gui.Tray({
+            title: '',
+            tooltip: 'stellar',
+            icon: iconPath,
+            iconsAreTemplates: false
+        });
+
+        tray.on('click', function(evt) {
+            win.moveTo((evt.x - (win.width/2)) + 8, evt.y);
+            win.show();
+            win.showDevTools();
+            win.focus();
+        });
+
+        function update() {
             if (alt.stores.ReviewStore.getState().isMonitoring)
                 reviewAction.updateAll();
-        }, 60000)
+        }
+
+        setInterval(update, 60000)
+        update();
 
         reviewAction.checkRunOnLogin();
 
@@ -49,16 +71,3 @@ try {
     console.log(ex.message);
 }
 
-tray = new gui.Tray({
-    title: '',
-    tooltip: 'stellar',
-    icon: 'img/tray_icon@2x.png',
-    iconsAreTemplates: false
-});
-
-tray.on('click', function(evt) {
-    win.moveTo((evt.x - (win.width/2)) + 8, evt.y);
-    win.show();
-    win.showDevTools();
-    win.focus();
-});

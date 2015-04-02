@@ -17,8 +17,8 @@ module.exports = {
     },
     module: {
         loaders: [
-            { test: /\.css/, loader: "style-loader!css-loader" },
-            { test: /\.scss$/, loader: "style!css!sass" },
+            { test: /\.css/, loader: "style-loader!css-loader!autoprefixer-loader?browsers=last 2 version" },
+            { test: /\.scss$/, loader: "style!css!autoprefixer-loader?browsers=last 2 version!sass" },
             { test: /\.js$/, exclude: /node_modules/, loader: "babel-loader" },
             { test: /\.jsx$/, exclude: /node_modules/, loader: "jsx-loader?harmony" },
             { test: /\.json$/, loader: "json-loader" },
