@@ -83,6 +83,7 @@ class ReviewAction {
         var self = this
         request(review.url, function(er, response, body) {
 
+            //console.log(response)
             review.loading = false
 
             if (review.isDeleted || _.isUndefined(body))
@@ -102,10 +103,10 @@ class ReviewAction {
                 }
 
                 if (!review.hasNew) {
-                    review.hasNew = review.hasTitle && !review.error && (review.lastStatus.numReviews != review.numReviews) || (review.lastStatus.stars != review.stars)
+                    review.hasNew = review.hasTitle && !review.error && (review.lastStatus.numReviews != review.numReviews || review.lastStatus.stars != review.stars)
 
                     // create notification
-                    if (review.hasNew)
+                    if (review.hasNew && review.hasTitle)
                         NotificationUtil.createNotification(review.title + " now has " + review.numReviews + " reviews!")
                 }
             }
@@ -155,6 +156,7 @@ class ReviewAction {
         let reviews = this.alt.stores.ReviewStore.getState().reviews;
 
         if (reviews[id]) {
+            this.actions.markAsSeen(id)
             reviews[id].isDeleted = true
             delete reviews[id]
         }

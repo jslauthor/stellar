@@ -2,8 +2,8 @@
 
 module.exports = {
     target: "node-webkit",
-    debug: true,
-    devtool: "source-map",
+    //debug: true,
+    //devtool: "source-map",
     entry: {
         main: "./src/js/index.js"
     },

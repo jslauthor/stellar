@@ -58,6 +58,35 @@ body {
     overflow-y: auto;
     padding-bottom: 40px; // account for controls and bottom of scroll
 
+    .no-item-msg {
+      position: absolute;
+      width: 60%;
+      height: 80%;
+      overflow: hidden;
+      margin: auto;
+      top: 0; left: 0; bottom: 0; right: 0;
+      text-align: center;
+      color: white;
+      @include fontMdCn;
+      font-size: 24px;
+
+      span {
+        p { @include fontItalic;
+        font-size: 12px; }
+        svg {
+          margin-left: -10px;
+          margin-bottom: 40px;
+        }
+
+      }
+
+      p {
+        svg {
+          margin-bottom: -2px;
+        }
+      }
+    }
+
     .reviewItem {
       width: 100%;
       margin-bottom: 5px;
@@ -430,22 +459,33 @@ body {
   100% {background-position: -100px 0;}
 }
 
-.list-animation--enter {
+.list-animation-enter {
   opacity: 0.01;
   transition: opacity .5s ease-in;
 }
 
-.list-animation--enter.list-animation--enter-active {
+.list-animation-enter.list-animation-enter-active {
   opacity: 1;
 }
 
-.list-animation--leave {
+.list-animation-leave {
   opacity: 1;
   transition: opacity .5s ease-in;
 }
 
-.list-animation--leave.list-animation--leave-active {
+.list-animation-leave.list-animation-leave-active {
   opacity: 0.01;
 }
 
+@keyframes jiggles {
+  from {transform: rotateZ(.5deg);}
+  50% {transform: rotateZ(-.5deg);}
+  to {transform: rotateZ(.5deg);}
+}
 
+.jiggle {
+  animation: jiggles .2s linear;
+  animation-iteration-count: infinite;
+}
+
+.hide { visibility: hidden;  }

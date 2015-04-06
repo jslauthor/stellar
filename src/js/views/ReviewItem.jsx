@@ -23,7 +23,12 @@ var ReviewItem = React.createClass({
         var classNames = classnames({
             reviewItem: true,
             reviewLoading: this.props.loading,
-            reviewError: this.props.error && !this.props.loading
+            reviewError: this.props.error && !this.props.loading,
+        })
+
+        var contentClasses = classnames({
+            reviewContent: true,
+            jiggle: this.props.isEditing
         })
 
         var num = this.props.numReviews ? this.props.numReviews.length : 0;
@@ -45,7 +50,7 @@ var ReviewItem = React.createClass({
 
         return (
             <section className={classNames}>
-                <div className="reviewContent">
+                <div className={contentClasses}>
                     <div className="reviewSource">
                         {reviewSource}
                     </div>

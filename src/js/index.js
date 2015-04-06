@@ -42,8 +42,8 @@ win.on("loaded",
 
         tray.on('click', function(evt) {
             win.moveTo((evt.x - (win.width/2)) + 8, evt.y);
+            win.showDevTools()
             win.show();
-            win.showDevTools();
             win.focus();
         });
 
@@ -52,7 +52,7 @@ win.on("loaded",
                 reviewAction.updateAll();
         }
 
-        setInterval(update, 60000)
+        setInterval(update, 300000)
         update();
 
         reviewAction.checkRunOnLogin();

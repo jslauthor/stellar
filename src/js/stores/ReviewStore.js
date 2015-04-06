@@ -24,8 +24,7 @@ class ReviewStore {
             var state = _.cloneDeep(this.alt.stores.ReviewStore.getState());
             state.isEditing = false
             state.loading = false
-            state.showReviewPopup = false
-            delete state.nwAppLauncher
+            state.showReviewPopup = false 
             delete state.runOnLogin
 
             _.each(state.reviews, function(review){
