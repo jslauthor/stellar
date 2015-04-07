@@ -18,12 +18,15 @@ var ReviewItem = React.createClass({
         gui.Shell.openExternal(this.props.url)
         reviewAction.markAsSeen(this.props.reviewID)
     },
+    handleValidation: function () {
+
+    },
     render: function() {
 
         var classNames = classnames({
             reviewItem: true,
             reviewLoading: this.props.loading,
-            reviewError: this.props.error && !this.props.loading,
+            reviewError: (this.props.requiresValidation || this.props.error) && !this.props.loading
         })
 
         var contentClasses = classnames({
@@ -37,6 +40,13 @@ var ReviewItem = React.createClass({
             md: num <= 6 && num > 3,
             lg: num <= 3
         })
+
+        var validation
+        if (this.props.requiresValidation)
+            validation =
+                <div className="requiresValidation">
+                    <button className="pointer" onClick={this.handleValidation}>Validate with Amazon</button>
+                </div>
 
         var newComponent
         if (this.props.hasNew)
@@ -69,6 +79,7 @@ var ReviewItem = React.createClass({
                         {newComponent}
                     </div>
                 </div>
+                {validation}
             </section>
         )
     }

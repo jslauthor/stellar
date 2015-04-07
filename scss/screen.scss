@@ -95,6 +95,28 @@ body {
       position: relative;
       padding: 5px;
 
+      .requiresValidation {
+        top: 0; bottom: 0; left: 0; right: 0;
+        background-color: rgba(0, 0, 0, .5);
+        display: block;
+        position: absolute;
+
+        button {
+          display: block;
+          @include fontMdCn;
+          font-size: 16px;
+          padding: 5px;
+          color: white;
+          background-color: $errorRed;
+          border-radius: $borderRadius - 1;
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+        }
+
+      }
+
       .reviewContent {
         display: inline-flex;
         flex-direction: row;
@@ -254,16 +276,30 @@ body {
       margin-left: 5px;
     }
 
-    *:nth-child(3) {
+    *:nth-child(2) {
       flex-grow: 2;
     }
 
     .last-update {
+
+      position: relative;
+      top: 1px;
       font-size: 10px;
-      @include fontMdCnO;
-      opacity: .8;
-      color: $teal;
-      padding-left: 5px;
+
+      i {
+        color: $teal;
+        @include fontMdCnO;
+      }
+
+      i, p, span {
+        padding: 0;
+        margin: 0;
+      }
+
+      span {
+        @include fontMdCn;
+        color: $teal;
+      }
     }
 
     .sortMenu {

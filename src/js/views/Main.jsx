@@ -31,7 +31,9 @@ var Main = React.createClass({
         if (this.props.tray == null)
             return
 
-        if (this.state.hasNewReviews)
+        if (this.state.hasValidationRequirment)
+            this.props.tray.icon = 'img/tray_icon_error@2x.png'
+        else if (this.state.hasNewReviews)
             this.props.tray.icon = 'img/tray_icon_alert@2x.png'
         else
             this.props.tray.icon = 'img/tray_icon@2x.png'

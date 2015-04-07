@@ -19,7 +19,9 @@ win.on("loaded",
             alt.bootstrap(altStore)
 
         var iconPath;
-        if (alt.stores.ReviewStore.getState().hasNewReviews)
+        if (alt.stores.ReviewStore.getState().hasValidationRequirment)
+            iconPath = 'img/tray_icon_error@2x.png'
+        else if (alt.stores.ReviewStore.getState().hasNewReviews)
             iconPath = 'img/tray_icon_alert@2x.png'
         else
             iconPath = 'img/tray_icon@2x.png'
@@ -52,7 +54,7 @@ win.on("loaded",
                 reviewAction.updateAll();
         }
 
-        setInterval(update, 300000)
+        setInterval(update, 1000)
         update();
 
         reviewAction.checkRunOnLogin();

@@ -17,8 +17,10 @@ class ReviewStore {
         this.lastUpdate = ""
         this.shouldScrollToBottom = true
         this.hasNewReviews = false
+        this.hasValidationRequirment = false
         this.notificationsEnabled = true
         this.runOnLogin = false
+        this.nextUpdateTime
 
         this.on('serialize', () => {
             var state = _.cloneDeep(this.alt.stores.ReviewStore.getState());
@@ -61,7 +63,7 @@ class ReviewStore {
     }
 
     onAllComplete() {
-        this.lastUpdate = "Updated " + moment().format("ddd, h:mmA")
+        this.lastUpdate = moment().format("ddd, h:mmA")
         this.loading = false
     }
 
@@ -76,38 +78,52 @@ class ReviewStore {
 
     onAddReview(review) {
         this.isEditing = false;
-        this.reviews[review.id] = review;
-        this.shouldScrollToBottom = true;
+        this.reviews[review.id] = review
+        this.shouldScrollToBottom = true
         LocalStorageUtil.saveAll()
     }
 
     onReviewComplete(review) {
-        this.reviews[review.id] = review;
+        this.reviews[review.id] = review
         LocalStorageUtil.saveAll()
-        this._updateHasNew();
+        this._updateReviewStatuses()
     }
 
     onMarkAsSeen(reviewID) {
         var review = this.reviews[reviewID]
         if (!_.isUndefined(review))
-            review.hasNew = false;
+            review.hasNew = false
 
-        this._updateHasNew();
+        this._updateReviewStatuses();
         LocalStorageUtil.saveAll()
     }
 
     onResetScrollToBottom() {
-        this.shouldScrollToBottom = false;
+        this.shouldScrollToBottom = false
     }
 
-    _updateHasNew() {
-        this.hasNewReviews = false;
+    onUpdateReview() {
+        var self = this
+        var nextUpdate
+        _.each(this.reviews, function(review) {
+            var newTime = self.alt.stores.ConfigStore.getPollingLength() - (new Date().getTime() - ((review.lastUpdate && Date.parse(review.lastUpdate)) || 0))
+            nextUpdate = nextUpdate < newTime ? nextUpdate : newTime
+        })
+        this.nextUpdateTime = nextUpdate
+    }
+
+    _updateReviewStatuses() {
+        this.hasNewReviews = false
+        this.hasValidationRequirment = false;
         let self = this
         _.each(this.reviews, function(review) {
-            if (review.hasNew) {
-                self.hasNewReviews = true
+            if (review.requiresValidation) {
+                self.hasValidationRequirment = true
                 return false
             }
+
+            if (review.hasNew)
+                self.hasNewReviews = true
         })
     }
 

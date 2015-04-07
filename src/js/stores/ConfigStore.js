@@ -56,10 +56,12 @@ class ConfigStore {
 
     static getRGBForToggle(toggled) {
         if (toggled)
-            return color.toRGB(GREEN);
+            return color.toRGB(GREEN)
         else
-            return color.toRGB(RED);
+            return color.toRGB(RED)
     }
+
+    static getPollingLength() { return 300000 }
 }
 
 module.exports = alt.createStore(ConfigStore, 'ConfigStore');

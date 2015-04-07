@@ -143,13 +143,13 @@ class ReviewAction {
 
     updateReview(review) {
         var elapsedTime = new Date().getTime() - ((review.lastUpdate && Date.parse(review.lastUpdate)) || 0)
-        if (!review.loading || elapsedTime >= 60000)
+        if (!review.loading && elapsedTime >= this.alt.stores.ConfigStore.getPollingLength())
         {
             review.loading = true
             review.error = false
             this.actions.requestReview(review)
-            this.dispatch()
         }
+        this.dispatch()
     }
 
     deleteReview(id) {

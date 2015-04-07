@@ -7,6 +7,8 @@ class InterpreterUtil {
     interpretGoodreads(body, review) {
         var $ = cheerio.load(body)
 
+        review.requiresValidation = false
+
         var reviewData = $('#bookMeta').text()
         var title = $('#bookMeta').find(".fn").first().text()
 
@@ -38,6 +40,8 @@ class InterpreterUtil {
     interpretAmazon(body, review) {
         var $ = cheerio.load(body)
         var reviewData
+
+        review.requiresValidation = false
 
         var rootNode = $('span:contains("See all reviews")');
         rootNode.each(function (i, el) {

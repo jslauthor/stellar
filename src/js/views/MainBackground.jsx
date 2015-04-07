@@ -32,9 +32,9 @@ var MainBackground = React.createClass({
             <svg className="mainBackground" preserveAspectRatio="xMinYMin meet">
                 <defs>
                     <linearGradient id="sunsetFill" x1="0%" y1="0%" x2="100%" y2="0%" opacity="1" gradientTransform="rotate(90)">
-                        <stop offset="0%" stopColor="#cc643f" stopOpacity="1" />
+                        <stop offset="0%" stopColor="#341e2c" stopOpacity="1" />
                         <stop offset="50%" stopColor="#633845" stopOpacity="1" />
-                        <stop offset="100%" stopColor="#341e2c" stopOpacity="1" />
+                        <stop offset="100%" stopColor="#cc643f" stopOpacity="1" />
                     </linearGradient>
                     <mask id="backgroundMask">
                         <rect rx="5" ry="5" style={svgStyle} width="100%" x="0" y="11" height={Math.max((this.state.bgHeight-11), 0)} />

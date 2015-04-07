@@ -7,7 +7,8 @@ class Review {
         this.id = uuid.v1()
         this.title = "Retrieving starlet..."
         this.hasBeenFound = false
-        this.hasTitle
+        this.requiresValidation = false
+        this.hasTitle = false
         this.url = url
         this.type = type
         this.stars = 0

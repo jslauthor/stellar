@@ -47,6 +47,7 @@ var ReviewList = React.createClass({
                     hasNew={item.hasNew}
                     loading={item.loading}
                     error={item.error}
+                    requiresValidation={item.requiresValidation}
                     isEditing={self.state.isEditing} />
             )
         })
