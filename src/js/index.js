@@ -44,7 +44,7 @@ win.on("loaded",
 
         tray.on('click', function(evt) {
             win.moveTo((evt.x - (win.width/2)) + 8, evt.y);
-            win.showDevTools()
+            //win.showDevTools()
             win.show();
             win.focus();
         });

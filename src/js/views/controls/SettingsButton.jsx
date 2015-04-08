@@ -73,7 +73,7 @@ var SettingsButton = React.createClass({
         menu.append(new gui.MenuItem({
             label: 'Help',
             click: function() {
-                gui.Shell.openExternal('http://www.jslauthor.com/stellar');
+                gui.Shell.openExternal('http://www.jslauthor.com/tools/stellar#help');
             }
         }));
 

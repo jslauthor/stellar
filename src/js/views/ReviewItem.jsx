@@ -66,7 +66,7 @@ var ReviewItem = React.createClass({
                     </div>
                     <div className="reviewInfo">
                         <div ref="reviewTitle" className="reviewTitle">
-                            <p><a className="pointer" onClick={this.handleLink}>{truncate(this.props.title, 55)}</a></p>
+                            <p><a className="pointer" onClick={this.handleLink}>{truncate(this.props.title, 45)}</a></p>
                         </div>
                         <div className="reviewAvg">
                             <Stars stars={this.props.stars} />
