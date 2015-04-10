@@ -1,5 +1,8 @@
 "use strict"
 
+var ConfigActions = require('../actions/ConfigAction')
+var gui = require('nw.gui')
+
 var color = require('hex-rgb-converter');
 var alt = require('../alt');
 var React = require('react')
@@ -11,8 +14,26 @@ var RED = "e62040";
 var AMAZON = "amazon";
 var GOODREADS = "goodreads";
 
+var mins = 1/4
+var DELAY = (mins * 60) * 1000 // milliseconds
+
 class ConfigStore {
     constructor() {
+        this.bindActions(ConfigActions)
+    }
+
+    onNewVersionAvailable() {
+        var win = gui.Window.open('/newVersion.html', {
+            position: 'center',
+            width: 400,
+            height: 200,
+            "always-on-top": true,
+            "visible-on-all-workspaces": true,
+            "transparent": false,
+            "resizable": false,
+            "toolbar": false,
+            "frame": true
+        })
     }
 
     static getAmazonType() { return AMAZON; }
@@ -61,7 +82,7 @@ class ConfigStore {
             return color.toRGB(RED)
     }
 
-    static getPollingLength() { return 300000 }
+    static getPollingLength() { return DELAY }
 }
 
 module.exports = alt.createStore(ConfigStore, 'ConfigStore');

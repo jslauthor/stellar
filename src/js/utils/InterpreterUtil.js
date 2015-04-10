@@ -41,7 +41,7 @@ class InterpreterUtil {
         var $ = cheerio.load(body)
         var reviewData
 
-        review.requiresValidation = false
+        review.requiresValidation = this._hasAmazonRobotWarning(body)
 
         var rootNode = $('span:contains("See all reviews")');
         rootNode.each(function (i, el) {
@@ -77,6 +77,11 @@ class InterpreterUtil {
     _getAmazonReviewAverage(data) {
         var matches = /([.\d]+) out of [.\d]+ stars/gi.exec(data);
         return !matches || matches.length < 1 ? -1 : matches[1];
+    }
+
+    _hasAmazonRobotWarning(data) {
+        var matches = /Sorry, we just need to make sure you're not a robot./gi.exec(data);
+        return !matches || matches.length < 1 ? false : true;
     }
 
 }

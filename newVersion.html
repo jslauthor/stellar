@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>stellar</title>
+    <style>
+
+        body,html {
+            width: 100%;
+            height: 100%;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            font-family: "Helvetic Neue", Helvetica, Arial;
+            font-style: italic;
+            background-image: url('img/new_release_bg.jpg');
+        }
+
+        #newVersion {
+            text-align: center;
+        }
+
+        #newVersion img {
+            max-width: 100px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        #newVersion h1 {
+            max-width: 300px;
+            margin: 20px auto;
+            font-size: 25px;
+        }
+
+        #newVersion button {
+            cursor: pointer;
+            color: white;
+            background-color: #20bee6;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+        }
+
+    </style>
+
+    <script>
+
+        gui = require('nw.gui')
+
+        function launchDownload() {
+            gui.Shell.openExternal('http://www.jslauthor.com/tools/stellar')
+            gui.Window.get().close(true)
+        }
+
+    </script>
+
+</head>
+
+<body>
+
+<div id="newVersion">
+    <img src="img/logo.png" />
+    <h1>A new version of Stellar is available!</h1>
+    <button onclick="launchDownload()">Download</button>
+</div>
+
+</body>
+
+</html>

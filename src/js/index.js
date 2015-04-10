@@ -6,6 +6,7 @@ var gui = require('nw.gui');
 var alt = require('./alt')
 var LocalStorageUtil = require('./utils/LocalStorageUtil')
 var reviewAction = require('./actions/ReviewAction')
+var configAction = require('./actions/ConfigAction')
 var _ = require('lodash')
 var OSXUtil = require('./utils/OSXUtil')
 
@@ -13,6 +14,21 @@ var win = gui.Window.get();
 
 win.on("loaded",
     () => {
+
+
+        // Remove Cookies for robot testing
+        win.cookies.getAll({}, function(cookies) {
+            _.each(cookies, function(cookie)
+            {
+                console.log("removing cookie " + cookie.name)
+                var lurl = "http" + (cookie.secure ? "s" : "") + "://" + cookie.domain +
+                    cookie.path;
+                win.cookies.remove({
+                    url: lurl,
+                    name: cookie.name
+                })
+            })
+        })
 
         var altStore = LocalStorageUtil.restore()
         if (altStore != "")
@@ -43,21 +59,26 @@ win.on("loaded",
         });
 
         tray.on('click', function(evt) {
-            win.moveTo((evt.x - (win.width/2)) + 8, evt.y);
-            //win.showDevTools()
-            win.show();
-            win.focus();
+            win.moveTo((evt.x - (win.width/2)) + 8, evt.y)
+            win.showDevTools()
+            win.show()
+            win.focus()
         });
+
+        function checkForNewVersion() {
+            configAction.checkForNewVersion()
+        }
+        checkForNewVersion()
 
         function update() {
             if (alt.stores.ReviewStore.getState().isMonitoring)
-                reviewAction.updateAll();
+                reviewAction.updateAll()
         }
 
         setInterval(update, 1000)
         update();
 
-        reviewAction.checkRunOnLogin();
+        reviewAction.checkRunOnLogin()
 
         // Bootstrap this biatch
         React.render(<Main tray={tray} style={{width: "100%", height: "100%", position:"relative"}} />, document.getElementById('mainApp'));
@@ -71,7 +92,8 @@ win.on("blur", function() {
 win.on("close", function() {
     this.hide();
     LocalStorageUtil.saveAll();
-    this.close(true);
+    //this.close(true);
+    gui.App.quit();
 })
 
 

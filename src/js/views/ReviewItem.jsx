@@ -8,7 +8,7 @@ var Stars = require('./components/Stars.jsx')
 var pluralize = require('pluralize')
 var DeleteButton = require('./controls/DeleteButton.jsx')
 var reviewAction = require('../actions/ReviewAction')
-var gui = require('nw.gui');
+var gui = require('nw.gui')
 
 var ReviewItem = React.createClass({
     handleClick: function() {
@@ -19,7 +19,21 @@ var ReviewItem = React.createClass({
         reviewAction.markAsSeen(this.props.reviewID)
     },
     handleValidation: function () {
+        var win = gui.Window.open(this.props.url, {
+            position: 'center',
+            width: 900,
+            height: 600,
+            "always-on-top": true,
+            "visible-on-all-workspaces": true,
+            "transparent": false,
+            "resizable": true,
+            "toolbar": false,
+            "frame": true
+        })
 
+        win.on('document-end', function() {
+            console.log(win.content.document)
+        })
     },
     render: function() {
 
