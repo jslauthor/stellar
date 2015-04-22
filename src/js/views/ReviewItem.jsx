@@ -31,8 +31,13 @@ var ReviewItem = React.createClass({
             "frame": true
         })
 
-        win.on('document-end', function() {
-            console.log(win.content.document)
+        //win.on('document-end', function(event) {
+        //    console.log(event)
+        //})
+
+        win.on ('close', function() {
+            win.close(true)
+            reviewAction.updateAll(true)
         })
     },
     render: function() {

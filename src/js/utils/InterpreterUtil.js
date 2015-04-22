@@ -43,28 +43,30 @@ class InterpreterUtil {
 
         review.requiresValidation = this._hasAmazonRobotWarning(body)
 
-        var rootNode = $('span:contains("See all reviews")');
-        rootNode.each(function (i, el) {
-            if ($(this).text() == "See all reviews") {
-                reviewData = $(this).parents(".crAvgStars").first().text()
-                return false;
-            }
-        })
+        if (!review.requiresValidation) {
+            var rootNode = $('span:contains("See all reviews")');
+            rootNode.each(function (i, el) {
+                if ($(this).text() == "See all reviews") {
+                    reviewData = $(this).parents(".crAvgStars").first().text()
+                    return false;
+                }
+            })
 
-        var title = $("#btAsinTitle").text()
-        title = title == "" ? $("#productTitle").text() : title
+            var title = $("#btAsinTitle").text()
+            title = title == "" ? $("#productTitle").text() : title
 
-        var numReviews = this._getNumberOfAmazonReviews(reviewData)
-        var stars = this._getAmazonReviewAverage(reviewData)
+            var numReviews = this._getNumberOfAmazonReviews(reviewData)
+            var stars = this._getAmazonReviewAverage(reviewData)
 
-        review.hasTitle = title != ""
+            review.hasTitle = title != ""
 
-        if (!review.hasBeenFound && review.hasTitle)
-            review.hasBeenFound = true
+            if (!review.hasBeenFound && review.hasTitle)
+                review.hasBeenFound = true
 
-        review.numReviews = numReviews != -1 ? numReviews : review.numReviews
-        review.stars = stars != -1 ? stars : review.stars
-        review.title = review.hasTitle ? title : (review.hasBeenFound ? review.title : "Error finding starlet")
+            review.numReviews = numReviews != -1 ? numReviews : review.numReviews
+            review.stars = stars != -1 ? stars : review.stars
+            review.title = review.hasTitle ? title : (review.hasBeenFound ? review.title : "Error finding starlet")
+        }
 
         return review
     }

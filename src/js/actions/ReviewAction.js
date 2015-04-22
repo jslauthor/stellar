@@ -141,9 +141,12 @@ class ReviewAction {
             this.actions.allComplete()
     }
 
-    updateReview(review) {
+    updateReview(review, force) {
+
+        force = _.isUndefined(force) ? false : force
+
         var elapsedTime = new Date().getTime() - ((review.lastUpdate && Date.parse(review.lastUpdate)) || 0)
-        if (!review.loading && elapsedTime >= this.alt.stores.ConfigStore.getPollingLength())
+        if (!review.loading && elapsedTime >= this.alt.stores.ConfigStore.getPollingLength() || force)
         {
             review.loading = true
             review.error = false
@@ -164,12 +167,15 @@ class ReviewAction {
         this.dispatch(reviews)
     }
 
-    updateAll() {
+    updateAll(force) {
+
+        force = _.isUndefined(force) ? false : force
+
         let self = this
         let reviews = this.alt.stores.ReviewStore.getState().reviews;
 
         _.each(reviews, function(review) {
-            self.actions.updateReview(review)
+            self.actions.updateReview(review, force)
         })
 
         this.dispatch()

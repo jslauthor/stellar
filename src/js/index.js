@@ -17,18 +17,18 @@ win.on("loaded",
 
 
         // Remove Cookies for robot testing
-        win.cookies.getAll({}, function(cookies) {
-            _.each(cookies, function(cookie)
-            {
-                console.log("removing cookie " + cookie.name)
-                var lurl = "http" + (cookie.secure ? "s" : "") + "://" + cookie.domain +
-                    cookie.path;
-                win.cookies.remove({
-                    url: lurl,
-                    name: cookie.name
-                })
-            })
-        })
+        //win.cookies.getAll({}, function(cookies) {
+        //    _.each(cookies, function(cookie)
+        //    {
+        //        console.log("removing cookie " + cookie.name)
+        //        var lurl = "http" + (cookie.secure ? "s" : "") + "://" + cookie.domain +
+        //            cookie.path;
+        //        win.cookies.remove({
+        //            url: lurl,
+        //            name: cookie.name
+        //        })
+        //    })
+        //})
 
         var altStore = LocalStorageUtil.restore()
         if (altStore != "")
@@ -60,7 +60,7 @@ win.on("loaded",
 
         tray.on('click', function(evt) {
             win.moveTo((evt.x - (win.width/2)) + 8, evt.y)
-            win.showDevTools()
+            //win.showDevTools()
             win.show()
             win.focus()
         });
@@ -92,7 +92,6 @@ win.on("blur", function() {
 win.on("close", function() {
     this.hide();
     LocalStorageUtil.saveAll();
-    //this.close(true);
     gui.App.quit();
 })
 

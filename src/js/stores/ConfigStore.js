@@ -14,7 +14,7 @@ var RED = "e62040";
 var AMAZON = "amazon";
 var GOODREADS = "goodreads";
 
-var mins = 1/4
+var mins = 10
 var DELAY = (mins * 60) * 1000 // milliseconds
 
 class ConfigStore {
