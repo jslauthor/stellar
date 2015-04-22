@@ -48,7 +48,6 @@
     "sass-loader": "^1.0.1",
     "semver": "^4.3.3",
     "style-loader": "^0.9.0",
-    "truncate": "^1.0.4",
     "url-loader": "^0.5.5",
     "validator": "^3.36.0",
     "webpack": "^1.7.3",
