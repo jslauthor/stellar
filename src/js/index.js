@@ -62,7 +62,7 @@ win.on("loaded", () => {
         }
 
         tray.on('click', onClick);
-        if (OSUtil.isWindows()) onClick()
+        //if (OSUtil.isWindows()) onClick()
 
         function checkForNewVersion(firstRun) {
             configAction.checkForNewVersion(firstRun)
