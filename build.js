@@ -4,7 +4,8 @@ var appdmg = require('appdmg');
 var nw = new NwBuilder({
     files: ['./img/**/*', './js/bundle.js', './package.json', './index.html'], // use the glob format
     platforms: ['osx32', 'osx64', 'win32', 'win64'],
-    macIcns: "./img/stellar.icns"
+    macIcns: "./img/stellar.icns",
+    winIco: "./img/stellar.ico"
 });
 
 //Log stuff you want

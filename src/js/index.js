@@ -1,20 +1,18 @@
 require("../../scss/screen.scss")
 
-var React = require('react');
-var Main = require("./views/Main.jsx");
-var gui = require('nw.gui');
+var React = require('react')
+var Main = require("./views/Main.jsx")
+var gui = require('nw.gui')
 var alt = require('./alt')
 var LocalStorageUtil = require('./utils/LocalStorageUtil')
 var reviewAction = require('./actions/ReviewAction')
 var configAction = require('./actions/ConfigAction')
 var _ = require('lodash')
-var OSXUtil = require('./utils/OSXUtil')
+var OSUtil = require('./utils/OSUtil')
 
 var win = gui.Window.get();
 
-win.on("loaded",
-    () => {
-
+win.on("loaded", () => {
 
         // Remove Cookies for robot testing
         //win.cookies.getAll({}, function(cookies) {
@@ -34,13 +32,7 @@ win.on("loaded",
         if (altStore != "")
             alt.bootstrap(altStore)
 
-        var iconPath;
-        if (alt.stores.ReviewStore.getState().hasValidationRequirment)
-            iconPath = 'img/tray_icon_error@2x.png'
-        else if (alt.stores.ReviewStore.getState().hasNewReviews)
-            iconPath = 'img/tray_icon_alert@2x.png'
-        else
-            iconPath = 'img/tray_icon@2x.png'
+        var iconPath = OSUtil.getIconPath();
 
         // Fix for copy/paste on mac
         var nativeMenuBar = new gui.Menu({ type: "menubar" });
@@ -58,17 +50,24 @@ win.on("loaded",
             iconsAreTemplates: false
         });
 
-        tray.on('click', function(evt) {
-            win.moveTo((evt.x - (win.width/2)) + 8, evt.y)
+        function onClick(evt) {
+            if (!OSUtil.isWindows())
+                win.moveTo((evt.x - (win.width/2)) + 8, evt.y)
+            else
+                win.moveTo(win.window.screen.availWidth - win.width + 20, win.window.screen.availHeight - win.height)
+
             //win.showDevTools()
             win.show()
             win.focus()
-        });
-
-        function checkForNewVersion() {
-            configAction.checkForNewVersion()
         }
-        checkForNewVersion()
+
+        tray.on('click', onClick);
+        if (OSUtil.isWindows()) onClick()
+
+        function checkForNewVersion(firstRun) {
+            configAction.checkForNewVersion(firstRun)
+        }
+        checkForNewVersion(altStore == "")
 
         function update() {
             if (alt.stores.ReviewStore.getState().isMonitoring)

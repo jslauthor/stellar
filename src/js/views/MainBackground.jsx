@@ -1,7 +1,11 @@
 "use strict";
 
-var React = require('react');
-var gui = require('nw.gui');
+var React = require('react')
+var gui = require('nw.gui')
+var _ = require('lodash')
+var OSUtil = require('../utils/OSUtil')
+
+var isWin = /^win/.test(process.platform);
 
 var MainBackground = React.createClass({
     getInitialState: function() {
@@ -12,8 +16,8 @@ var MainBackground = React.createClass({
     },
     componentDidMount: function() {
         var node = this.getDOMNode().parentNode;
-        this.setState({bgHeight: node.clientHeight});
-        this.setState({bgWidth: node.clientWidth});
+        this.setState({bgHeight: node.clientHeight})
+        this.setState({bgWidth: node.clientWidth})
     },
     render: function() {
 
@@ -22,11 +26,14 @@ var MainBackground = React.createClass({
             strokeWidth: "0",
             width: "100%",
             height: "100%"
-        };
+        }
 
-        var tailCenter = this.state.bgWidth/2 - 5.5;
-        var backgroundFill = "url(#sunsetFill)";
-        var backgroundStyle = { mask: "url(#backgroundMask)" };
+        var tailStyle = _.clone(svgStyle)
+        tailStyle.display = !OSUtil.isWindows() ? 'block' : 'none'
+
+        var tailCenter = this.state.bgWidth/2 - 5.5
+        var backgroundFill = "url(#sunsetFill)"
+        var backgroundStyle = { mask: "url(#backgroundMask)" }
 
         return (
             <svg className="mainBackground" preserveAspectRatio="xMinYMin meet">
@@ -39,7 +46,7 @@ var MainBackground = React.createClass({
                     <mask id="backgroundMask">
                         <rect rx="5" ry="5" style={svgStyle} width="100%" x="0" y="11" height={Math.max((this.state.bgHeight-11), 0)} />
                         <svg x={tailCenter} y="0">
-                            <path fill-rule="evenodd" clip-rule="evenodd" style={svgStyle} d="M0,11C3.9,11,11.1,0,11.9,0c1,0,8.8,11,13.2,11H0z"/>
+                            <path fill-rule="evenodd" clip-rule="evenodd" style={tailStyle} d="M0,11C3.9,11,11.1,0,11.9,0c1,0,8.8,11,13.2,11H0z"/>
                         </svg>
                     </mask>
                 </defs>
@@ -47,8 +54,8 @@ var MainBackground = React.createClass({
                 <rect width="100%" height="100%" style={backgroundStyle} fill={backgroundFill} />
 
             </svg>
-        );
+        )
     }
-});
+})
 
 module.exports = MainBackground;

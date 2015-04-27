@@ -8,6 +8,7 @@ var AddItem = require('./AddItem.jsx')
 var reviewStore = require('../stores/ReviewStore')
 var classnames = require('classnames')
 var ListenerMixin = require('alt/mixins/ListenerMixin')
+var OSUtil = require('../utils/OSUtil')
 
 var Main = React.createClass({
     mixins: [ListenerMixin],
@@ -31,12 +32,7 @@ var Main = React.createClass({
         if (this.props.tray == null)
             return
 
-        if (this.state.hasValidationRequirment)
-            this.props.tray.icon = 'img/tray_icon_error@2x.png'
-        else if (this.state.hasNewReviews)
-            this.props.tray.icon = 'img/tray_icon_alert@2x.png'
-        else
-            this.props.tray.icon = 'img/tray_icon@2x.png'
+        this.props.tray.icon = OSUtil.getIconPath()
     },
     render: function() {
 

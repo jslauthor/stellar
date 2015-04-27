@@ -6,6 +6,7 @@ var gui = require('nw.gui')
 var reviewAction = require('../../actions/ReviewAction')
 var reviewStore = require('../../stores/ReviewStore')
 var ListenerMixin = require('alt/mixins/ListenerMixin')
+var OSUtil = require('../../utils/OSUtil')
 
 var menu, editMenu, startUpMenu, notificationMenu, markSeenMenu
 
@@ -41,15 +42,17 @@ var SettingsButton = React.createClass({
 
         menu.append(new gui.MenuItem({ type: 'separator' }));
 
-        startUpMenu = new gui.MenuItem({
-            label: 'Open at startup',
-            type: "checkbox",
-            checked: true,
-            click: function() {
-                reviewAction.toggleRunOnLogin()
-            }
-        });
-        menu.append(startUpMenu)
+        if (!OSUtil.isWindows()) {
+            startUpMenu = new gui.MenuItem({
+                label: 'Open at startup',
+                type: "checkbox",
+                checked: true,
+                click: function() {
+                    reviewAction.toggleRunOnLogin()
+                }
+            });
+            menu.append(startUpMenu)
+        }
 
         notificationMenu = new gui.MenuItem({
             label: 'Show notifications',
