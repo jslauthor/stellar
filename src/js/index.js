@@ -28,7 +28,7 @@ win.on("loaded", () => {
         //    })
         //})
 
-        var altStore = ""//LocalStorageUtil.restore()
+        var altStore = LocalStorageUtil.restore()
         if (altStore != "")
             alt.bootstrap(altStore)
 
