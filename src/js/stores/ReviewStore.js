@@ -15,7 +15,7 @@ class ReviewStore {
         this.isEditing = false
         this.isMonitoring = true
         this.lastUpdate = ""
-        this.shouldScrollToBottom = true
+        this.shouldScrollToBottom = false
         this.hasNewReviews = false
         this.hasValidationRequirment = false
         this.notificationsEnabled = true

@@ -28,7 +28,7 @@ win.on("loaded", () => {
         //    })
         //})
 
-        var altStore = LocalStorageUtil.restore()
+        var altStore = ""//LocalStorageUtil.restore()
         if (altStore != "")
             alt.bootstrap(altStore)
 
@@ -62,7 +62,7 @@ win.on("loaded", () => {
         }
 
         tray.on('click', onClick);
-        //if (OSUtil.isWindows()) onClick()
+        if (OSUtil.isWindows()) onClick()
 
         function checkForNewVersion(firstRun) {
             configAction.checkForNewVersion(firstRun)
