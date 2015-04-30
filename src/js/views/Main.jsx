@@ -5,6 +5,7 @@ var MainBackground = require('./MainBackground.jsx');
 var ReviewList = require('./ReviewList.jsx');
 var Controls = require('./Controls.jsx');
 var AddItem = require('./AddItem.jsx')
+var SignUp = require('./SignUp.jsx')
 var reviewStore = require('../stores/ReviewStore')
 var classnames = require('classnames')
 var ListenerMixin = require('alt/mixins/ListenerMixin')
@@ -37,8 +38,16 @@ var Main = React.createClass({
     render: function() {
 
         var popup
+        var popUpContainer
         if (this.state.showReviewPopup)
-            popup = <AddItem style={{position: "absolute"}} />
+        {
+            popup =  <AddItem />
+            popUpContainer = <section id="popUpContainer" style={{position:"absolute", top: 0, left: 0, right: 0, bottom: 0}}>
+                <div className="flex-container">
+                    {popup}
+                </div>
+            </section>
+        }
 
         var classes = classnames({
             "main-section": true,
@@ -52,7 +61,7 @@ var Main = React.createClass({
                     <ReviewList />
                     <Controls />
                 </section>
-                {popup}
+                {popUpContainer}
             </main>
 
         );
