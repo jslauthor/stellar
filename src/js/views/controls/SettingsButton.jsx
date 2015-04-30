@@ -7,8 +7,11 @@ var reviewAction = require('../../actions/ReviewAction')
 var reviewStore = require('../../stores/ReviewStore')
 var ListenerMixin = require('alt/mixins/ListenerMixin')
 var OSUtil = require('../../utils/OSUtil')
+var _ = require('lodash')
 
-var menu, editMenu, startUpMenu, notificationMenu, markSeenMenu
+var twitterTemplate = _.template('https://twitter.com/intent/tweet/?text=<%= text %>&url=<%= url %>&via=<%= user %>');
+
+var menu, editMenu, startUpMenu, notificationMenu, markSeenMenu, shareMenu
 
 var SettingsButton = React.createClass({
     mixins: [ListenerMixin],
@@ -65,6 +68,33 @@ var SettingsButton = React.createClass({
         menu.append(notificationMenu)
 
         menu.append(new gui.MenuItem({ type: 'separator' }));
+
+        /* Share menu with submenu */
+
+        var stellarLink = "http://www.jslauthor.com/tools/stellar";
+        function share(link) {
+            gui.Shell.openExternal(link + stellarLink)
+        }
+
+        var shareSubMenu = new gui.Menu();
+        shareSubMenu.append(new gui.MenuItem({ label: 'StumbleUpon', icon: "img/stumble_upon.png", click: _.partial(share, "http://www.stumbleupon.com/submit?url=") }));
+        shareSubMenu.append(new gui.MenuItem({ label: 'Facebook', icon: "img/facebook.png", click: _.partial(share, "https://www.facebook.com/sharer/sharer.php?u=") }));
+        shareSubMenu.append(new gui.MenuItem({ label: 'Google+', icon: "img/google.png", click: _.partial(share, "https://plus.google.com/share?url=") }));
+        shareSubMenu.append(new gui.MenuItem({ label: 'Twitter', icon: "img/twitter.png", click: function() {
+            gui.Shell.openExternal(twitterTemplate({
+                url: stellarLink,
+                text: "Check out Stellar, an Amazon Book Review Monitor:",
+                user: "jslauthor"
+            }))
+        }}));
+
+        shareMenu = new gui.MenuItem({
+            label: 'Share me!',
+            submenu: shareSubMenu
+        })
+        menu.append(shareMenu);
+
+        /* Newsletter */
 
         menu.append(new gui.MenuItem({
             label: 'Join J.S.L. Newsletter',
