@@ -340,8 +340,10 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+  }
 
-    margin-top: -20px;
+  .flex-container-mac {
+    margin-top: -15px; // account for arrow tail
   }
 
   .sign-up-container {

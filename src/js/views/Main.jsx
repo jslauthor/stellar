@@ -41,9 +41,14 @@ var Main = React.createClass({
         var popUpContainer
         if (this.state.showReviewPopup)
         {
+            var popClasses = classnames({
+                "flex-container" : true,
+                "flex-container-mac" : !OSUtil.isWindows()
+            })
+
             popup =  <AddItem />
             popUpContainer = <section id="popUpContainer" style={{position:"absolute", top: 0, left: 0, right: 0, bottom: 0}}>
-                <div className="flex-container">
+                <div className={popClasses}>
                     {popup}
                 </div>
             </section>
