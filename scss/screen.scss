@@ -396,7 +396,7 @@ input.error, input:focus  .error {
     padding: 15px;
     transition: padding 0.5s ease;
 
-    input {
+    input:first-child {
       margin-bottom: 10px;
     }
 
