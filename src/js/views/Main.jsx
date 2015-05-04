@@ -37,7 +37,6 @@ var Main = React.createClass({
     },
     render: function() {
 
-        var popup
         var popUpContainer
         if (this.state.showReviewPopup)
         {
@@ -46,7 +45,7 @@ var Main = React.createClass({
                 "flex-container-mac" : !OSUtil.isWindows()
             })
 
-            popup =  <AddItem />
+            var popup = <SignUp />
             popUpContainer = <section id="popUpContainer" style={{position:"absolute", top: 0, left: 0, right: 0, bottom: 0}}>
                 <div className={popClasses}>
                     {popup}

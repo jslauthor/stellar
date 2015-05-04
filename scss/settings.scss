@@ -1,5 +1,6 @@
 $popupIndex: 9999;
 
+$buttonRadius: 1px;
 $borderRadius: 5px;
 $errorRed: #e62040;
 $teal: #1ac57f;
@@ -88,6 +89,10 @@ $errorRed: #cf222d;
   font-weight: normal;
 }
 
+@mixin zero {
+  padding: 0;
+  margin: 0;
+}
 
 /* Gmail style scrollbar */
 ::-webkit-scrollbar {

@@ -56,7 +56,7 @@ win.on("loaded", () => {
             else
                 win.moveTo(win.window.screen.availWidth - win.width + 20, win.window.screen.availHeight - win.height)
 
-            //win.showDevTools()
+            win.showDevTools()
             win.show()
             win.focus()
         }
@@ -85,7 +85,7 @@ win.on("loaded", () => {
 );
 
 win.on("blur", function() {
-    win.hide();
+    //win.hide();
 })
 
 win.on("close", function() {
