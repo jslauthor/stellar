@@ -22,7 +22,7 @@ module.exports = {
             { test: /\.js$/, exclude: /node_modules/, loader: "babel-loader" },
             { test: /\.jsx$/, exclude: /node_modules/, loader: "jsx-loader?harmony" },
             { test: /\.json$/, loader: "json-loader" },
-            { test: /\.jpe?g$|\.gif$|\.png$|\.svg$|\.woff$|\.ttf$|\.otf$/, loader: "url-loader" }
+            { test: /\.jpe?g$|\.gif$|\.png$|\.svg$|\.woff$|\.ttf$|\.otf$|\.eot$/, loader: "url-loader" }
         ]
     },
     plugins: [

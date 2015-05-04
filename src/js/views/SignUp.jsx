@@ -53,7 +53,7 @@ var SignUp = React.createClass({
             "sign-up-container": true
         })
 
-        var containerHeight = 280;
+        var containerHeight = 120;
 
         var headerContent
         if (this.state.currentStep <= 2)
@@ -73,8 +73,6 @@ var SignUp = React.createClass({
                     <button className="btn pointer" onClick={this.handleOnNew}>I'M NEW</button>
                     <button className="btn mute pointer" onClick={this.handleOnRegister}>I'M REGISTERED</button>
                 </div>
-
-            containerHeight = 130;
         }
         else if (this.state.currentStep == 2 && this.state.isNew) {
             content =
@@ -85,25 +83,24 @@ var SignUp = React.createClass({
                         className={inputClasses} onKeyUp={this.handleKeyUp} />
                 </div>
             continueButton =
-                <button className="sign-up-btn pointer" onClick={this.handleClick}>SIGN ME UP!</button>
+                <button key="closeBtn" className="sign-up-btn pointer" onClick={this.handleClick}>SIGN ME UP!</button>
 
-            containerHeight = 130;
+            containerHeight = 100;
         }
         else if (this.state.currentStep == 2 && !this.state.isNew) {
             content =
                 <div key="notNew">
-                    <input ref="urlInput" placeholder="Email" type="email" required
+                    <input ref="urlInput" placeholder="Registered Email" type="email" required
                         className={inputClasses} onKeyUp={this.handleKeyUp} />
                 </div>
             continueButton =
-                <button className="sign-up-btn pointer" onClick={this.handleClick}>VALIDATE ME!</button>
+                <button key="closeBtn" className="sign-up-btn pointer" onClick={this.handleClick}>VALIDATE ME!</button>
 
-            containerHeight = 110;
+            containerHeight = 50;
         }
 
-
         return (
-            <main className={containerClasses} style={{"paddingBottom": this.state.currentStep != 1 ? "60px" : 0}}>
+            <main className={containerClasses} style={{"paddingBottom": this.state.currentStep != 1 ? "65px" : "15px"}}>
 
                 {headerContent}
 
@@ -119,7 +116,9 @@ var SignUp = React.createClass({
                     <CloseButton />
                 </button>
 
-                {continueButton}
+                <ReactTransitionGroup transitionName="sign-btn-animation">
+                    {continueButton}
+                </ReactTransitionGroup>
 
             </main>
         )

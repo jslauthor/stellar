@@ -10,7 +10,8 @@ var configAction = require('./actions/ConfigAction')
 var _ = require('lodash')
 var OSUtil = require('./utils/OSUtil')
 
-var win = gui.Window.get();
+var win = gui.Window.get()
+gui.Screen.Init()
 
 win.on("loaded", () => {
 
@@ -84,14 +85,21 @@ win.on("loaded", () => {
     }
 );
 
-win.on("blur", function() {
-    //win.hide();
-})
+function hideWindow() {
+    win.hide();
+}
+
+win.on("blur", hideWindow)
 
 win.on("close", function() {
     this.hide();
     LocalStorageUtil.saveAll();
     gui.App.quit();
 })
+
+// Just hide the window if any updates happen to the screen(s)
+gui.Screen.on('displayBoundsChanged', hideWindow);
+gui.Screen.on('displayAdded', hideWindow);
+gui.Screen.on('displayRemoved', hideWindow);
 
 
