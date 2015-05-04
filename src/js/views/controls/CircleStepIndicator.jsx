@@ -1,3 +1,5 @@
+"use strict"
+
 var React = require('react')
 var _ = require('lodash')
 
@@ -9,8 +11,8 @@ var CircleStepIndicator = React.createClass({
           currentStep: 1
       }
     },
-    onCircleClick: function() {
-
+    onCircleClick: function(e) {
+        console.log(e.target.key)
     },
     render: function() {
 

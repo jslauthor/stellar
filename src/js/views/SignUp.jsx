@@ -8,14 +8,20 @@ var CloseButton = require('./controls/CloseButton.jsx')
 var CircleStepIndicator = require('./controls/CircleStepIndicator.jsx')
 var validator = require('validator')
 var reviewAction = require('../actions/ReviewAction')
+var ListenerMixin = require('alt/mixins/ListenerMixin')
+var _ = require('lodash')
 
 var SignUp = React.createClass({
+    mixins: [ListenerMixin],
     getInitialState: function() {
-        return {
-            formError: false,
-            isNew: false,
-            currentStep: 1
-        }
+        return _.merge(locationStore.getState(), {formError:false});
+    },
+    componentDidMount() {
+        this.listenTo(locationStore, this.onChange)
+    },
+
+    onChange() {
+        this.setState(locationStore.getState())
     },
     handleClick: function(event) {
         this.setState({formError: false}, function() {
