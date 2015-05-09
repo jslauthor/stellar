@@ -10,6 +10,7 @@ var ListenerMixin = require('alt/mixins/ListenerMixin')
 var classnames = require('classnames')
 var _ = require('lodash')
 var moment = require('moment')
+var AnnouncementBanner = require('./controls/AnnouncementBanner.jsx')
 
 var Controls = React.createClass({
     mixins: [ListenerMixin],
@@ -43,15 +44,18 @@ var Controls = React.createClass({
             nextUpdateLabel = "Loading"
 
         return (
-          <section className="mainControls">
-              <ToggleButton />
-              <div className={lastUpdateClasses}>
-                  <p className="next-update"><i>Next Update:</i> {nextUpdateLabel}</p>
-                  <p><i>Last Updated:</i> {this.state.lastUpdate}</p>
-              </div>
-              <AddButton />
-              <SettingsButton />
-          </section>
+          <main className="mainControls">
+              <AnnouncementBanner />
+              <section>
+                  <ToggleButton />
+                  <div className={lastUpdateClasses}>
+                      <p className="next-update"><i>Next Update:</i> {nextUpdateLabel}</p>
+                      <p><i>Last Updated:</i> {this.state.lastUpdate}</p>
+                  </div>
+                  <AddButton />
+                  <SettingsButton />
+              </section>
+          </main>
         );
     }
 

@@ -1,4 +1,5 @@
 @import "settings";
+@import "marquee";
 
 html, body, div, span, p, form, input, textarea, select, h1, h2, h3, table, tbody, tr, td, label, ul, li, button
 {
@@ -94,7 +95,6 @@ input.error, input:focus  .error {
     left: 3px;
     overflow-x: hidden;
     overflow-y: auto;
-    padding-bottom: 40px; // account for controls and bottom of scroll
 
     .no-item-msg {
       position: absolute;
@@ -299,18 +299,27 @@ input.error, input:focus  .error {
     position: absolute;
     z-index: 2;
     width: 100%;
-    height: 40px;
     border-bottom-right-radius: $borderRadius;
     border-bottom-left-radius: $borderRadius;
     background-color: rgba(52,7,86,.85);
     bottom: 0;
 
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
 
-    padding-left: 10px;
-    padding-right: 10px;
+    section {
+      width: 100%;
+      height: 40px;
+
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+      padding-left: 10px;
+      padding-right: 10px;
+
+    }
 
     *:not(:first-child) {
       margin-left: 5px;
@@ -358,6 +367,35 @@ input.error, input:focus  .error {
     svg {
       overflow: visible;
     }
+
+    div.banner {
+      position: relative;
+      height: 20px;
+      width: 100%;
+      background-color: $orange;
+      color: white;
+      @include fontNormal;
+      font-size: 11px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      flex-direction: row;
+      align-items: center;
+
+      div {
+        width: 93%;
+        cursor: pointer;
+      }
+
+      svg {
+        cursor: pointer;
+        width: 10px;
+        height: 10px;
+        path, polygon {
+          fill: darken($orange, 30);
+        }
+      }
+    }
   }
 
   .pointer { cursor: pointer }
@@ -399,6 +437,7 @@ input.error, input:focus  .error {
 
     input {
       margin-bottom: 5px;
+      width: 320px;
     }
 
     h1 {
@@ -408,11 +447,53 @@ input.error, input:focus  .error {
       }
     }
 
+    h2 {
+      color: white;
+      @include fontMdCnO;
+      width: 100%;
+      overflow: hidden;
+      @include zero;
+      margin-top: 10px;
+      margin-bottom: -10px;
+    }
+
     h4 {
       @include zero;
       font-size: 12px;
       @include fontItalic;
       color: #a696e8;
+    }
+
+    .step-status {
+
+      position: relative;
+      width: 100%;
+
+      button {
+        @include zero;
+        position: absolute;
+        left: 5px;
+        top: 3px;
+        color: white;
+        opacity: .7;
+        font-size: 10px;
+        text-decoration: underline;
+        cursor: pointer;
+        background: none;
+      }
+
+    }
+
+    .link {
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    div.last-step h1 {
+      @include fontBlkCn;
+      color: lighten($lightBlue, 30);
+      margin-bottom: -25px;
+      font-size: 75px;
     }
 
     p {
@@ -422,9 +503,25 @@ input.error, input:focus  .error {
       @include fontNormal;
     }
 
+    span.error-msg {
+      color: #fff297;
+    }
+
     button.btn {
       margin-bottom: 25px;
       letter-spacing: 1px;
+      position: relative;
+    }
+
+    button div.verificationLoading {
+      position: absolute;
+      height: 5px;
+      left: 0;
+      right: 0;
+      top: 0;
+      animation: moveBG 1s linear 0s infinite;
+      background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc1MCcgaGVpZ2h0PScxMDAnIHZpZXdCb3g9JzAgMCA1IDEwJz4NCgk8bGluZSB4MT0nLTInIHkxPScxJyB4Mj0nNycgeTI9JzEwJyBzdHJva2U9JyM5NDY4YTQnIHN0cm9rZS13aWR0aD0nMycvPg0KCTxsaW5lIHgxPSctMicgeTE9JzYnIHgyPSc3JyB5Mj0nMTUnIHN0cm9rZT0nIzk0NjhhNCcgc3Ryb2tlLXdpZHRoPSczJy8+DQoJPGxpbmUgeDE9Jy0yJyB5MT0nLTQnIHgyPSc3JyB5Mj0nNScgc3Ryb2tlPScjOTQ2OGE0JyBzdHJva2Utd2lkdGg9JzMnLz4NCjwvc3ZnPg==');
+      background-position: 0 0;
     }
 
     .mute {
@@ -434,7 +531,9 @@ input.error, input:focus  .error {
 
     button.sign-up-btn {
       width: 100%;
-      height: 60px;
+      height: 50px;
+      line-height: .4;
+      padding: 15px 15px 5px 15px;
       position: absolute;
       left: 0;
       bottom: 0;
@@ -652,8 +751,9 @@ input.error, input:focus  .error {
 
 .sign-up-animation-enter {
   position: absolute;
-  transition: transform .5s ease;
+  transition: transform .5s ease-out;
   transform: translate3d(100%, 0, 0);
+  width: 100%;
 }
 
 .sign-up-animation-enter.sign-up-animation-enter-active {
@@ -662,7 +762,7 @@ input.error, input:focus  .error {
 
 .sign-up-animation-leave {
   position: absolute;
-  transition: transform .5s ease;
+  transition: transform .5s ease-out;
   transform: translate3d(0, 0, 0);
 }
 
@@ -672,8 +772,30 @@ input.error, input:focus  .error {
 
 
 
+.sign-up-animation-reverse-enter {
+  position: absolute;
+  transition: transform .5s ease-out;
+  transform: translate3d(-100%, 0, 0);
+}
+
+.sign-up-animation-reverse-enter.sign-up-animation-reverse-enter-active {
+  transform: translate3d(0%, 0, 0);
+}
+
+.sign-up-animation-reverse-leave {
+  position: absolute;
+  transition: transform .5s ease-out;
+  transform: translate3d(0, 0, 0);
+}
+
+.sign-up-animation-reverse-leave.sign-up-animation-reverse-leave-active {
+  transform: translate3d(100%, 0, 0);
+}
+
+
+
 .sign-btn-animation-enter {
-  transition: transform .5s ease;
+  transition: transform .5s ease-out;
   transform: translate3d(0, 100%, 0);
 }
 
@@ -682,15 +804,13 @@ input.error, input:focus  .error {
 }
 
 .sign-btn-animation-leave {
-  transition: transform .5s ease;
+  transition: transform .5s ease-out;
   transform: translate3d(0, 0, 0);
 }
 
 .sign-btn-animation-leave.sign-btn-animation-leave-active {
   transform: translate3d(0, 100%, 0);
 }
-
-
 
 @keyframes jiggles {
   from {transform: rotateZ(.5deg);}
@@ -704,3 +824,4 @@ input.error, input:focus  .error {
 }
 
 .hide { visibility: hidden;  }
+.display-none { display: none; }

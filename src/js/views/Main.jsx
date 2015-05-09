@@ -10,6 +10,7 @@ var reviewStore = require('../stores/ReviewStore')
 var classnames = require('classnames')
 var ListenerMixin = require('alt/mixins/ListenerMixin')
 var OSUtil = require('../utils/OSUtil')
+var listStore = require('../stores/ListStore')
 
 var Main = React.createClass({
     mixins: [ListenerMixin],
@@ -45,7 +46,8 @@ var Main = React.createClass({
                 "flex-container-mac" : !OSUtil.isWindows()
             })
 
-            var popup = <SignUp />
+            var listStoreState = listStore.getState()
+            var popup = listStoreState.isValid ? <AddItem /> : <SignUp />
             popUpContainer = <section id="popUpContainer" style={{position:"absolute", top: 0, left: 0, right: 0, bottom: 0}}>
                 <div className={popClasses}>
                     {popup}

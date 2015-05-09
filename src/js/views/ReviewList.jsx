@@ -9,6 +9,7 @@ var ReviewItem = require('./ReviewItem.jsx')
 var reviewAction = require('../actions/ReviewAction')
 var AddButton = require ('./controls/AddButton.jsx')
 var StellarIcon = require('./components/StellarIcon.jsx')
+var AnnouncementStore = require('../stores/AnnouncementStore')
 
 var ReviewList = React.createClass({
     mixins: [ListenerMixin],
@@ -62,7 +63,7 @@ var ReviewList = React.createClass({
             )
 
         return (
-            <section ref="listRef" className="reviewList">
+            <section ref="listRef" className="reviewList" style={{paddingBottom: AnnouncementStore.getState().isDismissed ? "40px" : "60px"}}>
                 <ReactTransitionGroup transitionName="list-animation">
                     {reviewItems}
                 </ReactTransitionGroup>

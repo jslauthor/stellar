@@ -6,6 +6,8 @@ var gui = require('nw.gui')
 var alt = require('./alt')
 var LocalStorageUtil = require('./utils/LocalStorageUtil')
 var reviewAction = require('./actions/ReviewAction')
+var listAction = require('./actions/ListActions')
+var announcementActions = require('./actions/AnnouncementActions')
 var configAction = require('./actions/ConfigAction')
 var _ = require('lodash')
 var OSUtil = require('./utils/OSUtil')
@@ -73,11 +75,16 @@ win.on("loaded", () => {
         function update() {
             if (alt.stores.ReviewStore.getState().isMonitoring)
                 reviewAction.updateAll()
+
+            listAction.refresh()
+            announcementActions.updateAnnouncement()
         }
 
         setInterval(update, 1000)
         update();
 
+        listAction.reset()
+        listAction.refresh(true) // true forces refresh on load
         reviewAction.checkRunOnLogin()
 
         // Bootstrap this biatch
@@ -86,7 +93,7 @@ win.on("loaded", () => {
 );
 
 function hideWindow() {
-    win.hide();
+    //win.hide();
 }
 
 win.on("blur", hideWindow)

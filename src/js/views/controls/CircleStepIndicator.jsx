@@ -2,6 +2,7 @@
 
 var React = require('react')
 var _ = require('lodash')
+var listActions = require('../../actions/ListActions')
 
 var CircleStepIndicator = React.createClass({
 
@@ -11,8 +12,8 @@ var CircleStepIndicator = React.createClass({
           currentStep: 1
       }
     },
-    onCircleClick: function(e) {
-        console.log(e.target.key)
+    onCircleClick: function(key) {
+        //listActions.changeStep(key)
     },
     render: function() {
 
@@ -27,7 +28,7 @@ var CircleStepIndicator = React.createClass({
             }
 
             return <circle key={value} style={styles} cx={radius + (value * spacing)} cy={radius} r={radius}
-                           fill="#FFFFFF" className="pointer" onClick={this.onCircleClick}></circle>
+                           fill="#FFFFFF" onClick={() => {this.onCircleClick(value+1)}}></circle>
 
         });
 

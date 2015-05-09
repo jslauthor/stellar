@@ -17,6 +17,9 @@ var GOODREADS = "goodreads";
 var mins = 10
 var DELAY = (mins * 60) * 1000 // milliseconds
 
+var refresh = 720
+var REFRESH_DELAY = (refresh * 60) * 1000
+
 class ConfigStore {
     constructor() {
         this.bindActions(ConfigActions)
@@ -83,6 +86,8 @@ class ConfigStore {
     }
 
     static getPollingLength() { return DELAY }
+    static getRefreshLength() { return REFRESH_DELAY }
+
 }
 
 module.exports = alt.createStore(ConfigStore, 'ConfigStore');
