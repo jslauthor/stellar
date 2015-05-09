@@ -72,6 +72,7 @@ var SignUp = React.createClass({
             this.handleClose()
     },
     handleBackClick: function() {
+        this.setState({urlError: false, nameError: false});
         listActions.back();
     },
     render: function() {
