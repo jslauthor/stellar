@@ -100,7 +100,7 @@ var SignUp = React.createClass({
         else if (this.state.currentStep == 3) {
             msg = <h2>{this.state.email}</h2>
         }
-        else if (this.state.validateResponse && !this.state.isValid) {
+        else if (this.state.validateResponse && !this.state.isValid && this.state.currentStep > 1) {
             msg = <p><span className="error-msg">Couldn't find your email. Did you receive a confirmation email and click the link? You can also <span className="link" onClick={this.handleSignUpClick}>sign up here</span></span></p>
         }
 

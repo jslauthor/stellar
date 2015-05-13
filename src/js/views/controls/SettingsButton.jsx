@@ -5,24 +5,28 @@ var ConfigStore = require('../../stores/ConfigStore')
 var gui = require('nw.gui')
 var reviewAction = require('../../actions/ReviewAction')
 var reviewStore = require('../../stores/ReviewStore')
+var listStore = require('../../stores/ListStore')
 var ListenerMixin = require('alt/mixins/ListenerMixin')
 var OSUtil = require('../../utils/OSUtil')
 var _ = require('lodash')
+var mixpanel = require('../../mixpanel')
+var keys = require('../../keys')
 
 var twitterTemplate = _.template('https://twitter.com/intent/tweet/?text=<%= text %>&url=<%= url %>&via=<%= user %>');
 
-var menu, editMenu, startUpMenu, notificationMenu, markSeenMenu, shareMenu
+var menu, editMenu, startUpMenu, notificationMenu, markSeenMenu, shareMenu, joinMenu
 
 var SettingsButton = React.createClass({
     mixins: [ListenerMixin],
     getInitialState: function() {
-        return reviewStore.getState()
+        return _.merge(reviewStore.getState(), listStore.getState())
     },
     onChange: function() {
         this.setState(this.getInitialState())
     },
     componentDidMount: function() {
         this.listenTo(reviewStore, this.onChange)
+        this.listenTo(listStore, this.onChange)
 
         menu = new gui.Menu();
         editMenu = new gui.MenuItem({
@@ -73,6 +77,7 @@ var SettingsButton = React.createClass({
 
         var stellarLink = "http://www.jslauthor.com/tools/stellar";
         function share(link) {
+            mixpanel.track(keys.SHARE_CLICKED, {link:link})
             gui.Shell.openExternal(link + stellarLink)
         }
 
@@ -80,12 +85,14 @@ var SettingsButton = React.createClass({
         shareSubMenu.append(new gui.MenuItem({ label: 'StumbleUpon', icon: "img/stumble_upon.png", click: _.partial(share, "http://www.stumbleupon.com/submit?url=") }));
         shareSubMenu.append(new gui.MenuItem({ label: 'Facebook', icon: "img/facebook.png", click: _.partial(share, "https://www.facebook.com/sharer/sharer.php?u=") }));
         shareSubMenu.append(new gui.MenuItem({ label: 'Google+', icon: "img/google.png", click: _.partial(share, "https://plus.google.com/share?url=") }));
-        shareSubMenu.append(new gui.MenuItem({ label: 'Twitter', icon: "img/twitter.png", click: function() {
-            gui.Shell.openExternal(twitterTemplate({
+        shareSubMenu.append(new gui.MenuItem({ label: 'Twitter', icon: "img/twitter.png", click: () => {
+            var link = twitterTemplate({
                 url: stellarLink,
                 text: "Check out Stellar, an Amazon Book Review Monitor:",
                 user: "jslauthor"
-            }))
+            })
+            mixpanel.track(keys.SHARE_CLICKED, {link:link})
+            gui.Shell.openExternal(link)
         }}));
 
         shareMenu = new gui.MenuItem({
@@ -96,16 +103,20 @@ var SettingsButton = React.createClass({
 
         /* Newsletter */
 
-        menu.append(new gui.MenuItem({
-            label: 'Join J.S.L. Newsletter',
-            click: function() {
-                gui.Shell.openExternal('http://www.jslauthor.com/sign-up');
+        joinMenu = new gui.MenuItem({
+            label: this.getRegisteredLabel(),
+            click: () => {
+                mixpanel.track(keys.JOIN_CLICKED)
+                if (!this.state.isValid)
+                    gui.Shell.openExternal('http://www.jslauthor.com/sign-up');
             }
-        }));
+        });
+        menu.append(joinMenu)
 
         menu.append(new gui.MenuItem({
             label: 'Help',
             click: function() {
+                mixpanel.track(keys.HELP_CLICKED)
                 gui.Shell.openExternal('http://www.jslauthor.com/tools/stellar#help');
             }
         }));
@@ -120,6 +131,9 @@ var SettingsButton = React.createClass({
 
         this.updateMenuItems()
     },
+    getRegisteredLabel: function() {
+        return this.state.isValid ? 'You are registered' : "Join J.S.L. Newsletter"
+    },
     componentDidUpdate: function() {
         this.updateMenuItems()
     },
@@ -132,6 +146,9 @@ var SettingsButton = React.createClass({
 
         if (startUpMenu)
             startUpMenu.checked = this.state.runOnLogin
+
+        if (joinMenu)
+            joinMenu.label = this.getRegisteredLabel()
     },
     handleClick: function(event) {
         menu.popup(event.clientX+5, event.clientY+5)

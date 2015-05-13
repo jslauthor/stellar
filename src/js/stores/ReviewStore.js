@@ -4,6 +4,8 @@ var LocalStorageUtil = require('../utils/LocalStorageUtil')
 var _ = require('lodash')
 var moment = require('moment')
 var OSXUtil = require('../utils/OSXUtil')
+var mixpanel = require('../mixpanel')
+var keys = require('../keys')
 
 class ReviewStore {
 
@@ -39,15 +41,26 @@ class ReviewStore {
     onToggleMonitoring() {
         this.isMonitoring = !this.isMonitoring
         LocalStorageUtil.saveAll()
+
+        mixpanel.track(keys.TOGGLE_MONITORING, {
+            isMonitoring: this.isMonitoring
+        })
     }
 
     onToggleEditing() {
+        if (this.reviews && this.reviews.length == 0)
+            return
+
         this.isEditing = !this.isEditing
     }
 
     onToggleNotifications() {
         this.notificationsEnabled = !this.notificationsEnabled
         LocalStorageUtil.saveAll()
+
+        mixpanel.track(keys.TOGGLE_NOTIFICATIONS, {
+            isNotifying: this.notificationsEnabled
+        })
     }
 
     onUpdateRunOnLogin(enabled) {
@@ -73,6 +86,9 @@ class ReviewStore {
 
     onDeleteReview(reviews) {
         this.reviews = reviews
+        if (this.reviews && this.reviews.length == 0)
+            this.isEditing = false
+
         LocalStorageUtil.saveAll()
     }
 
@@ -81,6 +97,11 @@ class ReviewStore {
         this.reviews[review.id] = review
         this.shouldScrollToBottom = true
         LocalStorageUtil.saveAll()
+        mixpanel.track(keys.REVIEW_ADDED, {
+            url: review.url,
+            type: review.type,
+            numReviews: _.size(this.reviews)
+        })
     }
 
     onReviewComplete(review) {

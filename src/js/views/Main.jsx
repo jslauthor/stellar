@@ -11,6 +11,7 @@ var classnames = require('classnames')
 var ListenerMixin = require('alt/mixins/ListenerMixin')
 var OSUtil = require('../utils/OSUtil')
 var listStore = require('../stores/ListStore')
+var _ = require('lodash')
 
 var Main = React.createClass({
     mixins: [ListenerMixin],
@@ -47,7 +48,7 @@ var Main = React.createClass({
             })
 
             var listStoreState = listStore.getState()
-            var popup = listStoreState.isValid ? <AddItem /> : <SignUp />
+            var popup = listStoreState.isValid || _.size(this.state.reviews) < 1 ? <AddItem /> : <SignUp />
             popUpContainer = <section id="popUpContainer" style={{position:"absolute", top: 0, left: 0, right: 0, bottom: 0}}>
                 <div className={popClasses}>
                     {popup}

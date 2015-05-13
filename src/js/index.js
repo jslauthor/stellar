@@ -12,6 +12,10 @@ var configAction = require('./actions/ConfigAction')
 var _ = require('lodash')
 var OSUtil = require('./utils/OSUtil')
 
+// Address some mac specific formatting with fonts... go figure
+if (!OSUtil.isWindows())
+    require("../../scss/mac.scss")
+
 var win = gui.Window.get()
 gui.Screen.Init()
 
@@ -59,7 +63,7 @@ win.on("loaded", () => {
             else
                 win.moveTo(win.window.screen.availWidth - win.width + 20, win.window.screen.availHeight - win.height)
 
-            win.showDevTools()
+            //win.showDevTools()
             win.show()
             win.focus()
         }
@@ -83,7 +87,7 @@ win.on("loaded", () => {
         setInterval(update, 1000)
         update();
 
-        listAction.reset()
+        //listAction.reset()
         listAction.refresh(true) // true forces refresh on load
         reviewAction.checkRunOnLogin()
 
@@ -93,7 +97,7 @@ win.on("loaded", () => {
 );
 
 function hideWindow() {
-    //win.hide();
+    win.hide();
 }
 
 win.on("blur", hideWindow)

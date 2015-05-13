@@ -1,0 +1,46 @@
+button.btn {
+  line-height: .4;
+  padding: 15px 15px 5px 15px;
+}
+
+#mainApp {
+
+  .sign-up-container {
+
+    button.sign-up-btn {
+      line-height: .4;
+      padding: 15px 15px 5px 15px;
+    }
+
+    div.last-step h1 {
+      margin-bottom: -25px;
+    }
+
+  }
+
+  .reviewList {
+    .reviewItem {
+      .reviewContent {
+        .reviewStatus {
+
+          .lg::after {
+            content: '';
+            display: none;
+            margin-bottom: 0;
+            height: 0;
+          }
+
+          .lg { margin-bottom: -12px; }
+          .md { margin-bottom: -3px; }
+
+          p.new-label {
+            span.new-span {
+              line-height: 1;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+

@@ -6,6 +6,8 @@ var _ = require('lodash')
 var Review = require('../vo/Review')
 var NotificationUtil = require('../utils/NotificationUtil')
 var OSXUtil = require('../utils/OSXUtil')
+var mixpanel = require('../mixpanel')
+var keys = require('../keys')
 
 class ReviewAction {
 
@@ -92,7 +94,7 @@ class ReviewAction {
             review.lastUpdate = new Date()
             review.lastStatus = {stars: review.stars, numReviews: review.numReviews}
 
-            if (er == null) {
+            if (er == null && response.statusCode == 200) {
                 switch (review.type) {
                     case self.alt.stores.ConfigStore.getGoodreadsType():
                         review = InterpreterUtil.interpretGoodreads(body, review)
@@ -111,7 +113,7 @@ class ReviewAction {
                 }
             }
 
-            review.error = er != null || !review.hasTitle;
+            review.error = er != null || response.statusCode != 200 || !review.hasTitle;
 
             self.actions.reviewComplete(review)
         });
@@ -159,9 +161,18 @@ class ReviewAction {
         let reviews = this.alt.stores.ReviewStore.getState().reviews;
 
         if (reviews[id]) {
+            var url = reviews[id].url
+            var type = reviews[id].type
+
             this.actions.markAsSeen(id)
             reviews[id].isDeleted = true
             delete reviews[id]
+
+            mixpanel.track(keys.REVIEW_DELETED, {
+                url: url,
+                type: type,
+                numReviews: _.size(reviews)
+            })
         }
 
         this.dispatch(reviews)

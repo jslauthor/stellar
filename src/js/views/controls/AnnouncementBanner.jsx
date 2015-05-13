@@ -6,6 +6,7 @@ var announcementStore = require('../../stores/AnnouncementStore')
 var announcementAction = require('../../actions/AnnouncementActions')
 var gui = require('nw.gui')
 var CloseButton = require('../controls/CloseButton.jsx')
+var validator = require('validator')
 
 var AnnouncementBanner = React.createClass({
     mixins: [ListenerMixin],
@@ -19,7 +20,8 @@ var AnnouncementBanner = React.createClass({
         this.setState(this.getInitialState())
     },
     handleClick: function() {
-      gui.Shell.openExternal(this.state.link)
+        if (validator.isURL(this.state.link, {require_protocol: true}))
+            gui.Shell.openExternal(this.state.link)
     },
     handleDismiss: function() {
         announcementAction.dismiss()

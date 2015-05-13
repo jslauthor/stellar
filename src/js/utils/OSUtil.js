@@ -12,7 +12,7 @@ class OSUtil {
 
     getIconPath() {
         var iconPath;
-        var directory = this.isWindows() ? '' : ''
+        var directory = this.isWindows() ? 'win/' : ''
 
         if (alt.stores.ReviewStore.getState().hasValidationRequirment)
             iconPath = 'img/'+directory+'tray_icon_error@2x.png'

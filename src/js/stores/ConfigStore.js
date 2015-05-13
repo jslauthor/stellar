@@ -17,8 +17,11 @@ var GOODREADS = "goodreads";
 var mins = 10
 var DELAY = (mins * 60) * 1000 // milliseconds
 
-var refresh = 720
+var refresh = 720 // 12 hours
 var REFRESH_DELAY = (refresh * 60) * 1000
+
+var announcementRefreshMins = 60 // 1 hour
+var ANNOUNCEMENT_REFRESH_DELAY = (announcementRefreshMins * 60) * 1000
 
 class ConfigStore {
     constructor() {
@@ -87,6 +90,7 @@ class ConfigStore {
 
     static getPollingLength() { return DELAY }
     static getRefreshLength() { return REFRESH_DELAY }
+    static getAnnouncementRefreshLength() { return ANNOUNCEMENT_REFRESH_DELAY }
 
 }
 

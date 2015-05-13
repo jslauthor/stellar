@@ -3,6 +3,8 @@
 var alt = require('../alt')
 var AnnouncementActions = require('../actions/AnnouncementActions')
 var LocalStorageUtil = require('../utils/LocalStorageUtil')
+var mixpanel = require('../mixpanel')
+var keys = require('../keys')
 
 class AnnouncementStore {
 
@@ -26,6 +28,7 @@ class AnnouncementStore {
     onDismiss() {
         this.isDismissed = true
         LocalStorageUtil.saveAll()
+        mixpanel.track(keys.DISMISSED_ANNOUNCEMENT, {length: new Date().getTime() - ((this.lastRefresh && Date.parse(this.lastRefresh)) || 0)})
     }
 
 }

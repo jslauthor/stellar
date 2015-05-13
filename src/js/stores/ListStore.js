@@ -5,6 +5,8 @@ var gui = require('nw.gui')
 var alt = require('../alt')
 var _ = require('lodash')
 var LocalStorageUtil = require('../utils/LocalStorageUtil')
+var mixpanel = require('../mixpanel')
+var keys = require('../keys')
 
 class ListStore {
 
@@ -79,6 +81,12 @@ class ListStore {
         if (subscribeObj.isValid)
             this._setCurrentStep(3)
 
+        mixpanel.track(keys.SUBSCRIBED, {
+            name: subscribeObj.firstName,
+            email: subscribeObj.email,
+            valid: subscribeObj.isValid
+        })
+
         LocalStorageUtil.saveAll()
     }
 
@@ -100,6 +108,11 @@ class ListStore {
 
         if (!this.serverError)
             this.lastRefresh = new Date()
+
+        mixpanel.track(keys.VALIDATED, {
+            email: validatedObject.email,
+            valid: validatedObject.isValid
+        })
 
         this.alt.stores.ReviewStore.emitChange()
         LocalStorageUtil.saveAll()

@@ -1,7 +1,7 @@
 "use strict";
 
 var React = require('react/addons')
-var ReactTransitionGroup = React.addons.CSSTransitionGroup;
+var ReactTransitionGroup = require('../addons/TimeoutTransitionGroup');
 var reviewStore = require('../stores/ReviewStore');
 var ListenerMixin = require('alt/mixins/ListenerMixin')
 var _ = require('lodash')
@@ -64,7 +64,7 @@ var ReviewList = React.createClass({
 
         return (
             <section ref="listRef" className="reviewList" style={{paddingBottom: AnnouncementStore.getState().isDismissed ? "40px" : "60px"}}>
-                <ReactTransitionGroup transitionName="list-animation">
+                <ReactTransitionGroup transitionName="list-animation" enterTimeout={500} leaveTimeout={500}>
                     {reviewItems}
                 </ReactTransitionGroup>
             </section>

@@ -65,7 +65,7 @@ var ReviewItem = React.createClass({
 
         var newComponent
         if (this.props.hasNew)
-            newComponent = <p className="pointer" onClick={this.handleClick}><span>NEW</span></p>
+            newComponent = <p className="new-label pointer" onClick={this.handleClick}><span className="new-span">NEW</span></p>
 
         var reviewSource
         if (!this.props.isEditing)

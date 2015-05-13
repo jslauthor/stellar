@@ -14,7 +14,7 @@ class AnnouncementActions {
         var storeState = this.alt.stores.AnnouncementStore.getState()
         var elapsedTime = new Date().getTime() - ((storeState.lastRefresh && Date.parse(storeState.lastRefresh)) || 0)
 
-        if (elapsedTime >= this.alt.stores.ConfigStore.getRefreshLength()) {
+        if (elapsedTime >= this.alt.stores.ConfigStore.getAnnouncementRefreshLength()) {
 
             request('http://www.jslauthor.com/notification/random', (err, response, body) => {
                 if (!err && response.statusCode == 200)
