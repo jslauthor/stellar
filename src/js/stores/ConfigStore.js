@@ -29,7 +29,7 @@ class ConfigStore {
     }
 
     onNewVersionAvailable() {
-        var win = gui.Window.open('/newVersion.html', {
+        var win = gui.Window.open('./newVersion.html', {
             position: 'center',
             width: 400,
             height: 200,

@@ -24,7 +24,7 @@ class ConfigAction {
             if (data.version != pkginfo.version)
                 this.actions.newVersionAvailable()
             else if (!OSUtil.isWindows() && firstRun) {
-                var win = gui.Window.open('/firstRun.html', {
+                var win = gui.Window.open('./firstRun.html', {
                     position: 'center',
                     width: 500,
                     height: 500,
