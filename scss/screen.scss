@@ -510,7 +510,9 @@ input.error, input:focus  .error {
     p {
       font-size: 14px;
       margin: 15px auto;
-      width: 70%;
+      padding-left: 20px;
+      padding-right: 20px;
+      width: 100%;
       @include fontNormal;
     }
 
