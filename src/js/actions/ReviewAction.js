@@ -1,5 +1,5 @@
 var alt = require("../alt")
-var request = require('browser-request')
+var axios = require('axios')
 var uuid = require('node-uuid')
 var InterpreterUtil = require('../utils/InterpreterUtil')
 var _ = require('lodash')
@@ -83,40 +83,44 @@ class ReviewAction {
             return false;
 
         var self = this
-        request({url: review.url, timeout: 10000}, function(er, response, body) {
 
-            //console.log(er)
-            //console.log(response)
+        function finishRequest() {
             review.loading = false
-
-            if (review.isDeleted || _.isUndefined(body))
-                return false;
-
-            review.lastUpdate = new Date()
-            review.lastStatus = {stars: review.stars, numReviews: review.numReviews}
-
-            if (er == null && response.statusCode == 200) {
-                switch (review.type) {
-                    case self.alt.stores.ConfigStore.getGoodreadsType():
-                        review = InterpreterUtil.interpretGoodreads(body, review)
-                        break;
-                    case self.alt.stores.ConfigStore.getAmazonType():
-                    default:
-                        review = InterpreterUtil.interpretAmazon(body, review)
-                }
-
-                if (!review.hasNew) {
-                    review.hasNew = review.hasTitle && !review.error && (review.lastStatus.numReviews != review.numReviews || review.lastStatus.stars != review.stars)
-
-                    // create notification
-                    if (review.hasNew && review.hasTitle)
-                        NotificationUtil.createNotification(review.title + " now has " + review.numReviews + " reviews!")
-                }
-            }
-
-            review.error = !_.isNull(er) || response.statusCode != 200 || !review.hasTitle
             self.actions.reviewComplete(review)
-        });
+        }
+
+        axios
+            .get(review.url)
+            .then(function(response) {
+                review.lastUpdate = new Date()
+                review.lastStatus = {stars: review.stars, numReviews: review.numReviews}
+
+                if (response.status == 200) {
+                    switch (review.type) {
+                        case self.alt.stores.ConfigStore.getGoodreadsType():
+                            review = InterpreterUtil.interpretGoodreads(response.data, review)
+                            break;
+                        case self.alt.stores.ConfigStore.getAmazonType():
+                        default:
+                            review = InterpreterUtil.interpretAmazon(response.data, review)
+                    }
+
+                    if (!review.hasNew) {
+                        review.hasNew = review.hasTitle && !review.error && (review.lastStatus.numReviews != review.numReviews || review.lastStatus.stars != review.stars)
+
+                        // create notification
+                        if (review.hasNew && review.hasTitle)
+                            NotificationUtil.createNotification(review.title + " now has " + review.numReviews + " reviews!")
+                    }
+                }
+
+                review.error = (_.isUndefined(response) || response.status != 200) || !review.hasTitle
+                finishRequest()
+            })
+            .catch(function(response) {
+                review.error = true
+                finishRequest()
+            })
 
         this.dispatch(review)
     }
@@ -147,13 +151,18 @@ class ReviewAction {
 
         force = _.isUndefined(force) ? false : force
 
-        var elapsedTime = new Date().getTime() - ((review.lastUpdate && Date.parse(review.lastUpdate)) || 0)
-        if (elapsedTime >= this.alt.stores.ConfigStore.getPollingLength() || force)
-        {
-            review.loading = true
-            review.error = false
-            this.actions.requestReview(review)
+        if (review.isDeleted) {
+            this.actions.deleteReview(review.id)
+        } else {
+            var elapsedTime = new Date().getTime() - ((review.lastUpdate && Date.parse(review.lastUpdate)) || 0)
+            if (elapsedTime >= this.alt.stores.ConfigStore.getPollingLength() || force)
+            {
+                review.loading = true
+                review.error = false
+                this.actions.requestReview(review)
+            }
         }
+
         this.dispatch()
     }
 

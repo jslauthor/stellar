@@ -1,4 +1,4 @@
-//var UglifyJsPlugin = require("webpack/lib/optimize/UglifyJsPlugin");
+var webpack = require("webpack");
 
 module.exports = {
     target: "node-webkit",
@@ -26,6 +26,6 @@ module.exports = {
         ]
     },
     plugins: [
-        //new UglifyJsPlugin()
+        new webpack.IgnorePlugin(/vertx/)
     ]
 };
