@@ -83,8 +83,9 @@ class ReviewAction {
             return false;
 
         var self = this
-        request(review.url, function(er, response, body) {
+        request({url: review.url, timeout: 10000}, function(er, response, body) {
 
+            //console.log(er)
             //console.log(response)
             review.loading = false
 
@@ -113,8 +114,7 @@ class ReviewAction {
                 }
             }
 
-            review.error = er != null || response.statusCode != 200 || !review.hasTitle;
-
+            review.error = !_.isNull(er) || response.statusCode != 200 || !review.hasTitle
             self.actions.reviewComplete(review)
         });
 
