@@ -155,7 +155,7 @@ class ReviewAction {
             this.actions.deleteReview(review.id)
         } else {
             var elapsedTime = new Date().getTime() - ((review.lastUpdate && Date.parse(review.lastUpdate)) || 0)
-            if (elapsedTime >= this.alt.stores.ConfigStore.getPollingLength() || force)
+            if ((!review.loading && elapsedTime >= this.alt.stores.ConfigStore.getPollingLength()) || force)
             {
                 review.loading = true
                 review.error = false

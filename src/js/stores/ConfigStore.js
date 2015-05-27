@@ -14,7 +14,7 @@ var RED = "e62040";
 var AMAZON = "amazon";
 var GOODREADS = "goodreads";
 
-var mins = 15
+var mins = 30
 var DELAY = (mins * 60) * 1000 // milliseconds
 
 var refresh = 720 // 12 hours
