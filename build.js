@@ -21,11 +21,11 @@ nw.build().then(function () {
     var appSign = spawn('sh', ['app_sign.sh', './build/stellar/osx64/stellar.app', process.env.APPLE_DEV_ID ]);
 
     appSign.stdout.on('data', function (data) {
-        process.stdout.write('[APP SIGN] ' + data);
+        process.stdout.write('[APP SIGN] ' + data.toString());
     });
 
     appSign.stderr.on('data', function (data) {
-        process.stdout.write('[APP SIGN ERROR] ' + data);
+        process.stdout.write('[APP SIGN ERROR] ' + data.toString());
     });
 
     appSign.on('close', function (code) {
@@ -56,11 +56,11 @@ nw.build().then(function () {
             var dmgSign = spawn('sh', ['dmg_sign.sh', './build/stellar/osx64/stellar.dmg', process.env.APPLE_DEV_ID ]);
 
             dmgSign.stdout.on('data', function (data) {
-                process.stdout.write('[DMG SIGN] ' + data);
+                process.stdout.write('[DMG SIGN] ' + data.toString());
             });
 
             dmgSign.stderr.on('data', function (data) {
-                process.stdout.write('[DMG SIGN ERROR] ' + data);
+                process.stdout.write('[DMG SIGN ERROR] ' + data.toString());
             });
 
         });
