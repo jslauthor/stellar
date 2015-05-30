@@ -6,7 +6,7 @@ var spawn = require('child_process').spawn;
 var nw = new NwBuilder({
     version: "0.12.0",
     files: ['./img/**/*', './js/bundle.js', './package.json', './*.html'], // use the glob format
-    platforms: ['osx64', 'win32', 'win64'],
+    platforms: ['osx64', 'win32'],
     macIcns: "./img/stellar.icns",
     winIco: "./img/stellar.ico"
 });
