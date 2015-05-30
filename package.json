@@ -4,14 +4,6 @@
   "main": "index.html",
   "author": "J.S. Leonard <hello@jslauthor.com>",
   "manifestUrl": "https://s3-us-west-2.amazonaws.com/jsl-author/stellar/package.json",
-  "packages": {
-    "mac": {
-      "url": "https://s3-us-west-2.amazonaws.com/jsl-author/stellar/releases/stellar/mac/stellar.dmg"
-    },
-    "win": {
-      "url": "https://s3-us-west-2.amazonaws.com/jsl-author/stellar/releases/stellar/win/stellar.zip"
-    }
-  },
   "dependencies": {
     "alt": "^0.14.5",
     "appdmg": "^0.3.0",
